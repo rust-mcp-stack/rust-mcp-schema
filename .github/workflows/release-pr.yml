@@ -12,7 +12,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event.head_commit.committer.name != 'GitHub'
+    # if: github.event.head_commit.committer.name != 'GitHub'
     # needs: ci
     permissions:
       contents: write
