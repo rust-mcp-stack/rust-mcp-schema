@@ -6,12 +6,7 @@ categories = ["Model Context Protocol", "MCP Protocol", "MCP SDK"]
 description = "Type-safe implementation of the Model Context Protocol in Rust, designed to reduce errors and accelerate development with powerful utilities."
 repository = "https://github.com/rust-mcp-stack/rust-mcp-schema"
 documentation = "https://docs.rs/rust-mcp-schema"
-keywords = [
-    "Model Context Protocol",
-    "MCP Protocol",
-    "MCP SDK",
-    "Model Context Protocol SDK",
-]
+keywords = ["MCP Protocol", "MCP SDK", "Rust MCP Stack"]
 license = "MIT"
 edition = "2021"
 
