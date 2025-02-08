@@ -1,0 +1,54 @@
+[package]
+name = "rust-mcp-schema"
+version = "0.1.0"
+authors = ["Ali Hashemi"]
+categories = ["Model Context Protocol", "MCP Protocol", "MCP SDK"]
+description = "Type-safe implementation of the Model Context Protocol in Rust, designed to reduce errors and accelerate development with powerful utilities."
+repository = "https://github.com/rust-mcp-stack/rust-mcp-schema"
+documentation = "https://docs.rs/rust-mcp-schema"
+keywords = [
+    "Model Context Protocol",
+    "MCP Protocol",
+    "MCP SDK",
+    "Model Context Protocol SDK",
+]
+license = "MIT"
+edition = "2021"
+
+[lib]
+path = "src/rust-mcp-schema.rs"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+
+
+[dev-dependencies]
+json5 = { version = "0.4" }
+[lints]
+
+
+[package.metadata.docs.rs]
+features = ["latest", "schema_utils"]
+rustdoc-args = ["--generate-link-to-definition"]
+
+[package.metadata.playground]
+features = ["latest", "schema_utils"]
+
+### FEATURES #################################################################
+
+# Features to enable different schema versions and associated schema_utils
+[features]
+
+# defalt features
+default = ["latest", "schema_utils"] # Default features
+
+# activates the latest MCP schema version, this will be updated once a new version of schema is published
+latest = ["2024_11_05"]
+
+# enables the draft version of the mcp schema
+draft = []
+# enabled mcp schema version 2024_11_05
+2024_11_05 = []
+# Enables `schema_utils`, which provides utility types that simplify communication with MCP messages, improving ease of use while reducing potential mistakes ane errors when constructing messages.
+schema_utils = []

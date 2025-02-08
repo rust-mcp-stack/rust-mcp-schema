@@ -1,0 +1,12 @@
+[alias]
+run_clippy = [
+    "clippy",
+    "--features",
+    "latest draft",
+    "--fix",
+    "--",
+    "-D",
+    "warnings",
+]
+
+run_test = ["nextest", "run"]

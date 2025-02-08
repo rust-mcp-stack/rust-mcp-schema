@@ -1,0 +1,30 @@
+name: ReleasePR
+
+permissions:
+  pull-requests: write
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event.head_commit.committer.name != 'GitHub'
+    # needs: ci
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Release Please
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: rust
+          pull-request-header: ":robot: Automated release created! :rocket:"
+          token: ${{ secrets.RP_SECRET }}

@@ -1,0 +1,64 @@
+name: Bug Report
+description: Report an issue with rust-mcp-schema.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please provide the details below to help us investigate and resolve the issue.
+
+        Before submitting, ensure you're using [the latest version]() of the rust-mcp-schema.
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: |
+        Provide a clear description of the issue, including detailed steps to reproduce it.
+      value: |
+        **Issue Summary:**
+
+        **Steps to Reproduce:**
+        1. 
+        2. 
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What was the expected outcome?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include logs, error messages, or relevant output (consider using a [GitHub Gist](https://gist.github.com) if needed).
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: Specify which version of rust-mcp-schema you're using (e.g., latest, draft, or a specific version number).
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: version
+    attributes:
+      label: MCP Schema Version
+      description: Specify which version of mcp schema specification you're using (e.g., latest, draft, 2024_11_05).
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: |
+        Provide any extra details that might be relevant, such as environment specifics, system configuration, or related discussions.
+    validations:
+      required: false

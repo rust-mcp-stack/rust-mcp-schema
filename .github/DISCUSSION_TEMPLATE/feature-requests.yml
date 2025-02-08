@@ -1,0 +1,32 @@
+title: "Feature Request: "
+labels: ["feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide the necessary details below to help us evaluate your request.
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: "What problem are you trying to solve, and why is this feature important?"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: "Describe the feature you’re requesting and how it should work."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: "Are there any other approaches or workarounds you’ve considered?"
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: |
+        Provide any other relevant details, such as platform-specific considerations, related discussions, or supporting information.

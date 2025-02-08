@@ -1,0 +1,94 @@
+# These settings are synced to GitHub by https://probot.github.io/apps/settings/
+
+repository:
+  name: rust-mcp-schema
+  description: "A type-safe implementation of the Model Context Protocol (MCP) schema in Rust."
+  homepage: "docs.rs/rust-mcp-schema"
+  topics: "Model Context Protocol for Rust"
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_downloads: true
+  default_branch: main
+
+  # Clean commits are preferred
+  allow_merge_commit: true
+  # In case we need to clean up commits
+  allow_squash_merge: true
+  # not allowed
+  allow_rebase_merge: false
+
+  allow_auto_merge: true
+  delete_branch_on_merge: true
+
+  squash_merge_commit_title: "PR_TITLE"
+  squash_merge_commit_message: "PR_BODY"
+  merge_commit_message: "PR_BODY"
+
+  # labels:
+  #   # 🌱 Feature & Enhancement Labels
+  #   - name: "feature"
+  #     color: "1D76DB" # Blue
+  #     description: "New feature request or enhancement"
+
+  #   - name: "enhancement"
+  #     color: "84b6eb" # Light Blue
+  #     description: "Improvement or refinement of an existing feature"
+
+  #   # 🐛 Bug Labels
+  #   - name: "bug"
+  #     color: "D73A4A" # Red
+  #     description: "Something isn't working correctly"
+
+  #   - name: "critical-bug"
+  #     color: "B60205" # Dark Red
+  #     description: "A high-priority bug that needs urgent attention"
+
+  #   # 🔧 Maintenance & Refactoring
+  #   - name: "refactor"
+  #     color: "C5DEF5" # Light Blue
+  #     description: "Code cleanup or restructuring"
+
+  #   - name: "dependencies"
+  #     color: "0366D6" # Dark Blue
+  #     description: "Dependency updates and maintenance"
+
+  #   # 🛠️ Support & Help Labels
+  #   - name: "question"
+  #     color: "D876E3" # Purple
+  #     description: "General questions and discussions"
+
+  #   - name: "help wanted"
+  #     color: "008672" # Green
+  #     description: "Extra attention is needed, contributors welcome"
+
+  #   - name: "good first issue"
+  #     color: "7057FF" # Light Purple
+  #     description: "Good for first-time contributors"
+
+  #   # 🔄 Status Labels
+  #   - name: "wontfix"
+  #     color: "ffffff" # White
+  #     description: "This issue will not be fixed"
+
+  #   - name: "duplicate"
+  #     color: "CCCCCC" # Gray
+  #     description: "Duplicate of another issue"
+
+  #   - name: "invalid"
+  #     color: "E4E669" # Yellow
+  #     description: "Not a valid issue or PR"
+
+  #   # 🚀 Workflow & Priority
+  #   - name: "in progress"
+  #     color: "FBCA04" # Orange
+  #     description: "Work is currently ongoing"
+
+  #   - name: "blocked"
+  #     color: "000000" # Black
+  #     description: "Blocked by another issue or dependency"
+
+  #   # 📦 Release & Versioning
+  #   - name: "breaking change"
+  #     color: "FF0000" # Bright Red
+  #     description: "A change that requires adjustments by users"
