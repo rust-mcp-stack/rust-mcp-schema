@@ -57,7 +57,7 @@
     "req_tools_call_4": {"jsonrpc":"2.0","id":18,"method":"tools/call","params":{"_meta":{"progressToken":3},"name":"sampleLLM","arguments":{"a":15,"b":21,"prompt":"my prompt","maxTokens":5}}},
     /* ServerRequest::CreateMessageRequest */
     "req_sampling_create_message_2": {"method":"sampling/createMessage","params":{"messages":[{"role":"user","content":{"type":"text","text":"Resource sampleLLM context: my prompt"}}],"systemPrompt":"You are a helpful test server.","maxTokens":5,"temperature":0.7,"includeContext":"thisServer"},"jsonrpc":"2.0","id":1},
-    /* ServerRequest::CreateMessageRequest  */
+    /* ClientResult::CreateMessageResult  */
     "res_sampling_create_message_2": {"jsonrpc":"2.0","id":1,"result":{"model":"stub-model","stopReason":"endTurn","role":"assistant","content":{"type":"text","text":"This is a stub response."}}},
     /* ServerResult::CallToolResult */
     "res_tools_call_4": {"result":{"content":[{"type":"text","text":"LLM sampling result: This is a stub response."}]},"jsonrpc":"2.0","id":18},

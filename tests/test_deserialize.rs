@@ -2,10 +2,8 @@
 pub mod common;
 
 mod test_deserialize {
-    use rust_mcp_schema::{
-        schema_utils::*, ClientNotification, ClientRequest, RequestId, ServerRequest, ServerResult, JSONRPC_VERSION,
-        LATEST_PROTOCOL_VERSION,
-    };
+    use rust_mcp_schema::schema_utils::*;
+    use rust_mcp_schema::*;
 
     use super::common::get_message;
 
@@ -126,6 +124,16 @@ mod test_deserialize {
         ));
     }
 
+    /* ---------------------- CLIENT RESPONSES ---------------------- */
+    #[test]
+    fn test_list_tools_result() {
+        let message = get_message("res_sampling_create_message_2");
+        assert!(matches!(message, ClientMessage::Response(client_message)
+                if matches!(&client_message.result, ResultFromClient::ClientResult(client_result)
+                        if matches!( client_result, ClientResult::CreateMessageResult(_))
+                )
+        ));
+    }
     /* ---------------------- SERVER RESPONSES ---------------------- */
 
     #[test]

@@ -197,6 +197,41 @@ mod test_serialize {
         ));
     }
 
+    /* ---------------------- CLIENT RESPONSES ---------------------- */
+    #[test]
+    fn test_list_tools_result() {
+        let client_result = ClientResult::CreateMessageResult(CreateMessageResult {
+            content: CreateMessageResultContent::TextContent(TextContent::new(None, "This is a stub response.".to_string())),
+            meta: None,
+            model: "stub-model".to_string(),
+            role: Role::Assistant,
+            stop_reason: Some("endTurn".to_string()),
+        });
+
+        let message: ClientMessage = ClientMessage::Response(ClientJsonrpcResponse::new(
+            RequestId::Integer(15),
+            ResultFromClient::ClientResult(client_result.clone()),
+        ));
+
+        let message: ClientMessage = re_serialize(message);
+
+        assert!(matches!(message, ClientMessage::Response(client_message)
+                if matches!(&client_message.result, ResultFromClient::ClientResult(client_result)
+                        if matches!( client_result, ClientResult::CreateMessageResult(_))
+                )
+        ));
+
+        // test From<ClientResult> for ResultFromClient
+        let message: ClientMessage =
+            ClientMessage::Response(ClientJsonrpcResponse::new(RequestId::Integer(15), client_result.into()));
+
+        assert!(matches!(message, ClientMessage::Response(client_message)
+                if matches!(&client_message.result, ResultFromClient::ClientResult(client_result)
+                        if matches!( client_result, ClientResult::CreateMessageResult(_))
+                )
+        ));
+    }
+
     /* ---------------------- SERVER RESPONSES ---------------------- */
 
     #[test]
@@ -396,10 +431,43 @@ mod test_serialize {
 
         let message: ClientMessage = re_serialize(message);
 
+        // test Display trait
+        let str = message.to_string();
+        assert_eq!(str, "{\"jsonrpc\":\"2.0\",\"method\":\"my_notification\",\"params\":{\"method\":\"my_notification\",\"params\":{\"method\":\"my_notification\"}}}");
+
         assert!(matches!(message, ClientMessage::Notification(client_message)
                 if matches!(&client_message.notification, NotificationFromClient::CustomNotification(_)) && client_message.method == "my_notification"
         ));
     }
+
+    /* ---------------------- SERVER NOTIFICATIONS ---------------------- */
+    #[test]
+    fn test_server_cancel_notification() {
+        let cancel_notification = CancelledNotification::new(CancelledNotificationParams {
+            reason: Some("Request timed out".to_string()),
+            request_id: RequestId::Integer(15),
+        });
+        let message: ServerMessage =
+            ServerMessage::Notification(ServerJsonrpcNotification::new(NotificationFromServer::ServerNotification(
+                ServerNotification::CancelledNotification(cancel_notification.clone()),
+            )));
+
+        let message: ServerMessage = re_serialize(message);
+
+        assert!(matches!(message, ServerMessage::Notification(client_message)
+                if matches!(&client_message.notification,NotificationFromServer::ServerNotification(client_notification)
+                if matches!( client_notification, ServerNotification::CancelledNotification(_)))
+        ));
+
+        // test From<CancelledNotification> for NotificationFromServer
+        let message: ServerMessage = ServerMessage::Notification(ServerJsonrpcNotification::new(cancel_notification.into()));
+
+        assert!(matches!(message, ServerMessage::Notification(client_message)
+                if matches!(&client_message.notification,NotificationFromServer::ServerNotification(client_notification)
+                if matches!( client_notification, ServerNotification::CancelledNotification(_)))
+        ));
+    }
+
     /* ---------------------- SERVER REQUESTS ---------------------- */
     #[test]
     fn test_server_requests() {
@@ -433,6 +501,13 @@ mod test_serialize {
             RequestId::Integer(15),
             RequestFromServer::CustomRequest(json!({"method":"my_custom_method"})),
         ));
+
+        // test Display trait
+        let str = message.to_string();
+        assert_eq!(
+            str,
+            "{\"id\":15,\"jsonrpc\":\"2.0\",\"method\":\"my_custom_method\",\"params\":{\"method\":\"my_custom_method\"}}"
+        );
 
         let message: ServerMessage = re_serialize(message);
 
