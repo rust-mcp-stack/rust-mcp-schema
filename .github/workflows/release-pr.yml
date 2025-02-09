@@ -27,4 +27,6 @@ jobs:
         with:
           release-type: rust
           pull-request-header: ":robot: Automated release created! :rocket:"
+          bump-minor-pre-major: true
+          bump-patch-for-minor-pre-major: true
           token: ${{ secrets.RP_SECRET }}
