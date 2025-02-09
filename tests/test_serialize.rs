@@ -376,13 +376,32 @@ mod test_serialize {
 
     #[test]
     fn test_client_initialized_notification() {
-        let message: ClientMessage = ClientMessage::Notification(ClientJsonrpcNotification::new(
-            NotificationFromClient::ClientNotification(ClientNotification::InitializedNotification(
-                InitializedNotification::new(Some(InitializedNotificationParams { meta: None, extra: None })),
-            )),
-        ));
+        let init_notification =
+            InitializedNotification::new(Some(InitializedNotificationParams { meta: None, extra: None }));
+
+        let message: ClientMessage =
+            ClientMessage::Notification(ClientJsonrpcNotification::new(NotificationFromClient::ClientNotification(
+                ClientNotification::InitializedNotification(init_notification.clone()),
+            )));
 
         let message: ClientMessage = re_serialize(message);
+
+        assert!(matches!(message, ClientMessage::Notification(client_message)
+                if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
+                if matches!( client_notification, ClientNotification::InitializedNotification(_)))
+        ));
+
+        // test  From<InitializedNotification> for NotificationFromClient
+        let message: ClientMessage =
+            ClientMessage::Notification(ClientJsonrpcNotification::new(init_notification.clone().into()));
+
+        assert!(matches!(message, ClientMessage::Notification(client_message)
+                if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
+                if matches!( client_notification, ClientNotification::InitializedNotification(_)))
+        ));
+
+        // test  From<InitializedNotification> for ClientJsonrpcNotification
+        let message: ClientMessage = ClientMessage::Notification(init_notification.into());
 
         assert!(matches!(message, ClientMessage::Notification(client_message)
                 if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
@@ -460,7 +479,16 @@ mod test_serialize {
         ));
 
         // test From<CancelledNotification> for NotificationFromServer
-        let message: ServerMessage = ServerMessage::Notification(ServerJsonrpcNotification::new(cancel_notification.into()));
+        let message: ServerMessage =
+            ServerMessage::Notification(ServerJsonrpcNotification::new(cancel_notification.clone().into()));
+
+        assert!(matches!(message, ServerMessage::Notification(client_message)
+                if matches!(&client_message.notification,NotificationFromServer::ServerNotification(client_notification)
+                if matches!( client_notification, ServerNotification::CancelledNotification(_)))
+        ));
+
+        // test From<CancelledNotification> for ServerNotification
+        let message: ServerMessage = ServerMessage::Notification(cancel_notification.into());
 
         assert!(matches!(message, ServerMessage::Notification(client_message)
                 if matches!(&client_message.notification,NotificationFromServer::ServerNotification(client_notification)
