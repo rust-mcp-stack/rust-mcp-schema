@@ -9,7 +9,6 @@
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/rust-mcp-stack/rust-mcp-schema/ci.yml?style=for-the-badge" height="22">
 ](https://github.com/rust-mcp-stack/rust-mcp-schema/actions/workflows/ci.yml)
 
-
 A type-safe implementation of the official Model Context Protocol (MCP) schema in Rust.
 
 The MCP schemas in this repository are [automatically generated](#how-are-schemas-generated) from the official Model Context Protocol, ensuring they are always up-to-date and aligned with the latest official specifications.
@@ -18,13 +17,13 @@ The MCP schemas in this repository are [automatically generated](#how-are-schema
 
 - [Features](#features)
 - [How can this crate be used?](#how-can-this-crate-be-used)
-- [What this crate doesn't include?](#warning-what-this-crate-doesnt-include)
+- [What is not included in this crate?](#warning-what-is-not-included-in-this-crate)
 - [Schema Versions](#schema-versions)
   - [Currently available versions](#currently-available-versions)
   - [How to switch between different schema versions?](#how-to-switch-between-different-schema-versions)
   - [How are Schemas generated?](#how-are-schemas-generated)
 - [What is `schema_utils`?](#what-is-schema_utils)
-- [What SchemaUtils does?](#what-schemautils-does)
+- [What does the schema_utils do?](#what-does-the-schema_utils-do)
 - [Usage Examples](#usage-examples)
   - [Detecting an InitializeRequest Message on an MCP Server](#detecting-an-initializerequest-message-on-an-mcp-server)
   - [Creating an InitializeResult Response on an MCP Server](#creating-an-initializeresult-response-on-an-mcp-server)
@@ -37,10 +36,10 @@ The MCP schemas in this repository are [automatically generated](#how-are-schema
 
 ## Features
 
-- :jigsaw: Type-safe implementation of the MCP protocol specification.
-- :gem: Auto-generated schemas are always synchronized with the official schema specifications.
-- :scroll: Includes all schema versions, including draft versions for early adoption.
-- :hammer_and_pick: Complimentary schema utility module (schema_utils) to boost productivity and ensure development integrity.
+- 🧩 Type-safe implementation of the MCP protocol specification.
+- 💎 Auto-generated schemas are always synchronized with the official schema specifications.
+- 📜 Includes all schema versions, including draft versions for early adoption.
+- 🛠 Complimentary schema utility module (schema_utils) to boost productivity and ensure development integrity.
 
 ## How can this crate be used?
 
@@ -53,7 +52,7 @@ This crate includes the schema with `serialization` / `deserialization` support 
 This crate could be used for developing an **MCP Server**, **MCP Client**, or even an **MCP Host** in Rust.
 For more information on the MCP architecture, refer to the [official documentation](https://spec.modelcontextprotocol.io/specification).
 
-## :warning: What this crate doesn't include?
+## ⚠️ What is not included in this crate?
 
 This crate **only** provides an implementation of the MCP schema.
 This crate is not intended to provide an MCP Transport implementation for sending and receiving MCP messages.
@@ -101,7 +100,8 @@ Schemas are generated from the official `schema.ts` and `schema.json` files avai
 
 Using a customized version of [typify](https://github.com/oxidecomputer/typify), along with additional pre-processing and post-processing steps, the schema specifications are transformed into Rust code.
 
-> [!NOTE]  
+### 📌 Note
+
 > The code used to generate schemas from `schema.ts` and `schema.json` is not included in this repository. However, I am considering making it available as a CLI tool in the future, allowing developers to generate MCP schemas as Rust code that can be directly integrated into their projects.
 
 ## What is `schema_utils`?
@@ -114,13 +114,15 @@ To streamline development, improve compile-time type checking, and reduce the po
 
 Please refer to [schema_utils.rs](src/generated_schema/2024_11_05/schema_utils.rs) for more details.
 
-> [!NOTE]  
+### 📌 Note
+
 > Using schema_utils is optional. It is enabled by default through the schema_utils Cargo feature and can be used from `rust_mcp_schema::schema_utils`.
+
 > If you prefer not to use schema_utils, you can directly work with the enums and structs provided in schema.rs, adapting them to your needs and creating your own utility types and functions around them.
 
 Visit [Usage Examples (Without `Using schema_utils`)](#usage-examples-without-utilizing-schema_utils) to see an alternative approach.
 
-### What SchemaUtils Does?
+### What does the schema_utils do?
 
 The official schema defines a unified `JsonrpcMessage` type that encompasses all messages and notifications within the MCP protocol.
 
