@@ -1,4 +1,6 @@
 [alias]
+
+coverage = ["tarpaulin"]
 run_clippy = [
     "clippy",
     "--features",

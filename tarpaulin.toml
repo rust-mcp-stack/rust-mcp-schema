@@ -1,0 +1,13 @@
+[version_2024_11_05]
+no-default-features = true
+features = "2024_11_05 schema_utils"
+# release = true
+
+[version_draft]
+no-default-features = true
+features = "draft schema_utils"
+# release = true
+
+[report]
+output-dir = "./.coverage"
+out = ["Html", "Xml"]

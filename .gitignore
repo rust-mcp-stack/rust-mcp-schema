@@ -3,7 +3,9 @@
 settings.json
 
 
+
 # test artifacts
 /coverage
+.coverage
 *.lcov
 *.profraw
