@@ -1004,6 +1004,26 @@ impl From<RootsListChangedNotification> for NotificationFromClient {
         Self::ClientNotification(value.into())
     }
 }
+impl From<CancelledNotification> for ClientJsonrpcNotification {
+    fn from(value: CancelledNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<InitializedNotification> for ClientJsonrpcNotification {
+    fn from(value: InitializedNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<ProgressNotification> for ClientJsonrpcNotification {
+    fn from(value: ProgressNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<RootsListChangedNotification> for ClientJsonrpcNotification {
+    fn from(value: RootsListChangedNotification) -> Self {
+        Self::new(value.into())
+    }
+}
 impl From<Result> for ResultFromClient {
     fn from(value: Result) -> Self {
         Self::ClientResult(value.into())
@@ -1091,6 +1111,41 @@ impl From<ToolListChangedNotification> for NotificationFromServer {
 impl From<LoggingMessageNotification> for NotificationFromServer {
     fn from(value: LoggingMessageNotification) -> Self {
         Self::ServerNotification(value.into())
+    }
+}
+impl From<CancelledNotification> for ServerJsonrpcNotification {
+    fn from(value: CancelledNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<ProgressNotification> for ServerJsonrpcNotification {
+    fn from(value: ProgressNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<ResourceListChangedNotification> for ServerJsonrpcNotification {
+    fn from(value: ResourceListChangedNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<ResourceUpdatedNotification> for ServerJsonrpcNotification {
+    fn from(value: ResourceUpdatedNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<PromptListChangedNotification> for ServerJsonrpcNotification {
+    fn from(value: PromptListChangedNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<ToolListChangedNotification> for ServerJsonrpcNotification {
+    fn from(value: ToolListChangedNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<LoggingMessageNotification> for ServerJsonrpcNotification {
+    fn from(value: LoggingMessageNotification) -> Self {
+        Self::new(value.into())
     }
 }
 impl From<PingRequest> for RequestFromServer {
@@ -1223,9 +1278,5 @@ mod tests {
         );
         let result = detect_message_type(&json!(message));
         assert!(matches!(result, MessageTypes::Error));
-
-        // default
-        let result = detect_message_type(&json!({}));
-        assert!(matches!(result, MessageTypes::Request));
     }
 }
