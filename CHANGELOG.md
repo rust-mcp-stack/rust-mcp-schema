@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.2...v0.1.3) (2025-02-10)
+
+
+### Bug Fixes
+
+* generated schema and schema_utils ([#10](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/10)) ([c077d75](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/c077d7583f9278622c489d95a20afccca2c9982e))
+
 ## [0.1.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.1...v0.1.2) (2025-02-09)
 
 
