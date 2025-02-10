@@ -1267,5 +1267,9 @@ mod tests {
         );
         let result = detect_message_type(&json!(message));
         assert!(matches!(result, MessageTypes::Error));
+
+        // default
+        let result = detect_message_type(&json!({}));
+        assert!(matches!(result, MessageTypes::Request));
     }
 }
