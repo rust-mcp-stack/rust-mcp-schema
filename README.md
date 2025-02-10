@@ -17,7 +17,7 @@ The MCP schemas in this repository are [automatically generated](#how-are-schema
 
 - [Features](#features)
 - [How can this crate be used?](#how-can-this-crate-be-used)
-- [What is not included in this crate?](#warning-what-is-not-included-in-this-crate)
+- [What is not included in this crate?](#%EF%B8%8F-what-is-not-included-in-this-crate)
 - [Schema Versions](#schema-versions)
   - [Currently available versions](#currently-available-versions)
   - [How to switch between different schema versions?](#how-to-switch-between-different-schema-versions)
@@ -108,7 +108,7 @@ Using a customized version of [typify](https://github.com/oxidecomputer/typify),
 
 The Rust implementations of the MCP schemas in this crate are automatically generated from the official MCP GitHub repository.
 
-[schema_utils.rs](src/generated_schema/2024_11_05/schema_utils.rs) provides all the core structures and enums with serialization/deserialization support, allowing you to use them as needed and extend their functionality.
+[mcp_schema.rs](src/generated_schema/2024_11_05/mcp_schema.rs) provides all the core structures and enums with serialization/deserialization support, allowing you to use them as needed and extend their functionality.
 
 To streamline development, improve compile-time type checking, and reduce the potential for errors, we’ve implemented utility types and functions that offer more strongly-typed objects and implementations, all without modifying the originally generated schema.
 
@@ -118,7 +118,7 @@ Please refer to [schema_utils.rs](src/generated_schema/2024_11_05/schema_utils.r
 
 > Using schema_utils is optional. It is enabled by default through the schema_utils Cargo feature and can be used from `rust_mcp_schema::schema_utils`.
 
-> If you prefer not to use schema_utils, you can directly work with the enums and structs provided in schema.rs, adapting them to your needs and creating your own utility types and functions around them.
+> If you prefer not to use schema_utils, you can directly work with the enums and structs provided in [mcp_schema.rs](src/generated_schema/2024_11_05/mcp_schema.rs), adapting them to your needs and creating your own utility types and functions around them.
 
 Visit [Usage Examples (Without `Using schema_utils`)](#usage-examples-without-utilizing-schema_utils) to see an alternative approach.
 
