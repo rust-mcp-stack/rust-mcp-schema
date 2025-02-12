@@ -4534,7 +4534,7 @@ pub struct ResourceUpdatedNotificationParams {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct Result {
     ///This result property is reserved by the protocol to allow clients and servers to attach additional metadata to their responses.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4542,14 +4542,7 @@ pub struct Result {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-impl ::std::default::Default for Result {
-    fn default() -> Self {
-        Self {
-            meta: Default::default(),
-            extra: Default::default(),
-        }
-    }
-}
+
 ///The sender or recipient of messages and data in a conversation.
 ///
 /// <details><summary>JSON schema</summary>
