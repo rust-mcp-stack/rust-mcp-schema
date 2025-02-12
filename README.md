@@ -288,7 +288,7 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
     // Check it's a Request type of message
     if let JsonrpcMessage::Request(client_message) = message {
 
-        // Check method to detect it it a "initialize" request
+        // Check method to detect is a "initialize" request
         if client_message.method == "initialize" {
 
             // Now that we can handle the message, we simply print out the details.

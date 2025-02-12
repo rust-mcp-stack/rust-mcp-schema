@@ -77,6 +77,17 @@ impl ClientJsonrpcRequest {
     }
 }
 
+/// Formats the ClientJsonrpcRequest as a JSON string.
+impl Display for ClientJsonrpcRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
+    }
+}
+
 //*************************//
 //** Request From Client **//
 //*************************//
@@ -150,6 +161,17 @@ impl ClientJsonrpcNotification {
     }
 }
 
+/// Formats the ClientJsonrpcNotification as a JSON string.
+impl Display for ClientJsonrpcNotification {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
+    }
+}
+
 //*******************************//
 //**  NotificationFromClient   **//
 //*******************************//
@@ -207,6 +229,17 @@ impl ClientJsonrpcResponse {
             jsonrpc: JSONRPC_VERSION.to_string(),
             result,
         }
+    }
+}
+
+/// Formats the ClientJsonrpcResponse as a JSON string.
+impl Display for ClientJsonrpcResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
     }
 }
 
@@ -331,6 +364,16 @@ impl ServerJsonrpcRequest {
     }
 }
 
+/// Formats the ServerJsonrpcRequest as a JSON string.
+impl Display for ServerJsonrpcRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
+    }
+}
 //*************************//
 //** Request From Server **//
 //*************************//
@@ -404,6 +447,16 @@ impl ServerJsonrpcNotification {
     }
 }
 
+/// Formats the ServerJsonrpcNotification as a JSON string.
+impl Display for ServerJsonrpcNotification {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
+    }
+}
 //*******************************//
 //**  NotificationFromServer   **//
 //*******************************//
@@ -464,6 +517,17 @@ impl ServerJsonrpcResponse {
     }
 }
 
+/// Formats the ServerJsonrpcResponse as a JSON string.
+impl Display for ServerJsonrpcResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
+    }
+}
+
 //*******************************//
 //**      ResultFromServer     **//
 //*******************************//
@@ -508,6 +572,21 @@ impl<'de> serde::Deserialize<'de> for ResultFromServer {
             }
             Err(_) => Ok(Self::CustomResult(raw_value)),
         }
+    }
+}
+
+//***************************//
+//** impl for JsonrpcError **//
+//***************************//
+
+/// Formats the ServerJsonrpcResponse as a JSON string.
+impl Display for JsonrpcError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
     }
 }
 

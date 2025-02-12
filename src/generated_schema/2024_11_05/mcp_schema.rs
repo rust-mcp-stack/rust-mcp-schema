@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 3d4877e69cbc9921e1b511a90cdf17d42483036b
-/// Generated at : 2025-02-09 20:40:09
+/// Hash : 55c983fd85fafa458d31f729e433c60e95932178
+/// Generated at : 2025-02-11 20:13:30
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -4541,6 +4541,14 @@ pub struct Result {
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+}
+impl ::std::default::Default for Result {
+    fn default() -> Self {
+        Self {
+            meta: Default::default(),
+            extra: Default::default(),
+        }
+    }
 }
 ///The sender or recipient of messages and data in a conversation.
 ///
