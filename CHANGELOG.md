@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.3...v0.1.4) (2025-02-12)
+
+
+### Features
+
+* enhance `schema_utils` and `mcp_schema` ([#12](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/12)) ([2dbd271](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/2dbd2714259fb4d31927705565a3a25a3c9e89c0))
+
 ## [0.1.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.2...v0.1.3) (2025-02-10)
 
 
