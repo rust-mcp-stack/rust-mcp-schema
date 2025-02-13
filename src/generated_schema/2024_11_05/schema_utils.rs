@@ -67,7 +67,7 @@ pub struct ClientJsonrpcRequest {
 
 impl ClientJsonrpcRequest {
     pub fn new(id: RequestId, request: RequestFromClient) -> Self {
-        let method = request.get_method().to_string();
+        let method = request.method().to_string();
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -102,9 +102,17 @@ pub enum RequestFromClient {
 }
 
 impl RequestFromClient {
+    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
         match self {
-            RequestFromClient::ClientRequest(request) => request.get_method(),
+            RequestFromClient::ClientRequest(request) => request.method(),
+            RequestFromClient::CustomRequest(request) => request["method"].as_str().unwrap(),
+        }
+    }
+
+    fn method(&self) -> &str {
+        match self {
+            RequestFromClient::ClientRequest(request) => request.method(),
             RequestFromClient::CustomRequest(request) => request["method"].as_str().unwrap(),
         }
     }
@@ -152,7 +160,7 @@ pub struct ClientJsonrpcNotification {
 
 impl ClientJsonrpcNotification {
     pub fn new(notification: NotificationFromClient) -> Self {
-        let method = notification.get_method().to_string();
+        let method = notification.method().to_string();
         Self {
             jsonrpc: JSONRPC_VERSION.to_string(),
             method,
@@ -186,9 +194,17 @@ pub enum NotificationFromClient {
 }
 
 impl NotificationFromClient {
+    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
         match self {
-            NotificationFromClient::ClientNotification(notification) => notification.get_method(),
+            NotificationFromClient::ClientNotification(notification) => notification.method(),
+            NotificationFromClient::CustomNotification(notification) => notification["method"].as_str().unwrap(),
+        }
+    }
+
+    fn method(&self) -> &str {
+        match self {
+            NotificationFromClient::ClientNotification(notification) => notification.method(),
             NotificationFromClient::CustomNotification(notification) => notification["method"].as_str().unwrap(),
         }
     }
@@ -354,7 +370,7 @@ pub struct ServerJsonrpcRequest {
 
 impl ServerJsonrpcRequest {
     pub fn new(id: RequestId, request: RequestFromServer) -> Self {
-        let method = request.get_method().to_string();
+        let method = request.method().to_string();
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -388,9 +404,17 @@ pub enum RequestFromServer {
 }
 
 impl RequestFromServer {
+    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
         match self {
-            RequestFromServer::ServerRequest(request) => request.get_method(),
+            RequestFromServer::ServerRequest(request) => request.method(),
+            RequestFromServer::CustomRequest(request) => request["method"].as_str().unwrap(),
+        }
+    }
+
+    fn method(&self) -> &str {
+        match self {
+            RequestFromServer::ServerRequest(request) => request.method(),
             RequestFromServer::CustomRequest(request) => request["method"].as_str().unwrap(),
         }
     }
@@ -438,7 +462,7 @@ pub struct ServerJsonrpcNotification {
 
 impl ServerJsonrpcNotification {
     pub fn new(notification: NotificationFromServer) -> Self {
-        let method = notification.get_method().to_string();
+        let method = notification.method().to_string();
         Self {
             jsonrpc: JSONRPC_VERSION.to_string(),
             method,
@@ -471,9 +495,17 @@ pub enum NotificationFromServer {
 }
 
 impl NotificationFromServer {
+    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
         match self {
-            NotificationFromServer::ServerNotification(notification) => notification.get_method(),
+            NotificationFromServer::ServerNotification(notification) => notification.method(),
+            NotificationFromServer::CustomNotification(notification) => notification["method"].as_str().unwrap(),
+        }
+    }
+
+    fn method(&self) -> &str {
+        match self {
+            NotificationFromServer::ServerNotification(notification) => notification.method(),
             NotificationFromServer::CustomNotification(notification) => notification["method"].as_str().unwrap(),
         }
     }
@@ -1132,8 +1164,23 @@ impl From<RpcErrorCodes> for i64 {
         code as i64
     }
 }
-/// Constructs a new JsonrpcErrorError using the provided arguments.
 impl JsonrpcErrorError {
+    /// Constructs a new `JsonrpcErrorError` with the provided arguments.
+    ///
+    /// # Arguments
+    /// * `error_code` - The JSON-RPC error code.
+    /// * `message` - A descriptive error message.
+    /// * `data` - Optional additional data.
+    ///
+    /// # Example
+    /// ```
+    /// use serde_json::json;
+    /// use rust_mcp_schema::{JsonrpcErrorError, schema_utils::RpcErrorCodes};
+    ///
+    /// let error = JsonrpcErrorError::new(RpcErrorCodes::INVALID_PARAMS, "Invalid params!".to_string(), Some(json!({"details": "Missing method field"})));
+    /// assert_eq!(error.code, -32602);
+    /// assert_eq!(error.message, "Invalid params!".to_string());
+    /// ```
     pub fn new(
         error_code: RpcErrorCodes,
         message: ::std::string::String,
@@ -1144,6 +1191,114 @@ impl JsonrpcErrorError {
             data,
             message,
         }
+    }
+    /// Creates a new `JsonrpcErrorError` for "Method not found".
+    ///
+    /// # Example
+    /// ```
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::method_not_found();
+    /// assert_eq!(error.code, -32601);
+    /// assert_eq!(error.message, "Method not found");
+    /// ```
+    pub fn method_not_found() -> Self {
+        Self {
+            code: RpcErrorCodes::METHOD_NOT_FOUND.into(),
+            data: None,
+            message: "Method not found".to_string(),
+        }
+    }
+    /// Creates a new `JsonrpcErrorError` for "Invalid parameters".
+    ///
+    /// # Example
+    /// ```
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::invalid_params();
+    /// assert_eq!(error.code, -32602);
+    /// ```
+    pub fn invalid_params() -> Self {
+        Self {
+            code: RpcErrorCodes::INVALID_PARAMS.into(),
+            data: None,
+            message: "Invalid params".to_string(),
+        }
+    }
+    /// Creates a new `JsonrpcErrorError` for "Invalid request".
+    ///
+    /// # Example
+    /// ```
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::invalid_request();
+    /// assert_eq!(error.code, -32600);
+    /// ```
+    pub fn invalid_request() -> Self {
+        Self {
+            code: RpcErrorCodes::INVALID_REQUEST.into(),
+            data: None,
+            message: "Invalid request".to_string(),
+        }
+    }
+    /// Creates a new `JsonrpcErrorError` for "Internal error".
+    ///
+    /// # Example
+    /// ```
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::internal_error();
+    /// assert_eq!(error.code, -32603);
+    /// ```
+    pub fn internal_error() -> Self {
+        Self {
+            code: RpcErrorCodes::INTERNAL_ERROR.into(),
+            data: None,
+            message: "Internal error".to_string(),
+        }
+    }
+    /// Creates a new `JsonrpcErrorError` for "Parse error".
+    ///
+    /// # Example
+    /// ```
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::parse_error();
+    /// assert_eq!(error.code, -32700);
+    /// ```
+    pub fn parse_error() -> Self {
+        Self {
+            code: RpcErrorCodes::PARSE_ERROR.into(),
+            data: None,
+            message: "Parse error".to_string(),
+        }
+    }
+    /// Sets a custom error message.
+    ///
+    /// # Example
+    /// ```
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::invalid_request().with_message("Request format is invalid".to_string());
+    /// assert_eq!(error.message, "Request format is invalid".to_string());
+    /// ```
+    pub fn with_message(mut self, message: String) -> Self {
+        self.message = message;
+        self
+    }
+    /// Attaches optional data to the error.
+    ///
+    /// # Example
+    /// ```
+    /// use serde_json::json;
+    /// use rust_mcp_schema::JsonrpcErrorError;
+    ///
+    /// let error = JsonrpcErrorError::invalid_request().with_data(Some(json!({"reason": "Missing ID"})));
+    /// assert!(error.data.is_some());
+    /// ```
+    pub fn with_data(mut self, data: ::std::option::Option<::serde_json::Value>) -> Self {
+        self.data = data;
+        self
     }
 }
 /// Constructs a new JsonrpcError using the provided arguments.
