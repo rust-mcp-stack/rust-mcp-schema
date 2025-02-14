@@ -89,7 +89,7 @@ impl Display for ClientJsonrpcRequest {
 }
 
 impl FromStr for ClientJsonrpcRequest {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     /// Parses a JSON-RPC request from a string.
     ///
@@ -101,7 +101,7 @@ impl FromStr for ClientJsonrpcRequest {
     ///
     /// # Returns
     /// * `Ok(ClientJsonrpcRequest)` if parsing is successful.
-    /// * `Err(serde_json::error::Error)` if the string is not valid JSON.
+    /// * `Err(JsonrpcErrorError)` if the string is not valid JSON.
     ///
     /// # Example
     /// ```
@@ -114,6 +114,7 @@ impl FromStr for ClientJsonrpcRequest {
     /// ```
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -210,10 +211,11 @@ impl Display for ClientJsonrpcNotification {
 }
 
 impl FromStr for ClientJsonrpcNotification {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -297,10 +299,11 @@ impl Display for ClientJsonrpcResponse {
 }
 
 impl FromStr for ClientJsonrpcResponse {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*******************************//
@@ -349,10 +352,11 @@ impl<'de> serde::Deserialize<'de> for ResultFromClient {
 //*******************************//
 
 impl FromStr for ClientMessage {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -382,10 +386,11 @@ pub enum ServerMessage {
 }
 
 impl FromStr for ServerMessage {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -436,10 +441,11 @@ impl Display for ServerJsonrpcRequest {
 }
 
 impl FromStr for ServerJsonrpcRequest {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*************************//
@@ -535,10 +541,11 @@ impl Display for ServerJsonrpcNotification {
 }
 
 impl FromStr for ServerJsonrpcNotification {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*******************************//
@@ -621,10 +628,11 @@ impl Display for ServerJsonrpcResponse {
 }
 
 impl FromStr for ServerJsonrpcResponse {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*******************************//
@@ -690,10 +698,11 @@ impl Display for JsonrpcError {
 }
 
 impl FromStr for JsonrpcError {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -1380,9 +1389,10 @@ impl Display for JsonrpcErrorError {
     }
 }
 impl FromStr for JsonrpcErrorError {
-    type Err = serde_json::error::Error;
+    type Err = JsonrpcErrorError;
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
+            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 /// Constructs a new JsonrpcError using the provided arguments.
