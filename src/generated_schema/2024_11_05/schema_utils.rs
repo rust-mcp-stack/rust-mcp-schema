@@ -88,6 +88,35 @@ impl Display for ClientJsonrpcRequest {
     }
 }
 
+impl FromStr for ClientJsonrpcRequest {
+    type Err = serde_json::error::Error;
+
+    /// Parses a JSON-RPC request from a string.
+    ///
+    /// This implementation allows `ClientJsonrpcRequest` to be created
+    /// from a JSON string using the `from_str` method.
+    ///
+    /// # Arguments
+    /// * `s` - A JSON string representing a JSON-RPC request.
+    ///
+    /// # Returns
+    /// * `Ok(ClientJsonrpcRequest)` if parsing is successful.
+    /// * `Err(serde_json::error::Error)` if the string is not valid JSON.
+    ///
+    /// # Example
+    /// ```
+    /// use std::str::FromStr;
+    /// use your_crate::ClientJsonrpcRequest;
+    ///
+    /// let json = r#"{"jsonrpc": "2.0", "method": "initialize", "id": 1}"#;
+    /// let request = ClientJsonrpcRequest::from_str(json);
+    /// assert!(request.is_ok());
+    /// ```
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
+
 //*************************//
 //** Request From Client **//
 //*************************//
@@ -180,6 +209,14 @@ impl Display for ClientJsonrpcNotification {
     }
 }
 
+impl FromStr for ClientJsonrpcNotification {
+    type Err = serde_json::error::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
+
 //*******************************//
 //**  NotificationFromClient   **//
 //*******************************//
@@ -259,6 +296,13 @@ impl Display for ClientJsonrpcResponse {
     }
 }
 
+impl FromStr for ClientJsonrpcResponse {
+    type Err = serde_json::error::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
 //*******************************//
 //**      ResultFromClient     **//
 //*******************************//
@@ -390,6 +434,14 @@ impl Display for ServerJsonrpcRequest {
         )
     }
 }
+
+impl FromStr for ServerJsonrpcRequest {
+    type Err = serde_json::error::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
 //*************************//
 //** Request From Server **//
 //*************************//
@@ -481,6 +533,14 @@ impl Display for ServerJsonrpcNotification {
         )
     }
 }
+
+impl FromStr for ServerJsonrpcNotification {
+    type Err = serde_json::error::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
 //*******************************//
 //**  NotificationFromServer   **//
 //*******************************//
@@ -560,6 +620,13 @@ impl Display for ServerJsonrpcResponse {
     }
 }
 
+impl FromStr for ServerJsonrpcResponse {
+    type Err = serde_json::error::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
+    }
+}
 //*******************************//
 //**      ResultFromServer     **//
 //*******************************//
@@ -619,6 +686,14 @@ impl Display for JsonrpcError {
             "{}",
             serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
         )
+    }
+}
+
+impl FromStr for JsonrpcError {
+    type Err = serde_json::error::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
     }
 }
 
@@ -1299,6 +1374,21 @@ impl JsonrpcErrorError {
     pub fn with_data(mut self, data: ::std::option::Option<::serde_json::Value>) -> Self {
         self.data = data;
         self
+    }
+}
+impl Display for JsonrpcErrorError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+        )
+    }
+}
+impl FromStr for JsonrpcErrorError {
+    type Err = serde_json::error::Error;
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        serde_json::from_str(s)
     }
 }
 /// Constructs a new JsonrpcError using the provided arguments.
