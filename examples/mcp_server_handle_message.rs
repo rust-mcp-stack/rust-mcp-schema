@@ -2,7 +2,7 @@ use rust_mcp_schema::schema_utils::*;
 use rust_mcp_schema::*;
 use std::str::FromStr;
 
-type AppError = serde_json::error::Error;
+type AppError = JsonrpcErrorError;
 
 const SAMPLE_PAYLOAD: &str = r#"
 {
