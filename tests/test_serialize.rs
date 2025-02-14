@@ -585,7 +585,7 @@ mod test_serialize {
 
         assert_eq!(error_object.code, -32601);
         assert_eq!(error_object.message, "Error Message!".to_string());
-        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail".to_string());
+        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
     #[test]
@@ -604,7 +604,7 @@ mod test_serialize {
 
         assert_eq!(error_object.code, -32601);
         assert_eq!(error_object.message, "Error Message!".to_string());
-        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail".to_string());
+        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
     #[test]
@@ -623,7 +623,7 @@ mod test_serialize {
 
         assert_eq!(error_object.code, -32602);
         assert_eq!(error_object.message, "Error Message!".to_string());
-        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail".to_string());
+        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
     #[test]
@@ -642,7 +642,7 @@ mod test_serialize {
 
         assert_eq!(error_object.code, -32600);
         assert_eq!(error_object.message, "Error Message!".to_string());
-        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail".to_string());
+        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
     #[test]
@@ -661,7 +661,7 @@ mod test_serialize {
 
         assert_eq!(error_object.code, -32603);
         assert_eq!(error_object.message, "Error Message!".to_string());
-        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail".to_string());
+        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
     #[test]
@@ -680,7 +680,7 @@ mod test_serialize {
 
         assert_eq!(error_object.code, -32700);
         assert_eq!(error_object.message, "Error Message!".to_string());
-        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail".to_string());
+        matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
     #[test]

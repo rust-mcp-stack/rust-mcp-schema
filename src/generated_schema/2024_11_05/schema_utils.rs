@@ -106,7 +106,7 @@ impl FromStr for ClientJsonrpcRequest {
     /// # Example
     /// ```
     /// use std::str::FromStr;
-    /// use your_crate::ClientJsonrpcRequest;
+    /// use rust_mcp_schema::schema_utils::ClientJsonrpcRequest;
     ///
     /// let json = r#"{"jsonrpc": "2.0", "method": "initialize", "id": 1}"#;
     /// let request = ClientJsonrpcRequest::from_str(json);
