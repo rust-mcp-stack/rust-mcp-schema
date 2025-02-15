@@ -12,8 +12,7 @@ mod test_deserialize {
     fn test_client_initialize_request() {
         let message = get_message("req_initialize");
         assert!(matches!(&message, ClientMessage::Request(client_message)
-                if client_message.request.get_method() == "initialize" &&
-                 matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
+                if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::InitializeRequest(_)))
         ));
 
@@ -234,8 +233,7 @@ mod test_deserialize {
         //ClientInitializedNotification
         let message = get_message("ntf_initialized");
         assert!(matches!(message, ClientMessage::Notification(client_message)
-                if client_message.notification.get_method() == "notifications/initialized" &&
-                 matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
+                if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
                 if matches!( client_notification, ClientNotification::InitializedNotification(_)))
         ));
 

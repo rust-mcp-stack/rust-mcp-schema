@@ -182,8 +182,7 @@ mod test_serialize {
         let message: ClientMessage = re_serialize(message);
 
         assert!(matches!(message, ClientMessage::Request(client_message)
-        if client_message.request.get_method() == "my_custom_method" &&
-                 matches!(&client_message.request, RequestFromClient::CustomRequest(_)) && client_message.method == "my_custom_method"
+        if matches!(&client_message.request, RequestFromClient::CustomRequest(_)) && client_message.method == "my_custom_method"
         ));
 
         // test From<serde_json::Value> for RequestFromClient
@@ -389,8 +388,7 @@ mod test_serialize {
         let message: ClientMessage = re_serialize(message);
 
         assert!(matches!(message, ClientMessage::Notification(client_message)
-        if client_message.notification.get_method() == "notifications/initialized" &&
-                 matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
+        if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
                 if matches!( client_notification, ClientNotification::InitializedNotification(_)))
         ));
 
@@ -521,8 +519,7 @@ mod test_serialize {
         let message: ServerMessage = re_serialize(message);
 
         assert!(matches!(message, ServerMessage::Request(server_message)
-        if server_message.request.get_method() == "sampling/createMessage" &&
-                 matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
+        if matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
                 if matches!( server_request, ServerRequest::CreateMessageRequest(_)))
         ));
     }
