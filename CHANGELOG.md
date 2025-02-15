@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.5](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.4...v0.1.5) (2025-02-15)
+
+
+### Features
+
+* implement builder pattern for JsonrpcErrorError ([#18](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/18)) ([71e63e5](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/71e63e51e01fc934e6388b32c50a46602899fe5d))
+
+
+### Bug Fixes
+
+* Standardize error types  to conform to JSON-RPC ([#20](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/20)) ([47fd818](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/47fd818867626fe318b410e3adfa4b378c51ce69))
+
 ## [0.1.4](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.3...v0.1.4) (2025-02-12)
 
 
