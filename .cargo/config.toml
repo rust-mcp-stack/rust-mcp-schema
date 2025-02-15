@@ -4,7 +4,7 @@ coverage = ["tarpaulin"]
 run_clippy = [
     "clippy",
     "--features",
-    "latest draft",
+    "latest schema_utils",
     "--fix",
     "--",
     "-D",

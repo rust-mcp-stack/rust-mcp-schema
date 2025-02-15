@@ -182,7 +182,7 @@ mod test_serialize {
         let message: ClientMessage = re_serialize(message);
 
         assert!(matches!(message, ClientMessage::Request(client_message)
-                if matches!(&client_message.request, RequestFromClient::CustomRequest(_)) && client_message.method == "my_custom_method"
+        if matches!(&client_message.request, RequestFromClient::CustomRequest(_)) && client_message.method == "my_custom_method"
         ));
 
         // test From<serde_json::Value> for RequestFromClient
@@ -388,7 +388,7 @@ mod test_serialize {
         let message: ClientMessage = re_serialize(message);
 
         assert!(matches!(message, ClientMessage::Notification(client_message)
-                if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
+        if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
                 if matches!( client_notification, ClientNotification::InitializedNotification(_)))
         ));
 
@@ -519,7 +519,7 @@ mod test_serialize {
         let message: ServerMessage = re_serialize(message);
 
         assert!(matches!(message, ServerMessage::Request(server_message)
-                if matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
+        if matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
                 if matches!( server_request, ServerRequest::CreateMessageRequest(_)))
         ));
     }
@@ -696,5 +696,48 @@ mod test_serialize {
 
         assert!(matches!(&message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::PingRequest(_))));
+    }
+
+    #[test]
+    fn test_client_jsonrpc_notification() {
+        let message = ClientJsonrpcNotification::new(NotificationFromClient::CustomNotification(json!({"method":"notify"})));
+
+        let message_str = message.to_string();
+
+        let message: ClientJsonrpcNotification = ClientJsonrpcNotification::from_str(&message_str).unwrap();
+
+        assert!(
+            matches!(&message.notification, NotificationFromClient::CustomNotification(client_request)
+                if client_request["method"] == "notify")
+        );
+    }
+
+    #[test]
+    fn test_server_jsonrpc_request() {
+        let message = ServerJsonrpcRequest::new(
+            RequestId::Integer(15),
+            RequestFromServer::CustomRequest(json!({"method":"req"})),
+        );
+
+        let message_str = message.to_string();
+
+        let message: ServerJsonrpcRequest = ServerJsonrpcRequest::from_str(&message_str).unwrap();
+
+        assert!(matches!(&message.request, RequestFromServer::CustomRequest(request)
+                if request["method"] == "req"));
+    }
+
+    #[test]
+    fn test_server_jsonrpc_notification() {
+        let message = ServerJsonrpcNotification::new(NotificationFromServer::CustomNotification(json!({"method":"notify"})));
+
+        let message_str = message.to_string();
+
+        let message: ServerJsonrpcNotification = ServerJsonrpcNotification::from_str(&message_str).unwrap();
+
+        assert!(
+            matches!(&message.notification, NotificationFromServer::CustomNotification(server_request)
+                if server_request["method"] == "notify")
+        );
     }
 }
