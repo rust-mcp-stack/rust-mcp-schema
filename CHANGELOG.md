@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.6](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.5...v0.1.6) (2025-02-17)
+
+
+### Features
+
+* implement new utility functions ([#24](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/24)) ([859b5db](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/859b5dbf4705774dd3f73f50f870aaa573ba624b))
+
+
+### Bug Fixes
+
+* implemented Error trait for JsonrpcErrorError ([#22](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/22)) ([753bd87](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/753bd87d7b8ccf36a8ca697f7c6c6dacb632a59e))
+* serializations to skip None Params ([#25](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/25)) ([1f67654](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/1f67654a3a755d06a5b7dda1577d6763f4315cd0))
+
 ## [0.1.5](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.4...v0.1.5) (2025-02-15)
 
 
