@@ -37,6 +37,14 @@ mod test_serialize {
 
         let message: ClientMessage = re_serialize(message);
 
+        assert!(message.is_request());
+        assert!(!message.is_response());
+        assert!(!message.is_notification());
+        assert!(!message.is_error());
+        assert!(
+            matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
+        );
+
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::InitializeRequest(_)))
@@ -216,6 +224,14 @@ mod test_serialize {
 
         let message: ClientMessage = re_serialize(message);
 
+        assert!(!message.is_request());
+        assert!(message.is_response());
+        assert!(!message.is_notification());
+        assert!(!message.is_error());
+        assert!(
+            matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
+        );
+
         assert!(matches!(message, ClientMessage::Response(client_message)
                 if matches!(&client_message.result, ResultFromClient::ClientResult(client_result)
                         if matches!( client_result, ClientResult::CreateMessageResult(_))
@@ -258,6 +274,14 @@ mod test_serialize {
         ));
 
         let message: ServerMessage = re_serialize(message);
+
+        assert!(!message.is_request());
+        assert!(message.is_response());
+        assert!(!message.is_notification());
+        assert!(!message.is_error());
+        assert!(
+            matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
+        );
 
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
@@ -387,6 +411,13 @@ mod test_serialize {
 
         let message: ClientMessage = re_serialize(message);
 
+        assert!(!message.is_request());
+        assert!(!message.is_response());
+        assert!(message.is_notification());
+        assert!(!message.is_error());
+
+        assert!(message.request_id().is_none());
+
         assert!(matches!(message, ClientMessage::Notification(client_message)
         if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
                 if matches!( client_notification, ClientNotification::InitializedNotification(_)))
@@ -474,6 +505,13 @@ mod test_serialize {
 
         let message: ServerMessage = re_serialize(message);
 
+        assert!(!message.is_request());
+        assert!(!message.is_response());
+        assert!(message.is_notification());
+        assert!(!message.is_error());
+
+        assert!(message.request_id().is_none());
+
         assert!(matches!(message, ServerMessage::Notification(client_message)
                 if matches!(&client_message.notification,NotificationFromServer::ServerNotification(client_notification)
                 if matches!( client_notification, ServerNotification::CancelledNotification(_)))
@@ -518,6 +556,14 @@ mod test_serialize {
 
         let message: ServerMessage = re_serialize(message);
 
+        assert!(message.is_request());
+        assert!(!message.is_response());
+        assert!(!message.is_notification());
+        assert!(!message.is_error());
+        assert!(
+            matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
+        );
+
         assert!(matches!(message, ServerMessage::Request(server_message)
         if matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
                 if matches!( server_request, ServerRequest::CreateMessageRequest(_)))
@@ -559,6 +605,13 @@ mod test_serialize {
         let message: ClientMessage = re_serialize(message);
 
         assert!(matches!(message, ClientMessage::Error(_)));
+        assert!(!message.is_request());
+        assert!(!message.is_response());
+        assert!(!message.is_notification());
+        assert!(message.is_error());
+        assert!(
+            matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
+        );
 
         let message: ServerMessage = ServerMessage::Error(JsonrpcError::create(
             RequestId::Integer(15),
@@ -570,6 +623,14 @@ mod test_serialize {
         let message: ServerMessage = re_serialize(message);
 
         assert!(matches!(message, ServerMessage::Error(_)));
+
+        assert!(!message.is_request());
+        assert!(!message.is_response());
+        assert!(!message.is_notification());
+        assert!(message.is_error());
+        assert!(
+            matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
+        );
     }
 
     /* ---------------------- JsonrpcErrorError ---------------------- */
