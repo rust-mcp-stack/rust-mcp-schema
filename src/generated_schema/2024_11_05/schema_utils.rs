@@ -836,15 +836,31 @@ impl ::serde::Serialize for ClientJsonrpcRequest {
         match &self.request {
             RequestFromClient::ClientRequest(message) => match message {
                 InitializeRequest(msg) => state.serialize_field("params", &msg.params)?,
-                PingRequest(msg) => state.serialize_field("params", &msg.params)?,
+                PingRequest(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 ListResourcesRequest(msg) => state.serialize_field("params", &msg.params)?,
-                ListResourceTemplatesRequest(msg) => state.serialize_field("params", &msg.params)?,
+                ListResourceTemplatesRequest(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 ReadResourceRequest(msg) => state.serialize_field("params", &msg.params)?,
                 SubscribeRequest(msg) => state.serialize_field("params", &msg.params)?,
                 UnsubscribeRequest(msg) => state.serialize_field("params", &msg.params)?,
-                ListPromptsRequest(msg) => state.serialize_field("params", &msg.params)?,
+                ListPromptsRequest(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 GetPromptRequest(msg) => state.serialize_field("params", &msg.params)?,
-                ListToolsRequest(msg) => state.serialize_field("params", &msg.params)?,
+                ListToolsRequest(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 CallToolRequest(msg) => state.serialize_field("params", &msg.params)?,
                 SetLevelRequest(msg) => state.serialize_field("params", &msg.params)?,
                 CompleteRequest(msg) => state.serialize_field("params", &msg.params)?,
@@ -919,9 +935,17 @@ impl ::serde::Serialize for ServerJsonrpcRequest {
         use ServerRequest::*;
         match &self.request {
             RequestFromServer::ServerRequest(message) => match message {
-                PingRequest(msg) => state.serialize_field("params", &msg.params)?,
+                PingRequest(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 CreateMessageRequest(msg) => state.serialize_field("params", &msg.params)?,
-                ListRootsRequest(msg) => state.serialize_field("params", &msg.params)?,
+                ListRootsRequest(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
             },
             RequestFromServer::CustomRequest(value) => state.serialize_field("params", value)?,
         }
@@ -993,9 +1017,17 @@ impl ::serde::Serialize for ClientJsonrpcNotification {
         match &self.notification {
             NotificationFromClient::ClientNotification(message) => match message {
                 CancelledNotification(msg) => state.serialize_field("params", &msg.params)?,
-                InitializedNotification(msg) => state.serialize_field("params", &msg.params)?,
+                InitializedNotification(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 ProgressNotification(msg) => state.serialize_field("params", &msg.params)?,
-                RootsListChangedNotification(msg) => state.serialize_field("params", &msg.params)?,
+                RootsListChangedNotification(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
             },
             NotificationFromClient::CustomNotification(value) => state.serialize_field("params", value)?,
         }
@@ -1065,10 +1097,22 @@ impl ::serde::Serialize for ServerJsonrpcNotification {
             NotificationFromServer::ServerNotification(message) => match message {
                 CancelledNotification(msg) => state.serialize_field("params", &msg.params)?,
                 ProgressNotification(msg) => state.serialize_field("params", &msg.params)?,
-                ResourceListChangedNotification(msg) => state.serialize_field("params", &msg.params)?,
+                ResourceListChangedNotification(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 ResourceUpdatedNotification(msg) => state.serialize_field("params", &msg.params)?,
-                PromptListChangedNotification(msg) => state.serialize_field("params", &msg.params)?,
-                ToolListChangedNotification(msg) => state.serialize_field("params", &msg.params)?,
+                PromptListChangedNotification(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
+                ToolListChangedNotification(msg) => {
+                    if let Some(params) = &msg.params {
+                        state.serialize_field("params", params)?
+                    }
+                }
                 LoggingMessageNotification(msg) => state.serialize_field("params", &msg.params)?,
             },
             NotificationFromServer::CustomNotification(value) => state.serialize_field("params", value)?,
