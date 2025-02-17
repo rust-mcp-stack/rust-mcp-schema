@@ -1379,6 +1379,11 @@ impl JsonrpcErrorError {
         self
     }
 }
+impl std::error::Error for JsonrpcErrorError {
+    fn description(&self) -> &str {
+        &self.message
+    }
+}
 impl Display for JsonrpcErrorError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
