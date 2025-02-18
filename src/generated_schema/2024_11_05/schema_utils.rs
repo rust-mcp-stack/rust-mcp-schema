@@ -4,12 +4,30 @@ use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
 use std::{fmt::Display, str::FromStr};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum MessageTypes {
     Request,
     Response,
     Notification,
     Error,
+}
+/// Implements the `Display` trait for the `MessageTypes` enum,
+/// allowing it to be converted into a human-readable string.
+impl Display for MessageTypes {
+    /// Formats the `MessageTypes` enum variant as a string.   
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            // Match the current enum variant and return a corresponding string
+            match self {
+                MessageTypes::Request => "Request",
+                MessageTypes::Response => "Response",
+                MessageTypes::Notification => "Notification",
+                MessageTypes::Error => "Error",
+            }
+        )
+    }
 }
 
 /// A utility function used internally to detect the message type from the payload.
@@ -44,6 +62,7 @@ pub trait MCPMessage {
     fn is_notification(&self) -> bool;
     fn is_error(&self) -> bool;
     fn request_id(&self) -> Option<&RequestId>;
+    fn message_type(&self) -> MessageTypes;
 }
 
 //*******************************//
@@ -127,6 +146,16 @@ impl MCPMessage for ClientMessage {
             ClientMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
             // If the message is an error, return the associated request ID
             ClientMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
+        }
+    }
+
+    /// Determines the type of the message and returns the corresponding `MessageTypes` variant.
+    fn message_type(&self) -> MessageTypes {
+        match self {
+            ClientMessage::Request(_) => MessageTypes::Request,
+            ClientMessage::Notification(_) => MessageTypes::Notification,
+            ClientMessage::Response(_) => MessageTypes::Response,
+            ClientMessage::Error(_) => MessageTypes::Error,
         }
     }
 }
@@ -497,6 +526,16 @@ impl MCPMessage for ServerMessage {
             ServerMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
             // If the message is an error, return the associated request ID
             ServerMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
+        }
+    }
+
+    /// Determines the type of the message and returns the corresponding `MessageTypes` variant.
+    fn message_type(&self) -> MessageTypes {
+        match self {
+            ServerMessage::Request(_) => MessageTypes::Request,
+            ServerMessage::Notification(_) => MessageTypes::Notification,
+            ServerMessage::Response(_) => MessageTypes::Response,
+            ServerMessage::Error(_) => MessageTypes::Error,
         }
     }
 }
