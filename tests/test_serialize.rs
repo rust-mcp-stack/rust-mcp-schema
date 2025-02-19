@@ -41,6 +41,7 @@ mod test_serialize {
         assert!(!message.is_response());
         assert!(!message.is_notification());
         assert!(!message.is_error());
+        assert!(message.message_type() == MessageTypes::Request);
         assert!(
             matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
         );
@@ -228,6 +229,7 @@ mod test_serialize {
         assert!(message.is_response());
         assert!(!message.is_notification());
         assert!(!message.is_error());
+        assert!(message.message_type() == MessageTypes::Response);
         assert!(
             matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
         );
@@ -279,6 +281,8 @@ mod test_serialize {
         assert!(message.is_response());
         assert!(!message.is_notification());
         assert!(!message.is_error());
+        assert!(message.message_type() == MessageTypes::Response);
+
         assert!(
             matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
         );
@@ -415,7 +419,7 @@ mod test_serialize {
         assert!(!message.is_response());
         assert!(message.is_notification());
         assert!(!message.is_error());
-
+        assert!(message.message_type() == MessageTypes::Notification);
         assert!(message.request_id().is_none());
 
         assert!(matches!(message, ClientMessage::Notification(client_message)
@@ -509,7 +513,7 @@ mod test_serialize {
         assert!(!message.is_response());
         assert!(message.is_notification());
         assert!(!message.is_error());
-
+        assert!(message.message_type() == MessageTypes::Notification);
         assert!(message.request_id().is_none());
 
         assert!(matches!(message, ServerMessage::Notification(client_message)
@@ -560,6 +564,8 @@ mod test_serialize {
         assert!(!message.is_response());
         assert!(!message.is_notification());
         assert!(!message.is_error());
+        assert!(message.message_type() == MessageTypes::Request);
+
         assert!(
             matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
         );
@@ -609,6 +615,8 @@ mod test_serialize {
         assert!(!message.is_response());
         assert!(!message.is_notification());
         assert!(message.is_error());
+        assert!(message.message_type() == MessageTypes::Error);
+
         assert!(
             matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
         );
@@ -628,6 +636,8 @@ mod test_serialize {
         assert!(!message.is_response());
         assert!(!message.is_notification());
         assert!(message.is_error());
+        assert!(message.message_type() == MessageTypes::Error);
+
         assert!(
             matches!(message.request_id(), Some(request_id) if matches!(request_id , RequestId::Integer(r) if *r == 15))
         );
