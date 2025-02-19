@@ -60,6 +60,7 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
 /// This trait defines methods to classify and extract information from messages.
 pub trait RPCMessage {
     fn request_id(&self) -> Option<&RequestId>;
+    fn jsonrpc(&self) -> &str;
 }
 
 pub trait MCPMessage: RPCMessage {
@@ -132,6 +133,15 @@ impl RPCMessage for ClientMessage {
             ClientMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
         }
     }
+
+    fn jsonrpc(&self) -> &str {
+        match self {
+            ClientMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc(),
+            ClientMessage::Notification(notification) => notification.jsonrpc(),
+            ClientMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
+            ClientMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
+        }
+    }
 }
 
 // Implementing the `MCPMessage` trait for `ClientMessage`
@@ -175,7 +185,7 @@ impl MCPMessage for ClientMessage {
 #[derive(Clone, Debug)]
 pub struct ClientJsonrpcRequest {
     pub id: RequestId,
-    pub jsonrpc: ::std::string::String,
+    jsonrpc: ::std::string::String,
     pub method: String,
     pub request: RequestFromClient,
 }
@@ -189,6 +199,9 @@ impl ClientJsonrpcRequest {
             method,
             request,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
 }
 
@@ -298,7 +311,7 @@ impl<'de> serde::Deserialize<'de> for RequestFromClient {
 /// "Similar to JsonrpcNotification , but with the variants restricted to client-side notifications."
 #[derive(Clone, Debug)]
 pub struct ClientJsonrpcNotification {
-    pub jsonrpc: ::std::string::String,
+    jsonrpc: ::std::string::String,
     pub method: ::std::string::String,
     pub notification: NotificationFromClient,
 }
@@ -311,6 +324,9 @@ impl ClientJsonrpcNotification {
             method,
             notification,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
 }
 
@@ -388,7 +404,7 @@ impl<'de> serde::Deserialize<'de> for NotificationFromClient {
 #[derive(Clone, Debug)]
 pub struct ClientJsonrpcResponse {
     pub id: RequestId,
-    pub jsonrpc: ::std::string::String,
+    jsonrpc: ::std::string::String,
     pub result: ResultFromClient,
 }
 
@@ -399,6 +415,9 @@ impl ClientJsonrpcResponse {
             jsonrpc: JSONRPC_VERSION.to_string(),
             result,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
 }
 
@@ -514,6 +533,19 @@ impl RPCMessage for ServerMessage {
             ServerMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
         }
     }
+
+    fn jsonrpc(&self) -> &str {
+        match self {
+            // If the message is a request, return the associated request ID
+            ServerMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc(),
+            // Notifications do not have request IDs
+            ServerMessage::Notification(notification) => notification.jsonrpc(),
+            // If the message is a response, return the associated request ID
+            ServerMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
+            // If the message is an error, return the associated request ID
+            ServerMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
+        }
+    }
 }
 
 // Implementing the `MCPMessage` trait for `ServerMessage`
@@ -576,7 +608,7 @@ impl Display for ServerMessage {
 #[derive(Clone, Debug)]
 pub struct ServerJsonrpcRequest {
     pub id: RequestId,
-    pub jsonrpc: ::std::string::String,
+    jsonrpc: ::std::string::String,
     pub method: String,
     pub request: RequestFromServer,
 }
@@ -590,6 +622,9 @@ impl ServerJsonrpcRequest {
             method,
             request,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
 }
 
@@ -677,7 +712,7 @@ impl<'de> serde::Deserialize<'de> for RequestFromServer {
 /// "Similar to JsonrpcNotification , but with the variants restricted to server-side notifications."
 #[derive(Clone, Debug)]
 pub struct ServerJsonrpcNotification {
-    pub jsonrpc: ::std::string::String,
+    jsonrpc: ::std::string::String,
     pub method: ::std::string::String,
     pub notification: NotificationFromServer,
 }
@@ -690,6 +725,9 @@ impl ServerJsonrpcNotification {
             method,
             notification,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
 }
 
@@ -766,7 +804,7 @@ impl<'de> serde::Deserialize<'de> for NotificationFromServer {
 #[derive(Clone, Debug)]
 pub struct ServerJsonrpcResponse {
     pub id: RequestId,
-    pub jsonrpc: ::std::string::String,
+    jsonrpc: ::std::string::String,
     pub result: ResultFromServer,
 }
 
@@ -777,6 +815,9 @@ impl ServerJsonrpcResponse {
             jsonrpc: JSONRPC_VERSION.to_string(),
             result,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
 }
 
