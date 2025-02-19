@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 63e1dbb75456b359b9ed8b27d21f4ac68cbb753e
-/// Generated at : 2025-02-18 08:30:28
+/// Hash : bb1446ff1810a0df57989d78366d626d2c01b9d7
+/// Generated at : 2025-02-19 06:30:55
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version

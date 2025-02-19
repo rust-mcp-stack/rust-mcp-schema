@@ -18,7 +18,7 @@ mod test_deserialize {
 
         if let ClientMessage::Request(client_message) = message {
             matches!(&client_message.id, &RequestId::Integer(0));
-            assert_eq!(client_message.jsonrpc, JSONRPC_VERSION);
+            assert_eq!(client_message.jsonrpc(), JSONRPC_VERSION);
             assert_eq!(client_message.method, "initialize");
 
             if let RequestFromClient::ClientRequest(ClientRequest::InitializeRequest(request)) = client_message.request {
