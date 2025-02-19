@@ -58,17 +58,17 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
 
 /// Represents a generic MCP (Model Content Protocol) message.
 /// This trait defines methods to classify and extract information from messages.
-pub trait RPCMessage {
+pub trait RPCMessage: MCPMessage {
     fn request_id(&self) -> Option<&RequestId>;
-    fn jsonrpc_version(&self) -> &str;
+    fn jsonrpc(&self) -> &str;
 }
 
-pub trait MCPMessage: RPCMessage {
-    fn message_type(&self) -> MessageTypes;
+pub trait MCPMessage {
     fn is_response(&self) -> bool;
     fn is_request(&self) -> bool;
     fn is_notification(&self) -> bool;
     fn is_error(&self) -> bool;
+    fn message_type(&self) -> MessageTypes;
 }
 
 //*******************************//
@@ -134,11 +134,11 @@ impl RPCMessage for ClientMessage {
         }
     }
 
-    fn jsonrpc_version(&self) -> &str {
+    fn jsonrpc(&self) -> &str {
         match self {
-            ClientMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc.as_str(),
-            ClientMessage::Notification(notification) => notification.jsonrpc.as_str(),
-            ClientMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc.as_str(),
+            ClientMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc(),
+            ClientMessage::Notification(notification) => notification.jsonrpc(),
+            ClientMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
             ClientMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
         }
     }
@@ -534,14 +534,14 @@ impl RPCMessage for ServerMessage {
         }
     }
 
-    fn jsonrpc_version(&self) -> &str {
+    fn jsonrpc(&self) -> &str {
         match self {
             // If the message is a request, return the associated request ID
-            ServerMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc.as_str(),
+            ServerMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc(),
             // Notifications do not have request IDs
-            ServerMessage::Notification(notification) => notification.jsonrpc.as_str(),
+            ServerMessage::Notification(notification) => notification.jsonrpc(),
             // If the message is a response, return the associated request ID
-            ServerMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc.as_str(),
+            ServerMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
             // If the message is an error, return the associated request ID
             ServerMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
         }
