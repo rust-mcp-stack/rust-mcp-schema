@@ -58,13 +58,16 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
 
 /// Represents a generic MCP (Model Content Protocol) message.
 /// This trait defines methods to classify and extract information from messages.
-pub trait MCPMessage {
+pub trait RPCMessage {
+    fn request_id(&self) -> Option<&RequestId>;
+}
+
+pub trait MCPMessage: RPCMessage {
+    fn message_type(&self) -> MessageTypes;
     fn is_response(&self) -> bool;
     fn is_request(&self) -> bool;
     fn is_notification(&self) -> bool;
     fn is_error(&self) -> bool;
-    fn request_id(&self) -> Option<&RequestId>;
-    fn message_type(&self) -> MessageTypes;
 }
 
 //*******************************//
@@ -115,6 +118,22 @@ pub enum ClientMessage {
     Error(JsonrpcError),
 }
 
+impl RPCMessage for ClientMessage {
+    // Retrieves the request ID associated with the message, if applicable
+    fn request_id(&self) -> Option<&RequestId> {
+        match self {
+            // If the message is a request, return the associated request ID
+            ClientMessage::Request(client_jsonrpc_request) => Some(&client_jsonrpc_request.id),
+            // Notifications do not have request IDs
+            ClientMessage::Notification(_) => None,
+            // If the message is a response, return the associated request ID
+            ClientMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
+            // If the message is an error, return the associated request ID
+            ClientMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
+        }
+    }
+}
+
 // Implementing the `MCPMessage` trait for `ClientMessage`
 impl MCPMessage for ClientMessage {
     // Returns true if the message is a response type
@@ -135,20 +154,6 @@ impl MCPMessage for ClientMessage {
     // Returns true if the message represents an error
     fn is_error(&self) -> bool {
         matches!(self, ClientMessage::Error(_))
-    }
-
-    // Retrieves the request ID associated with the message, if applicable
-    fn request_id(&self) -> Option<&RequestId> {
-        match self {
-            // If the message is a request, return the associated request ID
-            ClientMessage::Request(client_jsonrpc_request) => Some(&client_jsonrpc_request.id),
-            // Notifications do not have request IDs
-            ClientMessage::Notification(_) => None,
-            // If the message is a response, return the associated request ID
-            ClientMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
-            // If the message is an error, return the associated request ID
-            ClientMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
-        }
     }
 
     /// Determines the type of the message and returns the corresponding `MessageTypes` variant.
@@ -495,6 +500,22 @@ pub enum ServerMessage {
     Error(JsonrpcError),
 }
 
+impl RPCMessage for ServerMessage {
+    // Retrieves the request ID associated with the message, if applicable
+    fn request_id(&self) -> Option<&RequestId> {
+        match self {
+            // If the message is a request, return the associated request ID
+            ServerMessage::Request(client_jsonrpc_request) => Some(&client_jsonrpc_request.id),
+            // Notifications do not have request IDs
+            ServerMessage::Notification(_) => None,
+            // If the message is a response, return the associated request ID
+            ServerMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
+            // If the message is an error, return the associated request ID
+            ServerMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
+        }
+    }
+}
+
 // Implementing the `MCPMessage` trait for `ServerMessage`
 impl MCPMessage for ServerMessage {
     // Returns true if the message is a response type
@@ -515,20 +536,6 @@ impl MCPMessage for ServerMessage {
     // Returns true if the message represents an error
     fn is_error(&self) -> bool {
         matches!(self, ServerMessage::Error(_))
-    }
-
-    // Retrieves the request ID associated with the message, if applicable
-    fn request_id(&self) -> Option<&RequestId> {
-        match self {
-            // If the message is a request, return the associated request ID
-            ServerMessage::Request(client_jsonrpc_request) => Some(&client_jsonrpc_request.id),
-            // Notifications do not have request IDs
-            ServerMessage::Notification(_) => None,
-            // If the message is a response, return the associated request ID
-            ServerMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
-            // If the message is an error, return the associated request ID
-            ServerMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
-        }
     }
 
     /// Determines the type of the message and returns the corresponding `MessageTypes` variant.
