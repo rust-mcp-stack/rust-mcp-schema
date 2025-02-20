@@ -71,6 +71,18 @@ pub trait MCPMessage {
     fn message_type(&self) -> MessageTypes;
 }
 
+/// A trait for converting a message of type `T` into `Self`.
+/// This is useful for transforming mcp messages into a Type that could be serialized into a JsonrpcMessage.
+///
+/// For example, a ServerMessage can be constructed from a rust_mcp_schema::PingRequest by attaching a RequestId.
+/// Eventually, the ServerMessage can be serialized into a valid JsonrpcMessage for transmission over the transport.
+pub trait FromMessage<T>
+where
+    Self: Sized,
+{
+    fn from_message(message: T, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError>;
+}
+
 //*******************************//
 //** RequestId Implementations **//
 //*******************************//
@@ -908,6 +920,148 @@ impl FromStr for JsonrpcError {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
             .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+    }
+}
+
+//**************************//
+//**  MessageFromServer   **//
+//**************************//
+
+/// An enum representing various types of messages that can be sent from an MCP Server.
+/// It provides a typed structure for the message payload while skipping internal details like
+/// `requestId` and protocol version, which are used solely by the transport layer and
+/// do not need to be exposed to the user.
+#[derive(::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum MessageFromServer {
+    RequestFromServer(RequestFromServer),
+    ResultFromServer(ResultFromServer),
+    NotificationFromServer(NotificationFromServer),
+    Error(JsonrpcErrorError),
+}
+
+impl MCPMessage for MessageFromServer {
+    fn is_response(&self) -> bool {
+        matches!(self, MessageFromServer::ResultFromServer(_))
+    }
+
+    fn is_request(&self) -> bool {
+        matches!(self, MessageFromServer::RequestFromServer(_))
+    }
+
+    fn is_notification(&self) -> bool {
+        matches!(self, MessageFromServer::NotificationFromServer(_))
+    }
+
+    fn is_error(&self) -> bool {
+        matches!(self, MessageFromServer::Error(_))
+    }
+
+    fn message_type(&self) -> MessageTypes {
+        match self {
+            MessageFromServer::RequestFromServer(_) => MessageTypes::Request,
+            MessageFromServer::ResultFromServer(_) => MessageTypes::Response,
+            MessageFromServer::NotificationFromServer(_) => MessageTypes::Notification,
+            MessageFromServer::Error(_) => MessageTypes::Error,
+        }
+    }
+}
+
+impl FromMessage<MessageFromServer> for ServerMessage {
+    fn from_message(
+        message: MessageFromServer,
+        request_id: Option<RequestId>,
+    ) -> std::result::Result<Self, JsonrpcErrorError> {
+        match message {
+            MessageFromServer::RequestFromServer(request_from_server) => {
+                let request_id = request_id
+                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                Ok(ServerMessage::Request(ServerJsonrpcRequest::new(
+                    request_id,
+                    request_from_server,
+                )))
+            }
+            MessageFromServer::ResultFromServer(result_from_server) => {
+                let request_id = request_id
+                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
+                    request_id,
+                    result_from_server,
+                )))
+            }
+            MessageFromServer::NotificationFromServer(notification_from_server) => {
+                if request_id.is_some() {
+                    return Err(JsonrpcErrorError::internal_error()
+                        .with_message("request_id expected to be None for Notifications!".to_string()));
+                }
+                Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(
+                    notification_from_server,
+                )))
+            }
+            MessageFromServer::Error(jsonrpc_error_error) => {
+                let request_id = request_id
+                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                Ok(ServerMessage::Error(JsonrpcError::new(jsonrpc_error_error, request_id)))
+            }
+        }
+    }
+}
+
+//**************************//
+//**  MessageFromClient   **//
+//**************************//
+
+/// An enum representing various types of messages that can be sent from an MCP Client.
+/// It provides a typed structure for the message payload while skipping internal details like
+/// `requestId` and protocol version, which are used solely by the transport layer and
+/// do not need to be exposed to the user.
+#[derive(::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum MessageFromClient {
+    RequestFromClient(RequestFromClient),
+    ResultFromClient(ResultFromClient),
+    NotificationFromClient(NotificationFromClient),
+    Error(JsonrpcErrorError),
+}
+
+impl FromMessage<MessageFromClient> for ClientMessage {
+    fn from_message(
+        message: MessageFromClient,
+        request_id: Option<RequestId>,
+    ) -> std::result::Result<Self, JsonrpcErrorError> {
+        match message {
+            MessageFromClient::RequestFromClient(request_from_client) => {
+                let request_id = request_id
+                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                Ok(ClientMessage::Request(ClientJsonrpcRequest::new(
+                    request_id,
+                    request_from_client,
+                )))
+            }
+            MessageFromClient::ResultFromClient(result_from_client) => {
+                let request_id = request_id
+                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
+                    request_id,
+                    result_from_client,
+                )))
+            }
+            MessageFromClient::NotificationFromClient(notification_from_client) => {
+                if request_id.is_some() {
+                    return Err(JsonrpcErrorError::internal_error()
+                        .with_message("request_id expected to be None for Notifications!".to_string()));
+                }
+
+                Ok(ClientMessage::Notification(ClientJsonrpcNotification::new(
+                    notification_from_client,
+                )))
+            }
+            MessageFromClient::Error(jsonrpc_error_error) => {
+                let request_id = request_id
+                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                Ok(ClientMessage::Error(JsonrpcError::new(jsonrpc_error_error, request_id)))
+            }
+        }
     }
 }
 
