@@ -77,21 +77,21 @@ Example: enable `draft` version of the shema:
 
 ```toml
 # Cargo.toml
-rust-mcp-schema = { version: 0.1.0 , features=["draft"] }
+rust-mcp-schema = { version: 0.1.7 , features=["draft"] }
 ```
 
 Example: enable `latest` version of the shema:
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.1.0 , features=["latest"] }
+rust-mcp-schema = { version: 0.1.7 , features=["latest"] }
 ```
 
 Example: enable specific version of the shema (2024_11_05) :
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.1.0 , features=["2024_11_05"] }
+rust-mcp-schema = { version: 0.1.7 , features=["2024_11_05"] }
 ```
 
 ## How are Schemas generated?
