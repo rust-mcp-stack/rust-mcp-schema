@@ -211,13 +211,10 @@ This code snippet demonstrates how to create an InitializeRequest, serialize it 
    };
 
 
-   // Create a ServerMessage (a message that will be sent from the server)
-   let message = ServerMessage::Response(ServerJsonrpcResponse::new(
-       RequestId::Integer(15),
-       ResultFromServer::ServerResult(ServerResult::InitializeResult(initial_result)),
-   ));
+    // Create a ServerMessage (a message intended to be sent from the server)
+    let message: ServerMessage = initial_result.to_message(request_id).unwrap();
 
-   // serialize MCP Message into valid json string to be sent to the client
+   // Serialize the MCP message into a valid JSON string for sending to the client
    let json_payload = message.to_string();
 
    println!("{}", json_payload);
