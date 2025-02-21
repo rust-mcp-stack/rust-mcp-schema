@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.7](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.6...v0.1.7) (2025-02-21)
+
+
+### Features
+
+* add message_type to MCPMessage trait ([#26](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/26)) ([aca2336](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/aca2336f6fa9258098d934bb5e5205ae12ebed1f))
+* implement ToMessage trait ([#31](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/31)) ([435f18b](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/435f18b376db0f368f8995fc5c76f8b95eb75ebe))
+* introduce FromMessage trait ([#30](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/30)) ([cc46100](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/cc46100a3e66889f21df919c98abefd4598dfa30))
+
 ## [0.1.6](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.5...v0.1.6) (2025-02-17)
 
 
