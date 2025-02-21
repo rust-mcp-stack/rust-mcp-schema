@@ -83,7 +83,6 @@ where
     fn from_message(message: T, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError>;
 }
 
-
 pub trait ToMessage<T>
 where
     T: FromMessage<Self>,
