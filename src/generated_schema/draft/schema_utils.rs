@@ -493,6 +493,14 @@ impl TryFrom<NotificationFromClient> for ClientNotification {
 }
 
 impl NotificationFromClient {
+    /// Checks if the current notification is an `InitializedNotification` from the client, indicating that the client has been initialized.
+    pub fn is_initialized_notification(&self) -> bool {
+        matches!(
+            self,
+            NotificationFromClient::ClientNotification(ClientNotification::InitializedNotification(_))
+        )
+    }
+
     #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
         match self {
@@ -2015,6 +2023,71 @@ impl From<CreateMessageResult> for MessageFromClient {
 impl From<ListRootsResult> for MessageFromClient {
     fn from(value: ListRootsResult) -> Self {
         MessageFromClient::ResultFromClient(value.into())
+    }
+}
+/// Enum representing SDK error codes.
+#[allow(non_camel_case_types)]
+pub enum SdkErrorCodes {
+    CONNECTION_CLOSED = -32000,
+    REQUEST_TIMEOUT = -32001,
+}
+impl core::fmt::Display for SdkErrorCodes {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            SdkErrorCodes::CONNECTION_CLOSED => write!(f, "Connection closed"),
+            SdkErrorCodes::REQUEST_TIMEOUT => write!(f, "Request timeout"),
+        }
+    }
+}
+impl From<SdkErrorCodes> for i64 {
+    fn from(code: SdkErrorCodes) -> Self {
+        code as i64
+    }
+}
+#[derive(Debug)]
+pub struct SdkError {
+    ///The error type that occurred.
+    pub code: i64,
+    ///Additional information about the error.
+    pub data: ::std::option::Option<::serde_json::Value>,
+    ///A short description of the error.
+    pub message: ::std::string::String,
+}
+impl core::fmt::Display for SdkError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "MCP error {}: {}", self.code, self.message)
+    }
+}
+impl std::error::Error for SdkError {
+    fn description(&self) -> &str {
+        &self.message
+    }
+}
+impl SdkError {
+    pub fn new(
+        error_code: SdkErrorCodes,
+        message: ::std::string::String,
+        data: ::std::option::Option<::serde_json::Value>,
+    ) -> Self {
+        Self {
+            code: error_code.into(),
+            data,
+            message,
+        }
+    }
+    pub fn connection_closed() -> Self {
+        Self {
+            code: SdkErrorCodes::CONNECTION_CLOSED.into(),
+            data: None,
+            message: SdkErrorCodes::CONNECTION_CLOSED.to_string(),
+        }
+    }
+    pub fn request_timeout(timeout: u128) -> Self {
+        Self {
+            code: SdkErrorCodes::REQUEST_TIMEOUT.into(),
+            data: Some(json!({ "timeout" : timeout })),
+            message: SdkErrorCodes::REQUEST_TIMEOUT.to_string(),
+        }
     }
 }
 /// Enum representing standard JSON-RPC error codes.
