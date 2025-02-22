@@ -154,11 +154,12 @@ impl ClientMessage {
         if let Self::Response(response) = self {
             Ok(response)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Response,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Response,
+                    self.message_type()
+                )))
         }
     }
 
@@ -175,11 +176,12 @@ impl ClientMessage {
         if let Self::Request(request) = self {
             Ok(request)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Request,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Request,
+                    self.message_type()
+                )))
         }
     }
 
@@ -196,11 +198,13 @@ impl ClientMessage {
         if let Self::Notification(notification) = self {
             Ok(notification)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Notification,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Notification,
+                    self.message_type()
+                ))
+                )
         }
     }
 
@@ -217,11 +221,13 @@ impl ClientMessage {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Error,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Error,
+                    self.message_type()
+                ))
+                )
         }
     }
 }
@@ -673,11 +679,12 @@ impl ServerMessage {
         if let Self::Response(response) = self {
             Ok(response)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Response,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Response,
+                    self.message_type()
+                )))
         }
     }
 
@@ -694,11 +701,13 @@ impl ServerMessage {
         if let Self::Request(request) = self {
             Ok(request)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Request,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Request,
+                    self.message_type()
+                ))
+                )
         }
     }
 
@@ -715,11 +724,13 @@ impl ServerMessage {
         if let Self::Notification(notification) = self {
             Ok(notification)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Notification,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Notification,
+                    self.message_type()
+                ))
+                )
         }
     }
 
@@ -736,11 +747,13 @@ impl ServerMessage {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid message type, expected: \"{}\" received\"{}\"",
-                MessageTypes::Error,
-                self.message_type()
-            )))
+            Err(JsonrpcErrorError::internal_error()
+                .with_message(format!(
+                    "Invalid message type, expected: \"{}\" received\"{}\"",
+                    MessageTypes::Error,
+                    self.message_type()
+                ))
+                )
         }
     }
 }
@@ -3043,6 +3056,446 @@ impl FromMessage<LoggingMessageNotification> for ServerMessage {
 impl ToMessage<ServerMessage> for LoggingMessageNotification {
     fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
         ServerMessage::from_message(self, request_id)
+    }
+}
+impl TryFrom<RequestFromClient> for InitializeRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::InitializeRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a InitializeRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for PingRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::PingRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a PingRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for ListResourcesRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::ListResourcesRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListResourcesRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for ListResourceTemplatesRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::ListResourceTemplatesRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListResourceTemplatesRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for ReadResourceRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::ReadResourceRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ReadResourceRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for SubscribeRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::SubscribeRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a SubscribeRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for UnsubscribeRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::UnsubscribeRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a UnsubscribeRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for ListPromptsRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::ListPromptsRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListPromptsRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for GetPromptRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::GetPromptRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a GetPromptRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for ListToolsRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::ListToolsRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListToolsRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for CallToolRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::CallToolRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CallToolRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for SetLevelRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::SetLevelRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a SetLevelRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for CompleteRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::CompleteRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CompleteRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for Result {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::Result(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a Result".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for CreateMessageResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::CreateMessageResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CreateMessageResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for ListRootsResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::ListRootsResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListRootsResult".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromClient> for CancelledNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientNotification = value.try_into()?;
+        if let ClientNotification::CancelledNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CancelledNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromClient> for InitializedNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientNotification = value.try_into()?;
+        if let ClientNotification::InitializedNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a InitializedNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromClient> for ProgressNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientNotification = value.try_into()?;
+        if let ClientNotification::ProgressNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ProgressNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromClient> for RootsListChangedNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientNotification = value.try_into()?;
+        if let ClientNotification::RootsListChangedNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a RootsListChangedNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for PingRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::PingRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a PingRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for CreateMessageRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::CreateMessageRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CreateMessageRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for ListRootsRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::ListRootsRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListRootsRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for Result {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::Result(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a Result".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for InitializeResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::InitializeResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a InitializeResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for ListResourcesResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::ListResourcesResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListResourcesResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for ListResourceTemplatesResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::ListResourceTemplatesResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListResourceTemplatesResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for ReadResourceResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::ReadResourceResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ReadResourceResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for ListPromptsResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::ListPromptsResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListPromptsResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for GetPromptResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::GetPromptResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a GetPromptResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for ListToolsResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::ListToolsResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ListToolsResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for CallToolResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::CallToolResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CallToolResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for CompleteResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::CompleteResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CompleteResult".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for CancelledNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::CancelledNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a CancelledNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for ProgressNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::ProgressNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ProgressNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for ResourceListChangedNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::ResourceListChangedNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ResourceListChangedNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for ResourceUpdatedNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::ResourceUpdatedNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ResourceUpdatedNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for PromptListChangedNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::PromptListChangedNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a PromptListChangedNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for ToolListChangedNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::ToolListChangedNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ToolListChangedNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::LoggingMessageNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a LoggingMessageNotification".to_string()))
+        }
     }
 }
 /// END AUTO GENERATED
