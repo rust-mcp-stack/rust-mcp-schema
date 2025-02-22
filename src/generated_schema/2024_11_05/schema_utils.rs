@@ -1187,6 +1187,30 @@ pub enum MessageFromServer {
     Error(JsonrpcErrorError),
 }
 
+impl From<RequestFromServer> for MessageFromServer {
+    fn from(value: RequestFromServer) -> Self {
+        Self::RequestFromServer(value)
+    }
+}
+
+impl From<ResultFromServer> for MessageFromServer {
+    fn from(value: ResultFromServer) -> Self {
+        Self::ResultFromServer(value)
+    }
+}
+
+impl From<NotificationFromServer> for MessageFromServer {
+    fn from(value: NotificationFromServer) -> Self {
+        Self::NotificationFromServer(value)
+    }
+}
+
+impl From<JsonrpcErrorError> for MessageFromServer {
+    fn from(value: JsonrpcErrorError) -> Self {
+        Self::Error(value)
+    }
+}
+
 impl MCPMessage for MessageFromServer {
     fn is_response(&self) -> bool {
         matches!(self, MessageFromServer::ResultFromServer(_))
@@ -1269,6 +1293,30 @@ pub enum MessageFromClient {
     ResultFromClient(ResultFromClient),
     NotificationFromClient(NotificationFromClient),
     Error(JsonrpcErrorError),
+}
+
+impl From<RequestFromClient> for MessageFromClient {
+    fn from(value: RequestFromClient) -> Self {
+        Self::RequestFromClient(value)
+    }
+}
+
+impl From<ResultFromClient> for MessageFromClient {
+    fn from(value: ResultFromClient) -> Self {
+        Self::ResultFromClient(value)
+    }
+}
+
+impl From<NotificationFromClient> for MessageFromClient {
+    fn from(value: NotificationFromClient) -> Self {
+        Self::NotificationFromClient(value)
+    }
+}
+
+impl From<JsonrpcErrorError> for MessageFromClient {
+    fn from(value: JsonrpcErrorError) -> Self {
+        Self::Error(value)
+    }
 }
 
 impl FromMessage<MessageFromClient> for ClientMessage {
