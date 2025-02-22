@@ -2040,7 +2040,6 @@ impl From<ListRootsResult> for MessageFromClient {
         MessageFromClient::ResultFromClient(value.into())
     }
 }
-
 /// Enum representing standard JSON-RPC error codes.
 #[allow(non_camel_case_types)]
 pub enum RpcErrorCodes {
