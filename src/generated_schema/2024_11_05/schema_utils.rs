@@ -154,12 +154,11 @@ impl ClientMessage {
         if let Self::Response(response) = self {
             Ok(response)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Response,
-                    self.message_type()
-                )))
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Response,
+                self.message_type()
+            )))
         }
     }
 
@@ -176,12 +175,11 @@ impl ClientMessage {
         if let Self::Request(request) = self {
             Ok(request)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Request,
-                    self.message_type()
-                )))
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Request,
+                self.message_type()
+            )))
         }
     }
 
@@ -198,13 +196,11 @@ impl ClientMessage {
         if let Self::Notification(notification) = self {
             Ok(notification)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Notification,
-                    self.message_type()
-                ))
-                )
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Notification,
+                self.message_type()
+            )))
         }
     }
 
@@ -221,13 +217,11 @@ impl ClientMessage {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Error,
-                    self.message_type()
-                ))
-                )
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Error,
+                self.message_type()
+            )))
         }
     }
 }
@@ -679,12 +673,11 @@ impl ServerMessage {
         if let Self::Response(response) = self {
             Ok(response)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Response,
-                    self.message_type()
-                )))
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Response,
+                self.message_type()
+            )))
         }
     }
 
@@ -701,13 +694,11 @@ impl ServerMessage {
         if let Self::Request(request) = self {
             Ok(request)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Request,
-                    self.message_type()
-                ))
-                )
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Request,
+                self.message_type()
+            )))
         }
     }
 
@@ -724,13 +715,11 @@ impl ServerMessage {
         if let Self::Notification(notification) = self {
             Ok(notification)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Notification,
-                    self.message_type()
-                ))
-                )
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Notification,
+                self.message_type()
+            )))
         }
     }
 
@@ -747,13 +736,11 @@ impl ServerMessage {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
-            Err(JsonrpcErrorError::internal_error()
-                .with_message(format!(
-                    "Invalid message type, expected: \"{}\" received\"{}\"",
-                    MessageTypes::Error,
-                    self.message_type()
-                ))
-                )
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Error,
+                self.message_type()
+            )))
         }
     }
 }
