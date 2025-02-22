@@ -2,6 +2,7 @@ use crate::generated_schema::*;
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
+use std::result;
 use std::{fmt::Display, str::FromStr};
 
 #[derive(Debug, PartialEq)]
@@ -137,6 +138,92 @@ pub enum ClientMessage {
     Notification(ClientJsonrpcNotification),
     Response(ClientJsonrpcResponse),
     Error(JsonrpcError),
+}
+
+impl ClientMessage {
+    /// Converts the current message into a `ClientJsonrpcResponse` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Response`. If so, it returns the
+    /// `ClientJsonrpcResponse` wrapped in a `Result::Ok`. If the message is not a `Response`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(ClientJsonrpcResponse)` if the message is a valid `Response`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_response(self) -> std::result::Result<ClientJsonrpcResponse, JsonrpcErrorError> {
+        if let Self::Response(response) = self {
+            Ok(response)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Response,
+                self.message_type()
+            )))
+        }
+    }
+
+    /// Converts the current message into a `ClientJsonrpcRequest` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Request`. If so, it returns the
+    /// `ClientJsonrpcRequest` wrapped in a `Result::Ok`. If the message is not a `Request`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(ClientJsonrpcRequest)` if the message is a valid `Request`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_request(self) -> std::result::Result<ClientJsonrpcRequest, JsonrpcErrorError> {
+        if let Self::Request(request) = self {
+            Ok(request)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Request,
+                self.message_type()
+            )))
+        }
+    }
+
+    /// Converts the current message into a `ClientJsonrpcNotification` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Notification`. If so, it returns the
+    /// `ClientJsonrpcNotification` wrapped in a `Result::Ok`. If the message is not a `Notification`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(ClientJsonrpcNotification)` if the message is a valid `Notification`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_notification(self) -> std::result::Result<ClientJsonrpcNotification, JsonrpcErrorError> {
+        if let Self::Notification(notification) = self {
+            Ok(notification)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Notification,
+                self.message_type()
+            )))
+        }
+    }
+
+    /// Converts the current message into a `JsonrpcError` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Error`. If so, it returns the
+    /// `JsonrpcError` wrapped in a `Result::Ok`. If the message is not a `Error`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(JsonrpcError)` if the message is a valid `Error`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_error(self) -> std::result::Result<JsonrpcError, JsonrpcErrorError> {
+        if let Self::Error(error) = self {
+            Ok(error)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Error,
+                self.message_type()
+            )))
+        }
+    }
 }
 
 impl RPCMessage for ClientMessage {
@@ -279,6 +366,17 @@ pub enum RequestFromClient {
     CustomRequest(serde_json::Value),
 }
 
+impl TryFrom<RequestFromClient> for ClientRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromClient) -> result::Result<Self, Self::Error> {
+        if let RequestFromClient::ClientRequest(client_request) = value {
+            Ok(client_request)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ClientRequest".to_string()))
+        }
+    }
+}
+
 impl RequestFromClient {
     #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
@@ -383,6 +481,17 @@ pub enum NotificationFromClient {
     CustomNotification(serde_json::Value),
 }
 
+impl TryFrom<NotificationFromClient> for ClientNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromClient) -> result::Result<Self, Self::Error> {
+        if let NotificationFromClient::ClientNotification(client_notification) = value {
+            Ok(client_notification)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ClientNotification".to_string()))
+        }
+    }
+}
+
 impl NotificationFromClient {
     #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
@@ -473,6 +582,17 @@ pub enum ResultFromClient {
     CustomResult(serde_json::Value),
 }
 
+impl TryFrom<ResultFromClient> for ClientResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromClient) -> result::Result<Self, Self::Error> {
+        if let ResultFromClient::ClientResult(client_result) = value {
+            Ok(client_result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ClientResult".to_string()))
+        }
+    }
+}
+
 impl From<ClientResult> for ResultFromClient {
     fn from(value: ClientResult) -> Self {
         Self::ClientResult(value)
@@ -539,16 +659,102 @@ pub enum ServerMessage {
     Error(JsonrpcError),
 }
 
+impl ServerMessage {
+    /// Converts the current message into a `ServerJsonrpcResponse` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Response`. If so, it returns the
+    /// `ServerJsonrpcResponse` wrapped in a `Result::Ok`. If the message is not a `Response`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(ServerJsonrpcResponse)` if the message is a valid `Response`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_response(self) -> std::result::Result<ServerJsonrpcResponse, JsonrpcErrorError> {
+        if let Self::Response(response) = self {
+            Ok(response)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Response,
+                self.message_type()
+            )))
+        }
+    }
+
+    /// Converts the current message into a `ServerJsonrpcRequest` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Request`. If so, it returns the
+    /// `ServerJsonrpcRequest` wrapped in a `Result::Ok`. If the message is not a `Request`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(ServerJsonrpcRequest)` if the message is a valid `Request`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_request(self) -> std::result::Result<ServerJsonrpcRequest, JsonrpcErrorError> {
+        if let Self::Request(request) = self {
+            Ok(request)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Request,
+                self.message_type()
+            )))
+        }
+    }
+
+    /// Converts the current message into a `ServerJsonrpcNotification` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Notification`. If so, it returns the
+    /// `ServerJsonrpcNotification` wrapped in a `Result::Ok`. If the message is not a `Notification`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(ServerJsonrpcNotification)` if the message is a valid `Notification`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_notification(self) -> std::result::Result<ServerJsonrpcNotification, JsonrpcErrorError> {
+        if let Self::Notification(notification) = self {
+            Ok(notification)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Notification,
+                self.message_type()
+            )))
+        }
+    }
+
+    /// Converts the current message into a `JsonrpcError` if it's of the correct type.
+    ///
+    /// This function checks if the current message is of type `Error`. If so, it returns the
+    /// `JsonrpcError` wrapped in a `Result::Ok`. If the message is not a `Error`,
+    /// it returns an error with a descriptive message indicating the mismatch in expected message types.
+    ///
+    /// # Returns
+    /// - `Ok(JsonrpcError)` if the message is a valid `Error`.
+    /// - `Err(JsonrpcErrorError)` if the message type is invalid
+    pub fn as_error(self) -> std::result::Result<JsonrpcError, JsonrpcErrorError> {
+        if let Self::Error(error) = self {
+            Ok(error)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid message type, expected: \"{}\" received\"{}\"",
+                MessageTypes::Error,
+                self.message_type()
+            )))
+        }
+    }
+}
+
 impl RPCMessage for ServerMessage {
     // Retrieves the request ID associated with the message, if applicable
     fn request_id(&self) -> Option<&RequestId> {
         match self {
             // If the message is a request, return the associated request ID
-            ServerMessage::Request(client_jsonrpc_request) => Some(&client_jsonrpc_request.id),
+            ServerMessage::Request(server_jsonrpc_request) => Some(&server_jsonrpc_request.id),
             // Notifications do not have request IDs
             ServerMessage::Notification(_) => None,
             // If the message is a response, return the associated request ID
-            ServerMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
+            ServerMessage::Response(server_jsonrpc_response) => Some(&server_jsonrpc_response.id),
             // If the message is an error, return the associated request ID
             ServerMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
         }
@@ -557,11 +763,11 @@ impl RPCMessage for ServerMessage {
     fn jsonrpc(&self) -> &str {
         match self {
             // If the message is a request, return the associated request ID
-            ServerMessage::Request(client_jsonrpc_request) => client_jsonrpc_request.jsonrpc(),
+            ServerMessage::Request(server_jsonrpc_request) => server_jsonrpc_request.jsonrpc(),
             // Notifications do not have request IDs
             ServerMessage::Notification(notification) => notification.jsonrpc(),
             // If the message is a response, return the associated request ID
-            ServerMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
+            ServerMessage::Response(server_jsonrpc_response) => server_jsonrpc_response.jsonrpc(),
             // If the message is an error, return the associated request ID
             ServerMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
         }
@@ -680,6 +886,17 @@ pub enum RequestFromServer {
     CustomRequest(serde_json::Value),
 }
 
+impl TryFrom<RequestFromServer> for ServerRequest {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: RequestFromServer) -> result::Result<Self, Self::Error> {
+        if let RequestFromServer::ServerRequest(server_request) = value {
+            Ok(server_request)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ServerRequest".to_string()))
+        }
+    }
+}
+
 impl RequestFromServer {
     #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
@@ -783,6 +1000,17 @@ pub enum NotificationFromServer {
     CustomNotification(serde_json::Value),
 }
 
+impl TryFrom<NotificationFromServer> for ServerNotification {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: NotificationFromServer) -> result::Result<Self, Self::Error> {
+        if let NotificationFromServer::ServerNotification(server_notification) = value {
+            Ok(server_notification)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ServerNotification".to_string()))
+        }
+    }
+}
+
 impl NotificationFromServer {
     #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
@@ -871,6 +1099,17 @@ impl FromStr for ServerJsonrpcResponse {
 pub enum ResultFromServer {
     ServerResult(ServerResult),
     CustomResult(serde_json::Value),
+}
+
+impl TryFrom<ResultFromServer> for ServerResult {
+    type Error = JsonrpcErrorError;
+    fn try_from(value: ResultFromServer) -> result::Result<Self, Self::Error> {
+        if let ResultFromServer::ServerResult(server_result) = value {
+            Ok(server_result)
+        } else {
+            Err(JsonrpcErrorError::internal_error().with_message("Not a ServerResult".to_string()))
+        }
+    }
 }
 
 impl From<ServerResult> for ResultFromServer {
