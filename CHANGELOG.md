@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.8](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.7...v0.1.8) (2025-02-23)
+
+
+### Features
+
+* add SdkError codes and types ([#37](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/37)) ([034ee8f](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/034ee8f31f86314ff879174b33f41924da5cdb72))
+* add utility function for easy detection of initialized notifications ([#38](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/38)) ([39400b6](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/39400b6f13b07a0a59180dcba38cc07249e907f7))
+* add utility functions for simplified type conversions ([#33](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/33)) ([7447800](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/74478006769feb8692bf6a62cf51c549eb69863b))
+* more type conversion utilities ([#36](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/36)) ([9a0abb9](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/9a0abb9a37cd7feb7555a7f98f23ad6a05c7410e))
+* new TryFrom implementation for all standard mcp message variants ([#35](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/35)) ([08854f0](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/08854f07f93da8fe2bcd56bab7c910ac490413d8))
+
 ## [0.1.7](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.6...v0.1.7) (2025-02-21)
 
 
