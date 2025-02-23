@@ -493,6 +493,14 @@ impl TryFrom<NotificationFromClient> for ClientNotification {
 }
 
 impl NotificationFromClient {
+    /// Checks if the current notification is an `InitializedNotification` from the client, indicating that the client has been initialized.
+    pub fn is_initialized_notification(&self) -> bool {
+        matches!(
+            self,
+            NotificationFromClient::ClientNotification(ClientNotification::InitializedNotification(_))
+        )
+    }
+
     #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
     pub fn get_method(&self) -> &str {
         match self {
