@@ -1418,7 +1418,6 @@ impl std::error::Error for CallToolError {
     }
 }
 
-
 /// Conversion of `CallToolError` into a `CallToolResult` with an error.
 impl From<CallToolError> for CallToolResult {
     fn from(value: CallToolError) -> Self {
@@ -1490,7 +1489,6 @@ impl CallToolResultContentItem {
         EmbeddedResource::new(annotations, resource).into()
     }
 }
-
 
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
