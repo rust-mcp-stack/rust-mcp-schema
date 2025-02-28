@@ -1418,6 +1418,80 @@ impl std::error::Error for CallToolError {
     }
 }
 
+
+/// Conversion of `CallToolError` into a `CallToolResult` with an error.
+impl From<CallToolError> for CallToolResult {
+    fn from(value: CallToolError) -> Self {
+        // Convert `CallToolError` to a `CallToolResult` by using the `with_error` method
+        CallToolResult::with_error(value)
+    }
+}
+
+impl CallToolResult {
+    /// Create a `CallToolResult` with an error, containing an error message in the content
+    pub fn with_error(error: CallToolError) -> Self {
+        Self {
+            content: vec![CallToolResultContentItem::TextContent(TextContent::new(
+                None,
+                error.to_string(), // Convert the error to a string and wrap it in TextContent
+            ))],
+            is_error: Some(true), // Indicate that the result is an error
+            meta: None,
+        }
+    }
+
+    /// Create a `CallToolResult` containing text content and optional annotations
+    pub fn text_content(text_content: String, text_annotations: Option<TextContentAnnotations>) -> Self {
+        Self {
+            content: vec![TextContent::new(text_annotations, text_content).into()],
+            is_error: None,
+            meta: None,
+        }
+    }
+
+    /// Create a `CallToolResult` containing image content, with data, MIME type, and optional annotations
+    pub fn image_content(data: String, mime_type: String, annotations: Option<ImageContentAnnotations>) -> Self {
+        Self {
+            content: vec![ImageContent::new(annotations, data, mime_type).into()],
+            is_error: None,
+            meta: None,
+        }
+    }
+
+    /// Create a `CallToolResult` containing an embedded resource, with optional annotations
+    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
+        Self {
+            content: vec![EmbeddedResource::new(annotations, resource).into()],
+            is_error: None,
+            meta: None,
+        }
+    }
+
+    // Add metadata to the `CallToolResult`, allowing additional context or information to be included
+    pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
+        self.meta = meta;
+        self
+    }
+}
+
+impl CallToolResultContentItem {
+    /// Create a `CallToolResultContentItem` with text content and optional annotations
+    pub fn text_content(test_content: String, annotations: Option<TextContentAnnotations>) -> Self {
+        TextContent::new(annotations, test_content).into()
+    }
+
+    /// Create a `CallToolResultContentItem` with image content, with data, MIME type, and optional annotations
+    pub fn image_content(data: String, mime_type: String, annotations: Option<ImageContentAnnotations>) -> Self {
+        ImageContent::new(annotations, data, mime_type).into()
+    }
+
+    /// Create a `CallToolResultContentItem` with an embedded resource, with optional annotations
+    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
+        EmbeddedResource::new(annotations, resource).into()
+    }
+}
+
+
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
