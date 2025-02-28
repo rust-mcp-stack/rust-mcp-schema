@@ -1368,6 +1368,56 @@ impl FromMessage<MessageFromClient> for ClientMessage {
     }
 }
 
+/// A custom error type `UnknownTool` that wraps a `String`.
+/// This can be used as the error type in the result of a `CallToolRequest` when a non-existent or unimplemented tool is called.
+#[derive(Debug)]
+pub struct UnknownTool(pub String);
+
+// Implement `Display` for `UnknownTool` to format the error message.
+impl core::fmt::Display for UnknownTool {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        // The formatted string will display "Unknown tool: <tool_name>"
+        write!(f, "Unknown tool: {}", self.0)
+    }
+}
+
+// Implement the `Error` trait for `UnknownTool`, making it a valid error type.
+impl std::error::Error for UnknownTool {}
+
+/// A specific error type that can hold any kind of error and is used to
+/// encapsulate various error scenarios when a `CallToolRequest` fails.
+#[derive(Debug)]
+pub struct CallToolError(pub Box<dyn std::error::Error>);
+
+// Implement methods for `CallToolError` to handle different error types.
+impl CallToolError {
+    /// Constructor to create a new `CallToolError` from a generic error.
+    pub fn new<E: std::error::Error + 'static>(err: E) -> Self {
+        // Box the error to fit inside the `CallToolError` struct
+        CallToolError(Box::new(err))
+    }
+
+    /// Specific constructor to create a `CallToolError` for an `UnknownTool` error.
+    pub fn unknown_tool(tool_name: String) -> Self {
+        // Create a `CallToolError` from an `UnknownTool` error (wrapped in a `Box`).
+        CallToolError(Box::new(UnknownTool(tool_name)))
+    }
+}
+
+// Implement `Display` for `CallToolError` to provide a user-friendly error message.
+impl core::fmt::Display for CallToolError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+// Implement `Error` for `CallToolError` to propagate the source of the error.
+impl std::error::Error for CallToolError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        self.0.source()
+    }
+}
+
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
