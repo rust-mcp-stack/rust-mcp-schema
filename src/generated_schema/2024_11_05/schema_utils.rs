@@ -386,7 +386,7 @@ impl RequestFromClient {
         }
     }
 
-    fn method(&self) -> &str {
+    pub fn method(&self) -> &str {
         match self {
             RequestFromClient::ClientRequest(request) => request.method(),
             RequestFromClient::CustomRequest(request) => request["method"].as_str().unwrap(),
@@ -914,7 +914,7 @@ impl RequestFromServer {
         }
     }
 
-    fn method(&self) -> &str {
+    pub fn method(&self) -> &str {
         match self {
             RequestFromServer::ServerRequest(request) => request.method(),
             RequestFromServer::CustomRequest(request) => request["method"].as_str().unwrap(),
@@ -1028,7 +1028,7 @@ impl NotificationFromServer {
         }
     }
 
-    fn method(&self) -> &str {
+    pub fn method(&self) -> &str {
         match self {
             NotificationFromServer::ServerNotification(notification) => notification.method(),
             NotificationFromServer::CustomNotification(notification) => notification["method"].as_str().unwrap(),
@@ -1368,6 +1368,10 @@ impl FromMessage<MessageFromClient> for ClientMessage {
     }
 }
 
+//**************************//
+//**  UnknownTool Error   **//
+//**************************//
+
 /// A custom error type `UnknownTool` that wraps a `String`.
 /// This can be used as the error type in the result of a `CallToolRequest` when a non-existent or unimplemented tool is called.
 #[derive(Debug)]
@@ -1384,6 +1388,9 @@ impl core::fmt::Display for UnknownTool {
 // Implement the `Error` trait for `UnknownTool`, making it a valid error type.
 impl std::error::Error for UnknownTool {}
 
+//***************************//
+//**  CallToolError Error  **//
+//***************************//
 /// A specific error type that can hold any kind of error and is used to
 /// encapsulate various error scenarios when a `CallToolRequest` fails.
 #[derive(Debug)]
@@ -1426,6 +1433,9 @@ impl From<CallToolError> for CallToolResult {
     }
 }
 
+//***************************//
+//**  CallToolResult Impl  **//
+//***************************//
 impl CallToolResult {
     /// Create a `CallToolResult` with an error, containing an error message in the content
     pub fn with_error(error: CallToolError) -> Self {
@@ -1473,6 +1483,9 @@ impl CallToolResult {
     }
 }
 
+//**************************************//
+//**  CallToolResultContentItem Impl  **//
+//**************************************//
 impl CallToolResultContentItem {
     /// Create a `CallToolResultContentItem` with text content and optional annotations
     pub fn text_content(test_content: String, annotations: Option<TextContentAnnotations>) -> Self {
