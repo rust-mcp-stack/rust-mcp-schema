@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.9](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.8...v0.1.9) (2025-03-02)
+
+
+### Features
+
+* introduce CallToolError ([#39](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/39)) ([7b8672d](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/7b8672d7aecd67448bff7d9f3fa933d25ea845bc))
+* new cunstructor and conversion utilities for call tool operations ([#41](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/41)) ([0b8f622](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/0b8f6223ca5fd709ab55f4d7f0f9aef6e81e21b0))
+
+
+### Bug Fixes
+
+* add missing MCPMessage trait for MessageFromClient ([#43](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/43)) ([48dc8af](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/48dc8af9f677d1675e34bb429d7f493d163d51b6))
+
 ## [0.1.8](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.7...v0.1.8) (2025-02-23)
 
 
