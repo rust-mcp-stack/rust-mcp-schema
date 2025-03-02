@@ -1327,6 +1327,33 @@ impl From<JsonrpcErrorError> for MessageFromClient {
     }
 }
 
+impl MCPMessage for MessageFromClient {
+    fn is_response(&self) -> bool {
+        matches!(self, MessageFromClient::ResultFromClient(_))
+    }
+
+    fn is_request(&self) -> bool {
+        matches!(self, MessageFromClient::RequestFromClient(_))
+    }
+
+    fn is_notification(&self) -> bool {
+        matches!(self, MessageFromClient::NotificationFromClient(_))
+    }
+
+    fn is_error(&self) -> bool {
+        matches!(self, MessageFromClient::Error(_))
+    }
+
+    fn message_type(&self) -> MessageTypes {
+        match self {
+            MessageFromClient::RequestFromClient(_) => MessageTypes::Request,
+            MessageFromClient::ResultFromClient(_) => MessageTypes::Response,
+            MessageFromClient::NotificationFromClient(_) => MessageTypes::Notification,
+            MessageFromClient::Error(_) => MessageTypes::Error,
+        }
+    }
+}
+
 impl FromMessage<MessageFromClient> for ClientMessage {
     fn from_message(
         message: MessageFromClient,
