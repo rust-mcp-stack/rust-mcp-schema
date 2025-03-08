@@ -1142,9 +1142,7 @@ impl<'de> serde::Deserialize<'de> for ResultFromServer {
         let result = ServerResult::deserialize(&raw_value);
 
         match result {
-            Ok(server_result) => {
-               Ok(Self::ServerResult(server_result))
-            }
+            Ok(server_result) => Ok(Self::ServerResult(server_result)),
             Err(_) => Ok(Self::CustomResult(raw_value)),
         }
     }
