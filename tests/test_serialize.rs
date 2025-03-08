@@ -388,7 +388,7 @@ mod test_serialize {
     #[test]
     fn test_server_custom_result() {
         let custom_result: serde_json::Map<String, serde_json::Value> = json!({
-            "custom_key":"cutom_value",
+            "custom_key":"custom_value",
             "custom_number": 15.21
         })
         .as_object()
