@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : bb1446ff1810a0df57989d78366d626d2c01b9d7
-/// Generated at : 2025-03-02 12:41:59
+/// Hash : 6828f3ef6300b25dd2aaff2a2e5e81188bdbd22e
+/// Generated at : 2025-03-08 08:33:48
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -5155,7 +5155,7 @@ impl ::std::convert::From<Result> for ServerResult {
 ///      ],
 ///      "properties": {
 ///        "level": {
-///          "description": "The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/logging/message.",
+///          "description": "The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/message.",
 ///          "$ref": "#/definitions/LoggingLevel"
 ///        }
 ///      }
@@ -5192,7 +5192,7 @@ impl SetLevelRequest {
 ///  ],
 ///  "properties": {
 ///    "level": {
-///      "description": "The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/logging/message.",
+///      "description": "The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/message.",
 ///      "$ref": "#/definitions/LoggingLevel"
 ///    }
 ///  }
@@ -5201,7 +5201,7 @@ impl SetLevelRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct SetLevelRequestParams {
-    ///The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/logging/message.
+    ///The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/message.
     pub level: LoggingLevel,
 }
 ///Sent from the client to request resources/updated notifications from the server whenever a particular resource changes.

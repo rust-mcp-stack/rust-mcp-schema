@@ -222,7 +222,7 @@ mod test_deserialize {
     fn test_server_ping_result() {
         let message = get_message("res_ping");
         assert!(matches!(message, ServerMessage::Response(server_message)
-                if matches!(&server_message.result, ResultFromServer::CustomResult(_server_result))
+                if matches!(&server_message.result, ResultFromServer::ServerResult(_server_result))
         ));
     }
 

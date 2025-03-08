@@ -387,17 +387,29 @@ mod test_serialize {
 
     #[test]
     fn test_server_custom_result() {
+        let custom_result: serde_json::Map<String, serde_json::Value> = json!({
+            "custom_key":"cutom_value",
+            "custom_number": 15.21
+        })
+        .as_object()
+        .unwrap()
+        .clone();
+
         let message: ServerMessage = ServerMessage::Response(ServerJsonrpcResponse::new(
             RequestId::Integer(15),
-            ResultFromServer::CustomResult(json!({
-                "result":{},"jsonrpc":"2.0","id":15
+            ResultFromServer::ServerResult(ServerResult::Result(Result {
+                meta: None,
+                extra: Some(custom_result),
             })),
         ));
 
         let message: ServerMessage = re_serialize(message);
 
         assert!(matches!(message, ServerMessage::Response(server_message)
-                if matches!(&server_message.result, ResultFromServer::CustomResult(_))
+                if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
+                if matches!(server_result, ServerResult::Result(result)
+                if result.extra.is_some()
+            ))
         ));
     }
 
