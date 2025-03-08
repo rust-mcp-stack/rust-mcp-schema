@@ -6,6 +6,7 @@ run_clippy = [
     "--features",
     "latest schema_utils",
     "--fix",
+    "--allow-dirty",
     "--",
     "-A",
     "deprecated",

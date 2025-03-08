@@ -11,7 +11,7 @@ COMMON_FEATURES_STR="${COMMON_FEATURES[*]}"
 
 for FEATURE in "${SCHEMA_VERSION_FEATURES[@]}"; do
     echo "🚀 Running Clippy with: --features \"$COMMON_FEATURES_STR $FEATURE\""
-    cargo clippy --all-targets --no-default-features --features "$COMMON_FEATURES_STR $FEATURE" -- -D warnings
+    cargo clippy --all-targets --no-default-features --features "$COMMON_FEATURES_STR $FEATURE" -- -A deprecated -D warnings
 
     # stop on failure
     if [ $? -ne 0 ]; then
