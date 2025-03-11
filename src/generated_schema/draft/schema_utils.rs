@@ -1506,68 +1506,6 @@ impl CallToolResult {
     }
 }
 
-//**************************************//
-//**  CallToolResultContentItem Impl  **//
-//**************************************//
-impl CallToolResultContentItem {
-    /// Create a `CallToolResultContentItem` with text content and optional annotations
-    pub fn text_content(test_content: String, annotations: Option<TextContentAnnotations>) -> Self {
-        TextContent::new(annotations, test_content).into()
-    }
-
-    /// Create a `CallToolResultContentItem` with image content, with data, MIME type, and optional annotations
-    pub fn image_content(data: String, mime_type: String, annotations: Option<ImageContentAnnotations>) -> Self {
-        ImageContent::new(annotations, data, mime_type).into()
-    }
-
-    /// Create a `CallToolResultContentItem` with an embedded resource, with optional annotations
-    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
-        EmbeddedResource::new(annotations, resource).into()
-    }
-
-    /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
-    pub fn content_type(&self) -> &str {
-        match self {
-            CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
-            CallToolResultContentItem::ImageContent(image_content) => image_content.type_(),
-            CallToolResultContentItem::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
-        }
-    }
-
-    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
-    pub fn as_text_content(&self) -> std::result::Result<&TextContent, JsonrpcErrorError> {
-        match &self {
-            CallToolResultContentItem::TextContent(text_content) => Ok(text_content),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid conversion, \"{}\" is not a TextContent",
-                self.content_type()
-            ))),
-        }
-    }
-
-    /// Converts the content to a reference to `ImageContent`, returning an error if the conversion is invalid.
-    pub fn as_image_content(&self) -> std::result::Result<&ImageContent, JsonrpcErrorError> {
-        match &self {
-            CallToolResultContentItem::ImageContent(image_content) => Ok(image_content),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid conversion, \"{}\" is not a ImageContent",
-                self.content_type()
-            ))),
-        }
-    }
-
-    /// Converts the content to a reference to `EmbeddedResource`, returning an error if the conversion is invalid.
-    pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, JsonrpcErrorError> {
-        match &self {
-            CallToolResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
-                "Invalid conversion, \"{}\" is not a EmbeddedResource",
-                self.content_type()
-            ))),
-        }
-    }
-}
-
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
@@ -3723,6 +3661,77 @@ impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
             Ok(result)
         } else {
             Err(JsonrpcErrorError::internal_error().with_message("Not a LoggingMessageNotification".to_string()))
+        }
+    }
+}
+impl CallToolResultContentItem {
+    /// Create a `CallToolResultContentItem` with text content and optional annotations
+    pub fn text_content(text_content: String, annotations: Option<TextContentAnnotations>) -> Self {
+        TextContent::new(annotations, text_content).into()
+    }
+    /// Create a `CallToolResultContentItem` with image content, with data, MIME type, and optional annotations
+    pub fn image_content(data: String, mime_type: String, annotations: Option<ImageContentAnnotations>) -> Self {
+        ImageContent::new(annotations, data, mime_type).into()
+    }
+    /// Create a `CallToolResultContentItem` with an audio content resource and mime_type with optional annotations
+    pub fn audio_content(data: String, mime_type: String, annotations: Option<AudioContentAnnotations>) -> Self {
+        AudioContent::new(annotations, data, mime_type).into()
+    }
+    /// Create a `CallToolResultContentItem` with an embedded resource, with optional annotations
+    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
+        EmbeddedResource::new(annotations, resource).into()
+    }
+    /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
+    pub fn content_type(&self) -> &str {
+        match self {
+            CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
+            CallToolResultContentItem::ImageContent(image_content) => image_content.type_(),
+            CallToolResultContentItem::AudioContent(audio_content) => audio_content.type_(),
+            CallToolResultContentItem::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
+        }
+    }
+    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
+    pub fn as_text_content(&self) -> std::result::Result<&TextContent, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::TextContent(text_content) => Ok(text_content),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a {}",
+                self.content_type(),
+                "TextContent"
+            ))),
+        }
+    }
+    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
+    pub fn as_image_content(&self) -> std::result::Result<&ImageContent, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::ImageContent(image_content) => Ok(image_content),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a {}",
+                self.content_type(),
+                "ImageContent"
+            ))),
+        }
+    }
+    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
+    pub fn as_audio_content(&self) -> std::result::Result<&AudioContent, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::AudioContent(audio_content) => Ok(audio_content),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a {}",
+                self.content_type(),
+                "AudioContent"
+            ))),
+        }
+    }
+    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
+    pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a {}",
+                self.content_type(),
+                "EmbeddedResource"
+            ))),
         }
     }
 }
