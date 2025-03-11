@@ -29,4 +29,6 @@ jobs:
           pull-request-header: ":robot: Automated release created! :rocket:"
           bump-minor-pre-major: true
           bump-patch-for-minor-pre-major: true
+          extra-files: |
+            README.md
           token: ${{ secrets.RP_SECRET }}
