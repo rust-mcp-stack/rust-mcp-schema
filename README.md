@@ -75,6 +75,8 @@ By default, the latest version of the schema is active.
 
 Example: enable `draft` version of the shema:
 
+<!-- x-release-please-start-version -->
+
 ```toml
 # Cargo.toml
 rust-mcp-schema = { version: 0.1.7 , features=["draft"] }
@@ -93,6 +95,8 @@ Example: enable specific version of the shema (2024_11_05) :
 #Cargo.toml
 rust-mcp-schema = { version: 0.1.7 , features=["2024_11_05"] }
 ```
+
+<!-- x-release-please-end -->
 
 ## How are Schemas generated?
 
