@@ -587,6 +587,7 @@ impl FromStr for ClientJsonrpcResponse {
 #[serde(untagged)]
 pub enum ResultFromClient {
     ClientResult(ClientResult),
+    #[deprecated(since = "0.1.8", note = "Use `ClientResult::Result` with extra attributes instead.")]
     CustomResult(serde_json::Value),
 }
 
@@ -1106,6 +1107,7 @@ impl FromStr for ServerJsonrpcResponse {
 #[serde(untagged)]
 pub enum ResultFromServer {
     ServerResult(ServerResult),
+    #[deprecated(since = "0.1.8", note = "Use `ServerResult::Result` with extra attributes instead.")]
     CustomResult(serde_json::Value),
 }
 
@@ -1521,6 +1523,48 @@ impl CallToolResultContentItem {
     /// Create a `CallToolResultContentItem` with an embedded resource, with optional annotations
     pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
         EmbeddedResource::new(annotations, resource).into()
+    }
+
+    /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
+    pub fn content_type(&self) -> &str {
+        match self {
+            CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
+            CallToolResultContentItem::ImageContent(image_content) => image_content.type_(),
+            CallToolResultContentItem::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
+        }
+    }
+
+    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
+    pub fn as_text_content(&self) -> std::result::Result<&TextContent, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::TextContent(text_content) => Ok(text_content),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a TextContent",
+                self.content_type()
+            ))),
+        }
+    }
+
+    /// Converts the content to a reference to `ImageContent`, returning an error if the conversion is invalid.
+    pub fn as_image_content(&self) -> std::result::Result<&ImageContent, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::ImageContent(image_content) => Ok(image_content),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a ImageContent",
+                self.content_type()
+            ))),
+        }
+    }
+
+    /// Converts the content to a reference to `EmbeddedResource`, returning an error if the conversion is invalid.
+    pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, JsonrpcErrorError> {
+        match &self {
+            CallToolResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
+            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a EmbeddedResource",
+                self.content_type()
+            ))),
+        }
     }
 }
 
