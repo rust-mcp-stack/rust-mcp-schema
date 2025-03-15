@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.11](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.10...v0.1.11) (2025-03-15)
+
+
+### Features
+
+* add new utility functions for CallToolResultContentItem ([#46](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/46)) ([1fe212c](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/1fe212c38a37033180644d938f38e990126465ea))
+
+
+### Bug Fixes
+
+* updated release action to keep the readme version updated ([#49](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/49)) ([e8b03cf](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/e8b03cfd8879074b8f0ce35860647782549c190b))
+
 ## [0.1.10](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.9...v0.1.10) (2025-03-08)
 
 
