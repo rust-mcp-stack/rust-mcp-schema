@@ -57,7 +57,7 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
     MessageTypes::Request
 }
 
-/// Represents a generic MCP (Model Content Protocol) message.
+/// Represents a generic MCP (Model Context Protocol) message.
 /// This trait defines methods to classify and extract information from messages.
 pub trait RPCMessage: MCPMessage {
     fn request_id(&self) -> Option<&RequestId>;
