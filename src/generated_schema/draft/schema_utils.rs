@@ -1506,6 +1506,19 @@ impl CallToolResult {
     }
 }
 
+impl CallToolRequest {
+    /// Retrieves the name of the tool from the request parameters.
+    ///
+    /// This method provides access to the tool name stored within the `params` field
+    /// of the `CallToolRequest` struct, returning it as a string reference.
+    ///
+    /// # Returns
+    /// A reference to the string containing the tool's name.
+    pub fn tool_name(&self) -> &str {
+        &self.params.name
+    }
+}
+
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
