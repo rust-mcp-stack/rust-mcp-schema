@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : eb4abdf2bb91e0d5afd94510741eadd416982350
-/// Generated at : 2025-03-18 18:04:52
+/// Hash : 05530857bb410ecf3a7aa3fb34397385730cbe16
+/// Generated at : 2025-03-18 19:06:15
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -23,13 +23,48 @@ pub const METHOD_NOT_FOUND: i64 = -32601i64;
 pub const INVALID_PARAMS: i64 = -32602i64;
 /// Internal error. Internal JSON-RPC error.
 pub const INTERNAL_ERROR: i64 = -32603i64;
-///Optional annotations for the client. The client can use annotations to inform how objects are used or displayed
+///Base for objects that include optional annotations for the client. The client can use annotations to inform how objects are used or displayed
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Optional annotations for the client. The client can use annotations to inform how objects are used or displayed",
+///  "description": "Base for objects that include optional annotations for the client. The client can use annotations to inform how objects are used or displayed",
+///  "type": "object",
+///  "properties": {
+///    "annotations": {
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct Annotated {
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub annotations: ::std::option::Option<AnnotatedAnnotations>,
+}
+///AnnotatedAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
 ///  "type": "object",
 ///  "properties": {
 ///    "audience": {
@@ -49,22 +84,14 @@ pub const INTERNAL_ERROR: i64 = -32603i64;
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct Annotations {
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct AnnotatedAnnotations {
     /**Describes who the intended customer of this object or data is.
     It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub audience: ::std::vec::Vec<Role>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub priority: ::std::option::Option<f64>,
-}
-impl ::std::default::Default for Annotations {
-    fn default() -> Self {
-        Self {
-            audience: Default::default(),
-            priority: Default::default(),
-        }
-    }
 }
 ///Audio provided to or from an LLM.
 ///
@@ -81,8 +108,22 @@ impl ::std::default::Default for Annotations {
 ///  ],
 ///  "properties": {
 ///    "annotations": {
-///      "description": "Optional annotations for the client.",
-///      "$ref": "#/definitions/Annotations"
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
 ///    },
 ///    "data": {
 ///      "description": "The base64-encoded audio data.",
@@ -103,9 +144,8 @@ impl ::std::default::Default for Annotations {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct AudioContent {
-    ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub annotations: ::std::option::Option<Annotations>,
+    pub annotations: ::std::option::Option<AudioContentAnnotations>,
     ///The base64-encoded audio data.
     pub data: ::std::string::String,
     ///The MIME type of the audio. Different providers may support different audio types.
@@ -116,7 +156,7 @@ pub struct AudioContent {
 }
 impl AudioContent {
     pub fn new(
-        annotations: ::std::option::Option<Annotations>,
+        annotations: ::std::option::Option<AudioContentAnnotations>,
         data: ::std::string::String,
         mime_type: ::std::string::String,
     ) -> Self {
@@ -130,6 +170,40 @@ impl AudioContent {
     pub fn type_(&self) -> &::std::string::String {
         &self.type_
     }
+}
+///AudioContentAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "audience": {
+///      "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Role"
+///      }
+///    },
+///    "priority": {
+///      "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///      "type": "number",
+///      "maximum": 1.0,
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct AudioContentAnnotations {
+    /**Describes who the intended customer of this object or data is.
+    It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub audience: ::std::vec::Vec<Role>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub priority: ::std::option::Option<f64>,
 }
 ///BlobResourceContents
 ///
@@ -1359,8 +1433,22 @@ of the LLM and/or the user.*/
 ///  ],
 ///  "properties": {
 ///    "annotations": {
-///      "description": "Optional annotations for the client.",
-///      "$ref": "#/definitions/Annotations"
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
 ///    },
 ///    "resource": {
 ///      "anyOf": [
@@ -1382,15 +1470,14 @@ of the LLM and/or the user.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct EmbeddedResource {
-    ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub annotations: ::std::option::Option<Annotations>,
+    pub annotations: ::std::option::Option<EmbeddedResourceAnnotations>,
     pub resource: EmbeddedResourceResource,
     #[serde(rename = "type")]
     type_: ::std::string::String,
 }
 impl EmbeddedResource {
-    pub fn new(annotations: ::std::option::Option<Annotations>, resource: EmbeddedResourceResource) -> Self {
+    pub fn new(annotations: ::std::option::Option<EmbeddedResourceAnnotations>, resource: EmbeddedResourceResource) -> Self {
         Self {
             annotations,
             resource,
@@ -1400,6 +1487,40 @@ impl EmbeddedResource {
     pub fn type_(&self) -> &::std::string::String {
         &self.type_
     }
+}
+///EmbeddedResourceAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "audience": {
+///      "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Role"
+///      }
+///    },
+///    "priority": {
+///      "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///      "type": "number",
+///      "maximum": 1.0,
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct EmbeddedResourceAnnotations {
+    /**Describes who the intended customer of this object or data is.
+    It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub audience: ::std::vec::Vec<Role>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub priority: ::std::option::Option<f64>,
 }
 ///EmbeddedResourceResource
 ///
@@ -1593,8 +1714,22 @@ pub struct GetPromptResult {
 ///  ],
 ///  "properties": {
 ///    "annotations": {
-///      "description": "Optional annotations for the client.",
-///      "$ref": "#/definitions/Annotations"
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
 ///    },
 ///    "data": {
 ///      "description": "The base64-encoded image data.",
@@ -1615,9 +1750,8 @@ pub struct GetPromptResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ImageContent {
-    ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub annotations: ::std::option::Option<Annotations>,
+    pub annotations: ::std::option::Option<ImageContentAnnotations>,
     ///The base64-encoded image data.
     pub data: ::std::string::String,
     ///The MIME type of the image. Different providers may support different image types.
@@ -1628,7 +1762,7 @@ pub struct ImageContent {
 }
 impl ImageContent {
     pub fn new(
-        annotations: ::std::option::Option<Annotations>,
+        annotations: ::std::option::Option<ImageContentAnnotations>,
         data: ::std::string::String,
         mime_type: ::std::string::String,
     ) -> Self {
@@ -1642,6 +1776,40 @@ impl ImageContent {
     pub fn type_(&self) -> &::std::string::String {
         &self.type_
     }
+}
+///ImageContentAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "audience": {
+///      "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Role"
+///      }
+///    },
+///    "priority": {
+///      "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///      "type": "number",
+///      "maximum": 1.0,
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct ImageContentAnnotations {
+    /**Describes who the intended customer of this object or data is.
+    It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub audience: ::std::vec::Vec<Role>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub priority: ::std::option::Option<f64>,
 }
 ///Describes the name and version of an MCP implementation.
 ///
@@ -4071,8 +4239,22 @@ pub struct RequestParamsMeta {
 ///  ],
 ///  "properties": {
 ///    "annotations": {
-///      "description": "Optional annotations for the client.",
-///      "$ref": "#/definitions/Annotations"
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
 ///    },
 ///    "description": {
 ///      "description": "A description of what this resource represents.\n\nThis can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a \"hint\" to the model.",
@@ -4097,9 +4279,8 @@ pub struct RequestParamsMeta {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct Resource {
-    ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub annotations: ::std::option::Option<Annotations>,
+    pub annotations: ::std::option::Option<ResourceAnnotations>,
     /**A description of what this resource represents.
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4112,6 +4293,40 @@ pub struct Resource {
     pub name: ::std::string::String,
     ///The URI of this resource.
     pub uri: ::std::string::String,
+}
+///ResourceAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "audience": {
+///      "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Role"
+///      }
+///    },
+///    "priority": {
+///      "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///      "type": "number",
+///      "maximum": 1.0,
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct ResourceAnnotations {
+    /**Describes who the intended customer of this object or data is.
+    It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub audience: ::std::vec::Vec<Role>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub priority: ::std::option::Option<f64>,
 }
 ///The contents of a specific resource or sub-resource.
 ///
@@ -4278,8 +4493,22 @@ impl ResourceReference {
 ///  ],
 ///  "properties": {
 ///    "annotations": {
-///      "description": "Optional annotations for the client.",
-///      "$ref": "#/definitions/Annotations"
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
 ///    },
 ///    "description": {
 ///      "description": "A description of what this template is for.\n\nThis can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a \"hint\" to the model.",
@@ -4304,9 +4533,8 @@ impl ResourceReference {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceTemplate {
-    ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub annotations: ::std::option::Option<Annotations>,
+    pub annotations: ::std::option::Option<ResourceTemplateAnnotations>,
     /**A description of what this template is for.
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4320,6 +4548,40 @@ pub struct ResourceTemplate {
     ///A URI template (according to RFC 6570) that can be used to construct resource URIs.
     #[serde(rename = "uriTemplate")]
     pub uri_template: ::std::string::String,
+}
+///ResourceTemplateAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "audience": {
+///      "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Role"
+///      }
+///    },
+///    "priority": {
+///      "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///      "type": "number",
+///      "maximum": 1.0,
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct ResourceTemplateAnnotations {
+    /**Describes who the intended customer of this object or data is.
+    It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub audience: ::std::vec::Vec<Role>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub priority: ::std::option::Option<f64>,
 }
 ///A notification from the server to the client, informing it that a resource has changed and may need to be read again. This should only be sent if the client previously sent a resources/subscribe request.
 ///
@@ -5176,8 +5438,22 @@ pub struct SubscribeRequestParams {
 ///  ],
 ///  "properties": {
 ///    "annotations": {
-///      "description": "Optional annotations for the client.",
-///      "$ref": "#/definitions/Annotations"
+///      "type": "object",
+///      "properties": {
+///        "audience": {
+///          "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///          "type": "array",
+///          "items": {
+///            "$ref": "#/definitions/Role"
+///          }
+///        },
+///        "priority": {
+///          "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///          "type": "number",
+///          "maximum": 1.0,
+///          "minimum": 0.0
+///        }
+///      }
 ///    },
 ///    "text": {
 ///      "description": "The text content of the message.",
@@ -5193,16 +5469,15 @@ pub struct SubscribeRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct TextContent {
-    ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub annotations: ::std::option::Option<Annotations>,
+    pub annotations: ::std::option::Option<TextContentAnnotations>,
     ///The text content of the message.
     pub text: ::std::string::String,
     #[serde(rename = "type")]
     type_: ::std::string::String,
 }
 impl TextContent {
-    pub fn new(annotations: ::std::option::Option<Annotations>, text: ::std::string::String) -> Self {
+    pub fn new(annotations: ::std::option::Option<TextContentAnnotations>, text: ::std::string::String) -> Self {
         Self {
             annotations,
             text,
@@ -5212,6 +5487,40 @@ impl TextContent {
     pub fn type_(&self) -> &::std::string::String {
         &self.type_
     }
+}
+///TextContentAnnotations
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "audience": {
+///      "description": "Describes who the intended customer of this object or data is.\n\nIt can include multiple entries to indicate content useful for multiple audiences (e.g., [\"user\", \"assistant\"]).",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Role"
+///      }
+///    },
+///    "priority": {
+///      "description": "Describes how important this data is for operating the server.\n\nA value of 1 means \"most important,\" and indicates that the data is\neffectively required, while 0 means \"least important,\" and indicates that\nthe data is entirely optional.",
+///      "type": "number",
+///      "maximum": 1.0,
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct TextContentAnnotations {
+    /**Describes who the intended customer of this object or data is.
+    It can include multiple entries to indicate content useful for multiple audiences (e.g., ["user", "assistant"]).*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub audience: ::std::vec::Vec<Role>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub priority: ::std::option::Option<f64>,
 }
 ///TextResourceContents
 ///
