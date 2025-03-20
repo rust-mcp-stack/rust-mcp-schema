@@ -211,7 +211,7 @@ mod test_serialize {
     #[test]
     fn test_list_tools_result() {
         let client_result = ClientResult::CreateMessageResult(CreateMessageResult {
-            content: CreateMessageResultContent::TextContent(TextContent::new(None, "This is a stub response.".to_string())),
+            content: CreateMessageResultContent::TextContent(TextContent::new("This is a stub response.".to_string(), None)),
             meta: None,
             model: "stub-model".to_string(),
             role: Role::Assistant,

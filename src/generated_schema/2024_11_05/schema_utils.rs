@@ -378,14 +378,6 @@ impl TryFrom<RequestFromClient> for ClientRequest {
 }
 
 impl RequestFromClient {
-    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
-    pub fn get_method(&self) -> &str {
-        match self {
-            RequestFromClient::ClientRequest(request) => request.method(),
-            RequestFromClient::CustomRequest(request) => request["method"].as_str().unwrap(),
-        }
-    }
-
     pub fn method(&self) -> &str {
         match self {
             RequestFromClient::ClientRequest(request) => request.method(),
@@ -499,14 +491,6 @@ impl NotificationFromClient {
             self,
             NotificationFromClient::ClientNotification(ClientNotification::InitializedNotification(_))
         )
-    }
-
-    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
-    pub fn get_method(&self) -> &str {
-        match self {
-            NotificationFromClient::ClientNotification(notification) => notification.method(),
-            NotificationFromClient::CustomNotification(notification) => notification["method"].as_str().unwrap(),
-        }
     }
 
     fn method(&self) -> &str {
@@ -907,14 +891,6 @@ impl TryFrom<RequestFromServer> for ServerRequest {
 }
 
 impl RequestFromServer {
-    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
-    pub fn get_method(&self) -> &str {
-        match self {
-            RequestFromServer::ServerRequest(request) => request.method(),
-            RequestFromServer::CustomRequest(request) => request["method"].as_str().unwrap(),
-        }
-    }
-
     pub fn method(&self) -> &str {
         match self {
             RequestFromServer::ServerRequest(request) => request.method(),
@@ -1021,14 +997,6 @@ impl TryFrom<NotificationFromServer> for ServerNotification {
 }
 
 impl NotificationFromServer {
-    #[deprecated(since = "0.1.4", note = "Use `method()` instead.")]
-    pub fn get_method(&self) -> &str {
-        match self {
-            NotificationFromServer::ServerNotification(notification) => notification.method(),
-            NotificationFromServer::CustomNotification(notification) => notification["method"].as_str().unwrap(),
-        }
-    }
-
     pub fn method(&self) -> &str {
         match self {
             NotificationFromServer::ServerNotification(notification) => notification.method(),
@@ -1434,6 +1402,17 @@ impl CallToolError {
     }
 }
 
+/// Converts a `CallToolError` into a `JsonrpcErrorError`.
+///
+/// The conversion creates an internal error variant of `JsonrpcErrorError`
+/// and attaches the string representation of the original `CallToolError` as a message.
+///
+impl From<CallToolError> for JsonrpcErrorError {
+    fn from(value: CallToolError) -> Self {
+        Self::internal_error().with_message(value.to_string())
+    }
+}
+
 // Implement `Display` for `CallToolError` to provide a user-friendly error message.
 impl core::fmt::Display for CallToolError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -1453,56 +1432,6 @@ impl From<CallToolError> for CallToolResult {
     fn from(value: CallToolError) -> Self {
         // Convert `CallToolError` to a `CallToolResult` by using the `with_error` method
         CallToolResult::with_error(value)
-    }
-}
-
-//***************************//
-//**  CallToolResult Impl  **//
-//***************************//
-impl CallToolResult {
-    /// Create a `CallToolResult` with an error, containing an error message in the content
-    pub fn with_error(error: CallToolError) -> Self {
-        Self {
-            content: vec![CallToolResultContentItem::TextContent(TextContent::new(
-                None,
-                error.to_string(), // Convert the error to a string and wrap it in TextContent
-            ))],
-            is_error: Some(true), // Indicate that the result is an error
-            meta: None,
-        }
-    }
-
-    /// Create a `CallToolResult` containing text content and optional annotations
-    pub fn text_content(text_content: String, text_annotations: Option<TextContentAnnotations>) -> Self {
-        Self {
-            content: vec![TextContent::new(text_annotations, text_content).into()],
-            is_error: None,
-            meta: None,
-        }
-    }
-
-    /// Create a `CallToolResult` containing image content, with data, MIME type, and optional annotations
-    pub fn image_content(data: String, mime_type: String, annotations: Option<ImageContentAnnotations>) -> Self {
-        Self {
-            content: vec![ImageContent::new(annotations, data, mime_type).into()],
-            is_error: None,
-            meta: None,
-        }
-    }
-
-    /// Create a `CallToolResult` containing an embedded resource, with optional annotations
-    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
-        Self {
-            content: vec![EmbeddedResource::new(annotations, resource).into()],
-            is_error: None,
-            meta: None,
-        }
-    }
-
-    // Add metadata to the `CallToolResult`, allowing additional context or information to be included
-    pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
-        self.meta = meta;
-        self
     }
 }
 
@@ -3758,17 +3687,24 @@ impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
     }
 }
 impl CallToolResultContentItem {
-    /// Create a `CallToolResultContentItem` with text content and optional annotations
-    pub fn text_content(text_content: String, annotations: Option<TextContentAnnotations>) -> Self {
-        TextContent::new(annotations, text_content).into()
+    ///Create a CallToolResultContentItem::TextContent
+    pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<TextContentAnnotations>) -> Self {
+        TextContent::new(text, annotations).into()
     }
-    /// Create a `CallToolResultContentItem` with image content, with data, MIME type, and optional annotations
-    pub fn image_content(data: String, mime_type: String, annotations: Option<ImageContentAnnotations>) -> Self {
-        ImageContent::new(annotations, data, mime_type).into()
+    ///Create a CallToolResultContentItem::ImageContent
+    pub fn image_content(
+        data: ::std::string::String,
+        mime_type: ::std::string::String,
+        annotations: ::std::option::Option<ImageContentAnnotations>,
+    ) -> Self {
+        ImageContent::new(data, mime_type, annotations).into()
     }
-    /// Create a `CallToolResultContentItem` with an embedded resource, with optional annotations
-    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: Option<EmbeddedResourceAnnotations>) -> Self {
-        EmbeddedResource::new(annotations, resource).into()
+    ///Create a CallToolResultContentItem::EmbeddedResource
+    pub fn embedded_resource(
+        resource: EmbeddedResourceResource,
+        annotations: ::std::option::Option<EmbeddedResourceAnnotations>,
+    ) -> Self {
+        EmbeddedResource::new(resource, annotations).into()
     }
     /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
     pub fn content_type(&self) -> &str {
@@ -3810,6 +3746,52 @@ impl CallToolResultContentItem {
                 "EmbeddedResource"
             ))),
         }
+    }
+}
+impl CallToolResult {
+    pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<TextContentAnnotations>) -> Self {
+        Self {
+            content: vec![TextContent::new(text, annotations).into()],
+            is_error: None,
+            meta: None,
+        }
+    }
+    pub fn image_content(
+        data: ::std::string::String,
+        mime_type: ::std::string::String,
+        annotations: ::std::option::Option<ImageContentAnnotations>,
+    ) -> Self {
+        Self {
+            content: vec![ImageContent::new(data, mime_type, annotations).into()],
+            is_error: None,
+            meta: None,
+        }
+    }
+    pub fn embedded_resource(
+        resource: EmbeddedResourceResource,
+        annotations: ::std::option::Option<EmbeddedResourceAnnotations>,
+    ) -> Self {
+        Self {
+            content: vec![EmbeddedResource::new(resource, annotations).into()],
+            is_error: None,
+            meta: None,
+        }
+    }
+    /// Create a `CallToolResult` with an error, containing an error message in the content
+    pub fn with_error(error: CallToolError) -> Self {
+        Self {
+            content: vec![CallToolResultContentItem::TextContent(TextContent::new(
+                error.to_string(),
+                None,
+            ))],
+            is_error: Some(true),
+            meta: None,
+        }
+    }
+    /// Adds metadata to the `CallToolResult`, allowing additional context or information to be included
+    pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
+        self.meta = meta;
+        self
     }
 }
 /// END AUTO GENERATED
