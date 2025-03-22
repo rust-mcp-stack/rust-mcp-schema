@@ -1,6 +1,6 @@
 [package]
 name = "rust-mcp-schema"
-version = "0.1.11"
+version = "0.2.0"
 authors = ["Ali Hashemi"]
 categories = ["data-structures", "parser-implementations", "parsing"]
 description = "Type-safe implementation of the Model Context Protocol in Rust, designed to reduce errors and accelerate development with powerful utilities."

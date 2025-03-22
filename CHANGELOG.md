@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.11...v0.2.0) (2025-03-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* improve generated schema, eliminate deprecated methods ([#53](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/53))
+
+### Features
+
+* add associated methods to structs for static values ([#56](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/56)) ([f5a97a3](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/f5a97a3aabf7ddcb18813decd854bed63eec0227))
+* improve generated schema, eliminate deprecated methods ([#53](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/53)) ([604de64](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/604de64207d04896a2bbafb6d771b98603a3988d))
+
 ## [0.1.11](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.10...v0.1.11) (2025-03-18)
 
 
