@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="200" src="./assets/rust-mcp-schema.jpg" alt="Description" width="300">
+  <img width="200" src="./assets/rust-mcp-schema.png" alt="Description" width="300">
 </p>
 
 # Model Context Protocol (MCP) Schema for Rust
