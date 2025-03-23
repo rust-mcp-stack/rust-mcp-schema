@@ -571,7 +571,7 @@ impl FromStr for ClientJsonrpcResponse {
 #[serde(untagged)]
 pub enum ResultFromClient {
     ClientResult(ClientResult),
-    #[deprecated(since = "0.1.8", note = "Use `ClientResult::Result` with extra attributes instead.")]
+    /// **Deprecated**: Use `ClientResult::Result` with extra attributes instead.
     CustomResult(serde_json::Value),
 }
 
@@ -1075,7 +1075,7 @@ impl FromStr for ServerJsonrpcResponse {
 #[serde(untagged)]
 pub enum ResultFromServer {
     ServerResult(ServerResult),
-    #[deprecated(since = "0.1.8", note = "Use `ServerResult::Result` with extra attributes instead.")]
+    /// **Deprecated**: Use `ServerResult::Result` with extra attributes instead.
     CustomResult(serde_json::Value),
 }
 
