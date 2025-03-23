@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.2.0...v0.2.1) (2025-03-23)
+
+
+### Bug Fixes
+
+* soft depricate CustomResult variants to supress warnings ([#57](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/57)) ([069b7a4](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/069b7a4a3f31ffe75359f0ba729fbe9f7dfa18d1))
+
 ## [0.2.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.11...v0.2.0) (2025-03-22)
 
 
