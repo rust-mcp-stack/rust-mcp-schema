@@ -86,21 +86,21 @@ Example: enable `draft` version of the shema:
 
 ```toml
 # Cargo.toml
-rust-mcp-schema = { version: 0.2.1 , features=["draft"] }
+rust-mcp-schema = { version: 0.2.2 , features=["draft"] }
 ```
 
 Example: enable `latest` version of the shema:
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.2.1 , features=["latest"] }
+rust-mcp-schema = { version: 0.2.2 , features=["latest"] }
 ```
 
 Example: enable specific version of the shema (2024_11_05) :
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.2.1 , features=["2024_11_05"] }
+rust-mcp-schema = { version: 0.2.2 , features=["2024_11_05"] }
 ```
 
 <!-- x-release-please-end -->
