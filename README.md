@@ -13,10 +13,13 @@ A type-safe implementation of the official Model Context Protocol (MCP) schema i
 
 The MCP schemas in this repository are [automatically generated](#how-are-schemas-generated) from the official Model Context Protocol, ensuring they are always up-to-date and aligned with the latest official specifications.
 
+---
 **Note:** This crate **only** provides an implementation of the MCP schema.
 
 <img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> If you are looking for a high-performance, asynchronous toolkit for building MCP servers and clients, checkout [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk).
 Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) takes care of the rest!
+
+---
 
 ## Contents:
 
