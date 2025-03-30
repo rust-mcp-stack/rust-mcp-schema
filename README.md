@@ -13,11 +13,19 @@ A type-safe implementation of the official Model Context Protocol (MCP) schema i
 
 The MCP schemas in this repository are [automatically generated](#how-are-schemas-generated) from the official Model Context Protocol, ensuring they are always up-to-date and aligned with the latest official specifications.
 
+---
+**Note:** This crate **only** provides an implementation of the MCP schema.
+
+<img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> If you are looking for a high-performance, asynchronous toolkit for building MCP servers and clients, checkout [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk).
+Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) takes care of the rest!
+
+---
+
 ## Contents:
 
 - [Features](#features)
 - [How can this crate be used?](#how-can-this-crate-be-used)
-- [What is not included in this crate?](#%EF%B8%8F-what-is-not-included-in-this-crate)
+
 - [Schema Versions](#schema-versions)
   - [Currently available versions](#currently-available-versions)
   - [How to switch between different schema versions?](#how-to-switch-between-different-schema-versions)
@@ -49,15 +57,14 @@ Model Context Protocol (MCP) is an open protocol that enables seamless integrati
 
 This crate includes the schema with `serialization` / `deserialization` support via serde_json, along with a minimal implementation of the necessary traits for structs and enums. This helps in creating and using various MCP messages such as requests, responses, notifications, and errors.
 
-This crate could be used for developing an **MCP Server**, **MCP Client**, or even an **MCP Host** in Rust.
+This crate could be used for developing an **MCP Server** or **MCP Client** in Rust.
 For more information on the MCP architecture, refer to the [official documentation](https://spec.modelcontextprotocol.io/specification).
 
-## ⚠️ What is not included in this crate?
+---
 
-This crate **only** provides an implementation of the MCP schema.
-This crate is not intended to provide an MCP Transport implementation for sending and receiving MCP messages.
+<img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> Check out [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) , a high-performance, asynchronous toolkit for building MCP servers and clients which is based on `rust-mcp-schema`. Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) takes care of the rest!
 
-That said, we are actively developing a lightweight, memory-efficient asynchronous MCP SDK. This will offer seamless integration with rust-mcp-schema, making it easier for you to build your own MCP Server and MCP Client. Stay tuned for updates, and we appreciate your support!
+---
 
 ## Schema Versions
 
