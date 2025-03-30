@@ -1,5 +1,3 @@
-Here’s a summarized and rephrased version of your contribution guide:
-
 ---
 
 # **Contributing to rust-mcp-schema**
