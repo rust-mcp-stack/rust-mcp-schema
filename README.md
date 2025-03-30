@@ -15,8 +15,8 @@ The MCP schemas in this repository are [automatically generated](#how-are-schema
 
 **Note:** This crate **only** provides an implementation of the MCP schema.
 
-<img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> If you are looking for a high-performance, asynchronous toolkit for building MCP servers and clients, checkout [rust-mcp-sdk](https://github.com/rust-mcp-stack/rust-mcp-sdk).
-Focus on your app's logic while [rust-mcp-sdk](https://github.com/rust-mcp-stack/rust-mcp-sdk) takes care of the rest!
+<img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> If you are looking for a high-performance, asynchronous toolkit for building MCP servers and clients, checkout [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk).
+Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) takes care of the rest!
 
 ## Contents:
 
@@ -59,7 +59,7 @@ For more information on the MCP architecture, refer to the [official documentati
 
 ---
 
-<img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> Check out [rust-mcp-sdk](https://github.com/rust-mcp-stack/rust-mcp-sdk) , a high-performance, asynchronous toolkit for building MCP servers and clients which is based on `rust-mcp-schema`. Focus on your app's logic while [rust-mcp-sdk](https://github.com/rust-mcp-stack/rust-mcp-sdk) takes care of the rest!
+<img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> Check out [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) , a high-performance, asynchronous toolkit for building MCP servers and clients which is based on `rust-mcp-schema`. Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk) takes care of the rest!
 
 ---
 
