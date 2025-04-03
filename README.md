@@ -9,7 +9,7 @@
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/rust-mcp-stack/rust-mcp-schema/ci.yml?style=for-the-badge" height="22">
 ](https://github.com/rust-mcp-stack/rust-mcp-schema/actions/workflows/ci.yml)
 
-A type-safe implementation of the official Model Context Protocol (MCP) schema in Rust.
+A type-safe implementation of the official Model Context Protocol (MCP) schema in Rust, supporting both the `2024_11_05` and `2025_03_26` versions.
 
 The MCP schemas in this repository are [automatically generated](#how-are-schemas-generated) from the official Model Context Protocol, ensuring they are always up-to-date and aligned with the latest official specifications.
 
