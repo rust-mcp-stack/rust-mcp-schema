@@ -4,7 +4,7 @@
 COMMON_FEATURES=("schema_utils")  
 
 # schema versions features (passed to clippy one at a time)
-SCHEMA_VERSION_FEATURES=("2024_11_05" "draft")
+SCHEMA_VERSION_FEATURES=("2025_03_26", "2024_11_05")
 
 # space-separated string 
 COMMON_FEATURES_STR="${COMMON_FEATURES[*]}"

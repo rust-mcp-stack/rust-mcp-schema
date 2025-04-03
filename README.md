@@ -14,6 +14,7 @@ A type-safe implementation of the official Model Context Protocol (MCP) schema i
 The MCP schemas in this repository are [automatically generated](#how-are-schemas-generated) from the official Model Context Protocol, ensuring they are always up-to-date and aligned with the latest official specifications.
 
 ---
+
 **Note:** This crate **only** provides an implementation of the MCP schema.
 
 <img align="top" src="assets/rust-mcp-stack-icon.png" width="24" style="border-radius:0.2rem;"> If you are looking for a high-performance, asynchronous toolkit for building MCP servers and clients, checkout [rust-mcp-sdk](https://crates.io/crates/rust-mcp-sdk).
@@ -27,7 +28,6 @@ Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp
 - [How can this crate be used?](#how-can-this-crate-be-used)
 
 - [Schema Versions](#schema-versions)
-  - [Currently available versions](#currently-available-versions)
   - [How to switch between different schema versions?](#how-to-switch-between-different-schema-versions)
   - [How are Schemas generated?](#how-are-schemas-generated)
 - [What is `schema_utils`?](#what-is-schema_utils)
@@ -46,7 +46,7 @@ Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp
 
 - 🧩 Type-safe implementation of the MCP protocol specification.
 - 💎 Auto-generated schemas are always synchronized with the official schema specifications.
-- 📜 Includes all schema versions, including draft versions for early adoption.
+- 📜 Includes both schema versions : `2024_11_05` and `2025_03_26`.
 - 🛠 Complimentary schema utility module (schema_utils) to boost productivity and ensure development integrity.
 
 ## How can this crate be used?
@@ -68,25 +68,23 @@ For more information on the MCP architecture, refer to the [official documentati
 
 ## Schema Versions
 
-This repository provides all versions of the schema, including draft versions, enabling you to prepare and adapt your applications ahead of upcoming official schema releases.
-
-### Currently available versions
+This repository provides all versions of the schema, which can be selected using Cargo features:
 
 - [2024_11_05](src/generated_schema/2024_11_05)
-- [Draft](src/generated_schema/draft)
+- [2025_03_26](src/generated_schema/2025_03_26)
 
 ### How to switch between different schema versions?
 
 Each schema version has a corresponding Cargo feature that can be enabled in your project's Cargo.toml.
-By default, the latest version of the schema is active.
+By default, the version `2024_11_05` of the schema is active.
 
-Example: enable `draft` version of the shema:
+Example: enable `2025_03_26` version of the shema:
 
 <!-- x-release-please-start-version -->
 
 ```toml
 # Cargo.toml
-rust-mcp-schema = { version: 0.2.2 , features=["draft"] }
+rust-mcp-schema = { version: 0.2.2 , features=["2025_03_26"] }
 ```
 
 Example: enable `latest` version of the shema:
