@@ -42,7 +42,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: Specify which version of rust-mcp-schema you're using (e.g., latest, draft, or a specific version number).
+      description: Specify which version of rust-mcp-schema you're using.
       render: text
     validations:
       required: false
@@ -50,7 +50,7 @@ body:
     id: version
     attributes:
       label: MCP Schema Version
-      description: Specify which version of mcp schema specification you're using (e.g., latest, draft, 2024_11_05).
+      description: Specify which version of mcp schema specification you're using.
       render: text
     validations:
       required: false

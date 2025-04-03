@@ -3,9 +3,9 @@ no-default-features = true
 features = "2024_11_05 schema_utils"
 # release = true
 
-[version_draft]
+[version_2025_03_26]
 no-default-features = true
-features = "draft schema_utils"
+features = "2025_03_26 schema_utils"
 # release = true
 
 [report]
