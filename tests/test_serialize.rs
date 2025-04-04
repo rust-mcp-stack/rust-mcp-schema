@@ -657,16 +657,16 @@ mod test_serialize {
         );
     }
 
-    /* ---------------------- JsonrpcErrorError ---------------------- */
+    /* ---------------------- RpcError ---------------------- */
     #[test]
     fn test_new() {
-        let error_object = JsonrpcErrorError::new(
+        let error_object = RpcError::new(
             RpcErrorCodes::METHOD_NOT_FOUND,
             "Error Message!".to_string(),
             Some(json!({"details":"error detail"})),
         );
 
-        let error_object: JsonrpcErrorError = re_serialize(error_object);
+        let error_object: RpcError = re_serialize(error_object);
 
         assert_eq!(error_object.code, -32601);
         assert_eq!(error_object.message, "Error Message!".to_string());
@@ -675,17 +675,17 @@ mod test_serialize {
 
     #[test]
     fn test_method_not_found() {
-        let error_object = JsonrpcErrorError::method_not_found();
+        let error_object = RpcError::method_not_found();
         assert_eq!(error_object.code, -32601);
         assert_eq!(error_object.message, "Method not found".to_string());
         assert!(error_object.data.is_none());
 
         // builder pattern
-        let error_object = JsonrpcErrorError::method_not_found()
+        let error_object = RpcError::method_not_found()
             .with_message("Error Message!".to_string())
             .with_data(Some(json!({"details":"error detail"})));
 
-        let error_object: JsonrpcErrorError = re_serialize(error_object);
+        let error_object: RpcError = re_serialize(error_object);
 
         assert_eq!(error_object.code, -32601);
         assert_eq!(error_object.message, "Error Message!".to_string());
@@ -694,17 +694,17 @@ mod test_serialize {
 
     #[test]
     fn test_invalid_params() {
-        let error_object = JsonrpcErrorError::invalid_params();
+        let error_object = RpcError::invalid_params();
         assert_eq!(error_object.code, -32602);
         assert_eq!(error_object.message, "Invalid params".to_string());
         assert!(error_object.data.is_none());
 
         // builder pattern
-        let error_object = JsonrpcErrorError::invalid_params()
+        let error_object = RpcError::invalid_params()
             .with_message("Error Message!".to_string())
             .with_data(Some(json!({"details":"error detail"})));
 
-        let error_object: JsonrpcErrorError = re_serialize(error_object);
+        let error_object: RpcError = re_serialize(error_object);
 
         assert_eq!(error_object.code, -32602);
         assert_eq!(error_object.message, "Error Message!".to_string());
@@ -713,17 +713,17 @@ mod test_serialize {
 
     #[test]
     fn test_invalid_request() {
-        let error_object = JsonrpcErrorError::invalid_request();
+        let error_object = RpcError::invalid_request();
         assert_eq!(error_object.code, -32600);
         assert_eq!(error_object.message, "Invalid request".to_string());
         assert!(error_object.data.is_none());
 
         // builder pattern
-        let error_object = JsonrpcErrorError::invalid_request()
+        let error_object = RpcError::invalid_request()
             .with_message("Error Message!".to_string())
             .with_data(Some(json!({"details":"error detail"})));
 
-        let error_object: JsonrpcErrorError = re_serialize(error_object);
+        let error_object: RpcError = re_serialize(error_object);
 
         assert_eq!(error_object.code, -32600);
         assert_eq!(error_object.message, "Error Message!".to_string());
@@ -732,17 +732,17 @@ mod test_serialize {
 
     #[test]
     fn test_internal_error() {
-        let error_object = JsonrpcErrorError::internal_error();
+        let error_object = RpcError::internal_error();
         assert_eq!(error_object.code, -32603);
         assert_eq!(error_object.message, "Internal error".to_string());
         assert!(error_object.data.is_none());
 
         // builder pattern
-        let error_object = JsonrpcErrorError::internal_error()
+        let error_object = RpcError::internal_error()
             .with_message("Error Message!".to_string())
             .with_data(Some(json!({"details":"error detail"})));
 
-        let error_object: JsonrpcErrorError = re_serialize(error_object);
+        let error_object: RpcError = re_serialize(error_object);
 
         assert_eq!(error_object.code, -32603);
         assert_eq!(error_object.message, "Error Message!".to_string());
@@ -751,17 +751,17 @@ mod test_serialize {
 
     #[test]
     fn test_parse_error() {
-        let error_object = JsonrpcErrorError::parse_error();
+        let error_object = RpcError::parse_error();
         assert_eq!(error_object.code, -32700);
         assert_eq!(error_object.message, "Parse error".to_string());
         assert!(error_object.data.is_none());
 
         // builder pattern
-        let error_object = JsonrpcErrorError::parse_error()
+        let error_object = RpcError::parse_error()
             .with_message("Error Message!".to_string())
             .with_data(Some(json!({"details":"error detail"})));
 
-        let error_object: JsonrpcErrorError = re_serialize(error_object);
+        let error_object: RpcError = re_serialize(error_object);
 
         assert_eq!(error_object.code, -32700);
         assert_eq!(error_object.message, "Error Message!".to_string());

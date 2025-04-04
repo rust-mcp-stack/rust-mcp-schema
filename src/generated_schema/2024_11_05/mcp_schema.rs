@@ -6,7 +6,7 @@
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
 /// Hash : 72516795d9a7aacdcf9b87624feb05229e10c950
-/// Generated at : 2025-04-03 19:11:35
+/// Generated at : 2025-04-04 20:01:25
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -2006,12 +2006,12 @@ pub struct InitializedNotificationParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct JsonrpcError {
-    pub error: JsonrpcErrorError,
+    pub error: RpcError,
     pub id: RequestId,
     jsonrpc: ::std::string::String,
 }
 impl JsonrpcError {
-    pub fn new(error: JsonrpcErrorError, id: RequestId) -> Self {
+    pub fn new(error: RpcError, id: RequestId) -> Self {
         Self {
             error,
             id,
@@ -2021,43 +2021,6 @@ impl JsonrpcError {
     pub fn jsonrpc(&self) -> &::std::string::String {
         &self.jsonrpc
     }
-}
-///JsonrpcErrorError
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "type": "object",
-///  "required": [
-///    "code",
-///    "message"
-///  ],
-///  "properties": {
-///    "code": {
-///      "description": "The error type that occurred.",
-///      "type": "integer"
-///    },
-///    "data": {
-///      "description": "Additional information about the error. The value of this member is defined by the sender (e.g. detailed error information, nested errors etc.)."
-///    },
-///    "message": {
-///      "description": "A short description of the error. The message SHOULD be limited to a concise single sentence.",
-///      "type": "string"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct JsonrpcErrorError {
-    ///The error type that occurred.
-    pub code: i64,
-    ///Additional information about the error. The value of this member is defined by the sender (e.g. detailed error information, nested errors etc.).
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub data: ::std::option::Option<::serde_json::Value>,
-    ///A short description of the error. The message SHOULD be limited to a concise single sentence.
-    pub message: ::std::string::String,
 }
 ///JsonrpcMessage
 ///
@@ -4757,6 +4720,43 @@ pub struct RootsListChangedNotificationParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
+///RpcError
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "required": [
+///    "code",
+///    "message"
+///  ],
+///  "properties": {
+///    "code": {
+///      "description": "The error type that occurred.",
+///      "type": "integer"
+///    },
+///    "data": {
+///      "description": "Additional information about the error. The value of this member is defined by the sender (e.g. detailed error information, nested errors etc.)."
+///    },
+///    "message": {
+///      "description": "A short description of the error. The message SHOULD be limited to a concise single sentence.",
+///      "type": "string"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct RpcError {
+    ///The error type that occurred.
+    pub code: i64,
+    ///Additional information about the error. The value of this member is defined by the sender (e.g. detailed error information, nested errors etc.).
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub data: ::std::option::Option<::serde_json::Value>,
+    ///A short description of the error. The message SHOULD be limited to a concise single sentence.
+    pub message: ::std::string::String,
+}
 ///Describes a message issued to or received from an LLM API.
 ///
 /// <details><summary>JSON schema</summary>
@@ -6018,3 +6018,5 @@ impl ServerNotification {
         }
     }
 }
+#[deprecated(since = "0.3.0", note = "Use `RpcError` instead.")]
+pub type JsonrpcErrorError = RpcError;
