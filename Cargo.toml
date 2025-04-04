@@ -14,8 +14,8 @@ edition = "2021"
 path = "src/rust-mcp-schema.rs"
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0.140" }
 
 
 [dev-dependencies]
@@ -24,11 +24,11 @@ json5 = { version = "0.4" }
 
 
 [package.metadata.docs.rs]
-features = ["latest", "schema_utils"]
+features = ["2024_11_05", "schema_utils"]
 rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
-features = ["latest", "schema_utils"]
+features = ["2024_11_05", "schema_utils"]
 
 ### FEATURES #################################################################
 
@@ -36,7 +36,7 @@ features = ["latest", "schema_utils"]
 [features]
 
 # defalt features
-default = ["latest", "schema_utils"] # Default features
+default = ["2024_11_05", "schema_utils"] # Default features
 
 # activates the latest MCP schema version, this will be updated once a new version of schema is published
 latest = ["2025_03_26"]
