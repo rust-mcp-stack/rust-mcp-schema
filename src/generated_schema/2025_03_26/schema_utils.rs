@@ -81,7 +81,7 @@ pub trait FromMessage<T>
 where
     Self: Sized,
 {
-    fn from_message(message: T, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError>;
+    fn from_message(message: T, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError>;
 }
 
 pub trait ToMessage<T>
@@ -89,7 +89,7 @@ where
     T: FromMessage<Self>,
     Self: Sized,
 {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<T, JsonrpcErrorError>;
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<T, RpcError>;
 }
 
 //*******************************//
@@ -149,12 +149,12 @@ impl ClientMessage {
     ///
     /// # Returns
     /// - `Ok(ClientJsonrpcResponse)` if the message is a valid `Response`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_response(self) -> std::result::Result<ClientJsonrpcResponse, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_response(self) -> std::result::Result<ClientJsonrpcResponse, RpcError> {
         if let Self::Response(response) = self {
             Ok(response)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Response,
                 self.message_type()
@@ -170,12 +170,12 @@ impl ClientMessage {
     ///
     /// # Returns
     /// - `Ok(ClientJsonrpcRequest)` if the message is a valid `Request`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_request(self) -> std::result::Result<ClientJsonrpcRequest, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_request(self) -> std::result::Result<ClientJsonrpcRequest, RpcError> {
         if let Self::Request(request) = self {
             Ok(request)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Request,
                 self.message_type()
@@ -191,12 +191,12 @@ impl ClientMessage {
     ///
     /// # Returns
     /// - `Ok(ClientJsonrpcNotification)` if the message is a valid `Notification`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_notification(self) -> std::result::Result<ClientJsonrpcNotification, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_notification(self) -> std::result::Result<ClientJsonrpcNotification, RpcError> {
         if let Self::Notification(notification) = self {
             Ok(notification)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Notification,
                 self.message_type()
@@ -212,12 +212,12 @@ impl ClientMessage {
     ///
     /// # Returns
     /// - `Ok(JsonrpcError)` if the message is a valid `Error`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_error(self) -> std::result::Result<JsonrpcError, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_error(self) -> std::result::Result<JsonrpcError, RpcError> {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Error,
                 self.message_type()
@@ -324,7 +324,7 @@ impl Display for ClientJsonrpcRequest {
 }
 
 impl FromStr for ClientJsonrpcRequest {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     /// Parses a JSON-RPC request from a string.
     ///
@@ -336,7 +336,7 @@ impl FromStr for ClientJsonrpcRequest {
     ///
     /// # Returns
     /// * `Ok(ClientJsonrpcRequest)` if parsing is successful.
-    /// * `Err(JsonrpcErrorError)` if the string is not valid JSON.
+    /// * `Err(RpcError)` if the string is not valid JSON.
     ///
     /// # Example
     /// ```
@@ -349,7 +349,7 @@ impl FromStr for ClientJsonrpcRequest {
     /// ```
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -367,12 +367,12 @@ pub enum RequestFromClient {
 }
 
 impl TryFrom<RequestFromClient> for ClientRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> result::Result<Self, Self::Error> {
         if let RequestFromClient::ClientRequest(client_request) = value {
             Ok(client_request)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ClientRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ClientRequest".to_string()))
         }
     }
 }
@@ -452,11 +452,11 @@ impl Display for ClientJsonrpcNotification {
 }
 
 impl FromStr for ClientJsonrpcNotification {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -474,12 +474,12 @@ pub enum NotificationFromClient {
 }
 
 impl TryFrom<NotificationFromClient> for ClientNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> result::Result<Self, Self::Error> {
         if let NotificationFromClient::ClientNotification(client_notification) = value {
             Ok(client_notification)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ClientNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ClientNotification".to_string()))
         }
     }
 }
@@ -554,11 +554,11 @@ impl Display for ClientJsonrpcResponse {
 }
 
 impl FromStr for ClientJsonrpcResponse {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*******************************//
@@ -576,12 +576,12 @@ pub enum ResultFromClient {
 }
 
 impl TryFrom<ResultFromClient> for ClientResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromClient) -> result::Result<Self, Self::Error> {
         if let ResultFromClient::ClientResult(client_result) = value {
             Ok(client_result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ClientResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ClientResult".to_string()))
         }
     }
 }
@@ -619,11 +619,11 @@ impl<'de> serde::Deserialize<'de> for ResultFromClient {
 //*******************************//
 
 impl FromStr for ClientMessage {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -661,12 +661,12 @@ impl ServerMessage {
     ///
     /// # Returns
     /// - `Ok(ServerJsonrpcResponse)` if the message is a valid `Response`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_response(self) -> std::result::Result<ServerJsonrpcResponse, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_response(self) -> std::result::Result<ServerJsonrpcResponse, RpcError> {
         if let Self::Response(response) = self {
             Ok(response)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Response,
                 self.message_type()
@@ -682,12 +682,12 @@ impl ServerMessage {
     ///
     /// # Returns
     /// - `Ok(ServerJsonrpcRequest)` if the message is a valid `Request`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_request(self) -> std::result::Result<ServerJsonrpcRequest, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_request(self) -> std::result::Result<ServerJsonrpcRequest, RpcError> {
         if let Self::Request(request) = self {
             Ok(request)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Request,
                 self.message_type()
@@ -703,12 +703,12 @@ impl ServerMessage {
     ///
     /// # Returns
     /// - `Ok(ServerJsonrpcNotification)` if the message is a valid `Notification`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_notification(self) -> std::result::Result<ServerJsonrpcNotification, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_notification(self) -> std::result::Result<ServerJsonrpcNotification, RpcError> {
         if let Self::Notification(notification) = self {
             Ok(notification)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Notification,
                 self.message_type()
@@ -724,12 +724,12 @@ impl ServerMessage {
     ///
     /// # Returns
     /// - `Ok(JsonrpcError)` if the message is a valid `Error`.
-    /// - `Err(JsonrpcErrorError)` if the message type is invalid
-    pub fn as_error(self) -> std::result::Result<JsonrpcError, JsonrpcErrorError> {
+    /// - `Err(RpcError)` if the message type is invalid
+    pub fn as_error(self) -> std::result::Result<JsonrpcError, RpcError> {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message(format!(
+            Err(RpcError::internal_error().with_message(format!(
                 "Invalid message type, expected: \"{}\" received\"{}\"",
                 MessageTypes::Error,
                 self.message_type()
@@ -801,11 +801,11 @@ impl MCPMessage for ServerMessage {
 }
 
 impl FromStr for ServerMessage {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -859,11 +859,11 @@ impl Display for ServerJsonrpcRequest {
 }
 
 impl FromStr for ServerJsonrpcRequest {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*************************//
@@ -880,12 +880,12 @@ pub enum RequestFromServer {
 }
 
 impl TryFrom<RequestFromServer> for ServerRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromServer) -> result::Result<Self, Self::Error> {
         if let RequestFromServer::ServerRequest(server_request) = value {
             Ok(server_request)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ServerRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ServerRequest".to_string()))
         }
     }
 }
@@ -965,11 +965,11 @@ impl Display for ServerJsonrpcNotification {
 }
 
 impl FromStr for ServerJsonrpcNotification {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*******************************//
@@ -986,12 +986,12 @@ pub enum NotificationFromServer {
 }
 
 impl TryFrom<NotificationFromServer> for ServerNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> result::Result<Self, Self::Error> {
         if let NotificationFromServer::ServerNotification(server_notification) = value {
             Ok(server_notification)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ServerNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ServerNotification".to_string()))
         }
     }
 }
@@ -1058,11 +1058,11 @@ impl Display for ServerJsonrpcResponse {
 }
 
 impl FromStr for ServerJsonrpcResponse {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 //*******************************//
@@ -1080,12 +1080,12 @@ pub enum ResultFromServer {
 }
 
 impl TryFrom<ResultFromServer> for ServerResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> result::Result<Self, Self::Error> {
         if let ResultFromServer::ServerResult(server_result) = value {
             Ok(server_result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ServerResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ServerResult".to_string()))
         }
     }
 }
@@ -1134,11 +1134,11 @@ impl Display for JsonrpcError {
 }
 
 impl FromStr for JsonrpcError {
-    type Err = JsonrpcErrorError;
+    type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 
@@ -1156,7 +1156,7 @@ pub enum MessageFromServer {
     RequestFromServer(RequestFromServer),
     ResultFromServer(ResultFromServer),
     NotificationFromServer(NotificationFromServer),
-    Error(JsonrpcErrorError),
+    Error(RpcError),
 }
 
 impl From<RequestFromServer> for MessageFromServer {
@@ -1177,8 +1177,8 @@ impl From<NotificationFromServer> for MessageFromServer {
     }
 }
 
-impl From<JsonrpcErrorError> for MessageFromServer {
-    fn from(value: JsonrpcErrorError) -> Self {
+impl From<RpcError> for MessageFromServer {
+    fn from(value: RpcError) -> Self {
         Self::Error(value)
     }
 }
@@ -1211,22 +1211,19 @@ impl MCPMessage for MessageFromServer {
 }
 
 impl FromMessage<MessageFromServer> for ServerMessage {
-    fn from_message(
-        message: MessageFromServer,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: MessageFromServer, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         match message {
             MessageFromServer::RequestFromServer(request_from_server) => {
-                let request_id = request_id
-                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                let request_id =
+                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
                 Ok(ServerMessage::Request(ServerJsonrpcRequest::new(
                     request_id,
                     request_from_server,
                 )))
             }
             MessageFromServer::ResultFromServer(result_from_server) => {
-                let request_id = request_id
-                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                let request_id =
+                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
                 Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
                     request_id,
                     result_from_server,
@@ -1234,7 +1231,7 @@ impl FromMessage<MessageFromServer> for ServerMessage {
             }
             MessageFromServer::NotificationFromServer(notification_from_server) => {
                 if request_id.is_some() {
-                    return Err(JsonrpcErrorError::internal_error()
+                    return Err(RpcError::internal_error()
                         .with_message("request_id expected to be None for Notifications!".to_string()));
                 }
                 Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(
@@ -1242,8 +1239,8 @@ impl FromMessage<MessageFromServer> for ServerMessage {
                 )))
             }
             MessageFromServer::Error(jsonrpc_error_error) => {
-                let request_id = request_id
-                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                let request_id =
+                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
                 Ok(ServerMessage::Error(JsonrpcError::new(jsonrpc_error_error, request_id)))
             }
         }
@@ -1264,7 +1261,7 @@ pub enum MessageFromClient {
     RequestFromClient(RequestFromClient),
     ResultFromClient(ResultFromClient),
     NotificationFromClient(NotificationFromClient),
-    Error(JsonrpcErrorError),
+    Error(RpcError),
 }
 
 impl From<RequestFromClient> for MessageFromClient {
@@ -1285,8 +1282,8 @@ impl From<NotificationFromClient> for MessageFromClient {
     }
 }
 
-impl From<JsonrpcErrorError> for MessageFromClient {
-    fn from(value: JsonrpcErrorError) -> Self {
+impl From<RpcError> for MessageFromClient {
+    fn from(value: RpcError) -> Self {
         Self::Error(value)
     }
 }
@@ -1319,22 +1316,19 @@ impl MCPMessage for MessageFromClient {
 }
 
 impl FromMessage<MessageFromClient> for ClientMessage {
-    fn from_message(
-        message: MessageFromClient,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: MessageFromClient, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         match message {
             MessageFromClient::RequestFromClient(request_from_client) => {
-                let request_id = request_id
-                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                let request_id =
+                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
                 Ok(ClientMessage::Request(ClientJsonrpcRequest::new(
                     request_id,
                     request_from_client,
                 )))
             }
             MessageFromClient::ResultFromClient(result_from_client) => {
-                let request_id = request_id
-                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                let request_id =
+                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
                 Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
                     request_id,
                     result_from_client,
@@ -1342,7 +1336,7 @@ impl FromMessage<MessageFromClient> for ClientMessage {
             }
             MessageFromClient::NotificationFromClient(notification_from_client) => {
                 if request_id.is_some() {
-                    return Err(JsonrpcErrorError::internal_error()
+                    return Err(RpcError::internal_error()
                         .with_message("request_id expected to be None for Notifications!".to_string()));
                 }
 
@@ -1351,8 +1345,8 @@ impl FromMessage<MessageFromClient> for ClientMessage {
                 )))
             }
             MessageFromClient::Error(jsonrpc_error_error) => {
-                let request_id = request_id
-                    .ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+                let request_id =
+                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
                 Ok(ClientMessage::Error(JsonrpcError::new(jsonrpc_error_error, request_id)))
             }
         }
@@ -1402,12 +1396,12 @@ impl CallToolError {
     }
 }
 
-/// Converts a `CallToolError` into a `JsonrpcErrorError`.
+/// Converts a `CallToolError` into a `RpcError`.
 ///
-/// The conversion creates an internal error variant of `JsonrpcErrorError`
+/// The conversion creates an internal error variant of `RpcError`
 /// and attaches the string representation of the original `CallToolError` as a message.
 ///
-impl From<CallToolError> for JsonrpcErrorError {
+impl From<CallToolError> for RpcError {
     fn from(value: CallToolError) -> Self {
         Self::internal_error().with_message(value.to_string())
     }
@@ -2184,8 +2178,8 @@ impl From<RpcErrorCodes> for i64 {
         code as i64
     }
 }
-impl JsonrpcErrorError {
-    /// Constructs a new `JsonrpcErrorError` with the provided arguments.
+impl RpcError {
+    /// Constructs a new `RpcError` with the provided arguments.
     ///
     /// # Arguments
     /// * `error_code` - The JSON-RPC error code.
@@ -2195,9 +2189,9 @@ impl JsonrpcErrorError {
     /// # Example
     /// ```
     /// use serde_json::json;
-    /// use rust_mcp_schema::{JsonrpcErrorError, schema_utils::RpcErrorCodes};
+    /// use rust_mcp_schema::{RpcError, schema_utils::RpcErrorCodes};
     ///
-    /// let error = JsonrpcErrorError::new(RpcErrorCodes::INVALID_PARAMS, "Invalid params!".to_string(), Some(json!({"details": "Missing method field"})));
+    /// let error = RpcError::new(RpcErrorCodes::INVALID_PARAMS, "Invalid params!".to_string(), Some(json!({"details": "Missing method field"})));
     /// assert_eq!(error.code, -32602);
     /// assert_eq!(error.message, "Invalid params!".to_string());
     /// ```
@@ -2212,13 +2206,13 @@ impl JsonrpcErrorError {
             message,
         }
     }
-    /// Creates a new `JsonrpcErrorError` for "Method not found".
+    /// Creates a new `RpcError` for "Method not found".
     ///
     /// # Example
     /// ```
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::method_not_found();
+    /// let error = RpcError::method_not_found();
     /// assert_eq!(error.code, -32601);
     /// assert_eq!(error.message, "Method not found");
     /// ```
@@ -2229,13 +2223,13 @@ impl JsonrpcErrorError {
             message: "Method not found".to_string(),
         }
     }
-    /// Creates a new `JsonrpcErrorError` for "Invalid parameters".
+    /// Creates a new `RpcError` for "Invalid parameters".
     ///
     /// # Example
     /// ```
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::invalid_params();
+    /// let error = RpcError::invalid_params();
     /// assert_eq!(error.code, -32602);
     /// ```
     pub fn invalid_params() -> Self {
@@ -2245,13 +2239,13 @@ impl JsonrpcErrorError {
             message: "Invalid params".to_string(),
         }
     }
-    /// Creates a new `JsonrpcErrorError` for "Invalid request".
+    /// Creates a new `RpcError` for "Invalid request".
     ///
     /// # Example
     /// ```
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::invalid_request();
+    /// let error = RpcError::invalid_request();
     /// assert_eq!(error.code, -32600);
     /// ```
     pub fn invalid_request() -> Self {
@@ -2261,13 +2255,13 @@ impl JsonrpcErrorError {
             message: "Invalid request".to_string(),
         }
     }
-    /// Creates a new `JsonrpcErrorError` for "Internal error".
+    /// Creates a new `RpcError` for "Internal error".
     ///
     /// # Example
     /// ```
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::internal_error();
+    /// let error = RpcError::internal_error();
     /// assert_eq!(error.code, -32603);
     /// ```
     pub fn internal_error() -> Self {
@@ -2277,13 +2271,13 @@ impl JsonrpcErrorError {
             message: "Internal error".to_string(),
         }
     }
-    /// Creates a new `JsonrpcErrorError` for "Parse error".
+    /// Creates a new `RpcError` for "Parse error".
     ///
     /// # Example
     /// ```
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::parse_error();
+    /// let error = RpcError::parse_error();
     /// assert_eq!(error.code, -32700);
     /// ```
     pub fn parse_error() -> Self {
@@ -2297,9 +2291,9 @@ impl JsonrpcErrorError {
     ///
     /// # Example
     /// ```
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::invalid_request().with_message("Request format is invalid".to_string());
+    /// let error = RpcError::invalid_request().with_message("Request format is invalid".to_string());
     /// assert_eq!(error.message, "Request format is invalid".to_string());
     /// ```
     pub fn with_message(mut self, message: String) -> Self {
@@ -2311,9 +2305,9 @@ impl JsonrpcErrorError {
     /// # Example
     /// ```
     /// use serde_json::json;
-    /// use rust_mcp_schema::JsonrpcErrorError;
+    /// use rust_mcp_schema::RpcError;
     ///
-    /// let error = JsonrpcErrorError::invalid_request().with_data(Some(json!({"reason": "Missing ID"})));
+    /// let error = RpcError::invalid_request().with_data(Some(json!({"reason": "Missing ID"})));
     /// assert!(error.data.is_some());
     /// ```
     pub fn with_data(mut self, data: ::std::option::Option<::serde_json::Value>) -> Self {
@@ -2321,12 +2315,12 @@ impl JsonrpcErrorError {
         self
     }
 }
-impl std::error::Error for JsonrpcErrorError {
+impl std::error::Error for RpcError {
     fn description(&self) -> &str {
         &self.message
     }
 }
-impl Display for JsonrpcErrorError {
+impl Display for RpcError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -2335,11 +2329,11 @@ impl Display for JsonrpcErrorError {
         )
     }
 }
-impl FromStr for JsonrpcErrorError {
-    type Err = JsonrpcErrorError;
+impl FromStr for RpcError {
+    type Err = RpcError;
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         serde_json::from_str(s)
-            .map_err(|error| JsonrpcErrorError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
+            .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
 /// Constructs a new JsonrpcError using the provided arguments.
@@ -2350,7 +2344,7 @@ impl JsonrpcError {
         error_message: ::std::string::String,
         error_data: ::std::option::Option<::serde_json::Value>,
     ) -> Self {
-        Self::new(JsonrpcErrorError::new(error_code, error_message, error_data), id)
+        Self::new(RpcError::new(error_code, error_message, error_data), id)
     }
 }
 impl From<CancelledNotification> for NotificationFromServer {
@@ -2579,186 +2573,153 @@ impl From<CompleteResult> for MessageFromServer {
     }
 }
 impl FromMessage<InitializeRequest> for ClientMessage {
-    fn from_message(
-        message: InitializeRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: InitializeRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for InitializeRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<PingRequest> for ClientMessage {
-    fn from_message(message: PingRequest, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: PingRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for PingRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListResourcesRequest> for ClientMessage {
-    fn from_message(
-        message: ListResourcesRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListResourcesRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for ListResourcesRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ReadResourceRequest> for ClientMessage {
-    fn from_message(
-        message: ReadResourceRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ReadResourceRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for ReadResourceRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<SubscribeRequest> for ClientMessage {
-    fn from_message(
-        message: SubscribeRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: SubscribeRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for SubscribeRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<UnsubscribeRequest> for ClientMessage {
-    fn from_message(
-        message: UnsubscribeRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: UnsubscribeRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for UnsubscribeRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListPromptsRequest> for ClientMessage {
-    fn from_message(
-        message: ListPromptsRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListPromptsRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for ListPromptsRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<GetPromptRequest> for ClientMessage {
-    fn from_message(
-        message: GetPromptRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: GetPromptRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for GetPromptRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListToolsRequest> for ClientMessage {
-    fn from_message(
-        message: ListToolsRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListToolsRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for ListToolsRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CallToolRequest> for ClientMessage {
-    fn from_message(
-        message: CallToolRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CallToolRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for CallToolRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<SetLevelRequest> for ClientMessage {
-    fn from_message(
-        message: SetLevelRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: SetLevelRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for SetLevelRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CompleteRequest> for ClientMessage {
-    fn from_message(
-        message: CompleteRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CompleteRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ClientMessage> for CompleteRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<Result> for ClientMessage {
-    fn from_message(message: Result, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: Result, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2766,17 +2727,14 @@ impl FromMessage<Result> for ClientMessage {
     }
 }
 impl ToMessage<ClientMessage> for Result {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CreateMessageResult> for ClientMessage {
-    fn from_message(
-        message: CreateMessageResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CreateMessageResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2784,17 +2742,14 @@ impl FromMessage<CreateMessageResult> for ClientMessage {
     }
 }
 impl ToMessage<ClientMessage> for CreateMessageResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListRootsResult> for ClientMessage {
-    fn from_message(
-        message: ListRootsResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListRootsResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2802,58 +2757,52 @@ impl FromMessage<ListRootsResult> for ClientMessage {
     }
 }
 impl ToMessage<ClientMessage> for ListRootsResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CancelledNotification> for ClientMessage {
-    fn from_message(
-        message: CancelledNotification,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CancelledNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ClientMessage::Notification(ClientJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ClientMessage> for CancelledNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<InitializedNotification> for ClientMessage {
-    fn from_message(
-        message: InitializedNotification,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: InitializedNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ClientMessage::Notification(ClientJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ClientMessage> for InitializedNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ProgressNotification> for ClientMessage {
-    fn from_message(
-        message: ProgressNotification,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ProgressNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ClientMessage::Notification(ClientJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ClientMessage> for ProgressNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
@@ -2861,65 +2810,60 @@ impl FromMessage<RootsListChangedNotification> for ClientMessage {
     fn from_message(
         message: RootsListChangedNotification,
         request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    ) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ClientMessage::Notification(ClientJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ClientMessage> for RootsListChangedNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<PingRequest> for ServerMessage {
-    fn from_message(message: PingRequest, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: PingRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ServerMessage> for PingRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CreateMessageRequest> for ServerMessage {
-    fn from_message(
-        message: CreateMessageRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CreateMessageRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ServerMessage> for CreateMessageRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListRootsRequest> for ServerMessage {
-    fn from_message(
-        message: ListRootsRequest,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListRootsRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
     }
 }
 impl ToMessage<ServerMessage> for ListRootsRequest {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<Result> for ServerMessage {
-    fn from_message(message: Result, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: Result, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2927,17 +2871,14 @@ impl FromMessage<Result> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for Result {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<InitializeResult> for ServerMessage {
-    fn from_message(
-        message: InitializeResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: InitializeResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2945,17 +2886,14 @@ impl FromMessage<InitializeResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for InitializeResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListResourcesResult> for ServerMessage {
-    fn from_message(
-        message: ListResourcesResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListResourcesResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2963,17 +2901,14 @@ impl FromMessage<ListResourcesResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for ListResourcesResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ReadResourceResult> for ServerMessage {
-    fn from_message(
-        message: ReadResourceResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ReadResourceResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2981,17 +2916,14 @@ impl FromMessage<ReadResourceResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for ReadResourceResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListPromptsResult> for ServerMessage {
-    fn from_message(
-        message: ListPromptsResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListPromptsResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -2999,17 +2931,14 @@ impl FromMessage<ListPromptsResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for ListPromptsResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<GetPromptResult> for ServerMessage {
-    fn from_message(
-        message: GetPromptResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: GetPromptResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -3017,17 +2946,14 @@ impl FromMessage<GetPromptResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for GetPromptResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ListToolsResult> for ServerMessage {
-    fn from_message(
-        message: ListToolsResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ListToolsResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -3035,14 +2961,14 @@ impl FromMessage<ListToolsResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for ListToolsResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CallToolResult> for ServerMessage {
-    fn from_message(message: CallToolResult, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CallToolResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -3050,14 +2976,14 @@ impl FromMessage<CallToolResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for CallToolResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CompleteResult> for ServerMessage {
-    fn from_message(message: CompleteResult, request_id: Option<RequestId>) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CompleteResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
-            request_id.ok_or_else(|| JsonrpcErrorError::internal_error().with_message("request_id is None!".to_string()))?;
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
             request_id,
             message.into(),
@@ -3065,41 +2991,37 @@ impl FromMessage<CompleteResult> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for CompleteResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<CancelledNotification> for ServerMessage {
-    fn from_message(
-        message: CancelledNotification,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: CancelledNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for CancelledNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl FromMessage<ProgressNotification> for ServerMessage {
-    fn from_message(
-        message: ProgressNotification,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    fn from_message(message: ProgressNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for ProgressNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
@@ -3107,16 +3029,17 @@ impl FromMessage<ResourceListChangedNotification> for ServerMessage {
     fn from_message(
         message: ResourceListChangedNotification,
         request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    ) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for ResourceListChangedNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
@@ -3124,16 +3047,17 @@ impl FromMessage<ResourceUpdatedNotification> for ServerMessage {
     fn from_message(
         message: ResourceUpdatedNotification,
         request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    ) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for ResourceUpdatedNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
@@ -3141,16 +3065,17 @@ impl FromMessage<PromptListChangedNotification> for ServerMessage {
     fn from_message(
         message: PromptListChangedNotification,
         request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    ) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for PromptListChangedNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
@@ -3158,16 +3083,17 @@ impl FromMessage<ToolListChangedNotification> for ServerMessage {
     fn from_message(
         message: ToolListChangedNotification,
         request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    ) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for ToolListChangedNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
@@ -3175,434 +3101,435 @@ impl FromMessage<LoggingMessageNotification> for ServerMessage {
     fn from_message(
         message: LoggingMessageNotification,
         request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, JsonrpcErrorError> {
+    ) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
-            return Err(JsonrpcErrorError::internal_error()
-                .with_message("request_id expected to be None for Notifications!".to_string()));
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
         }
         Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
     }
 }
 impl ToMessage<ServerMessage> for LoggingMessageNotification {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, JsonrpcErrorError> {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
 }
 impl TryFrom<RequestFromClient> for InitializeRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::InitializeRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a InitializeRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a InitializeRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for PingRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::PingRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a PingRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a PingRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for ListResourcesRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::ListResourcesRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListResourcesRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListResourcesRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for ReadResourceRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::ReadResourceRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ReadResourceRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ReadResourceRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for SubscribeRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::SubscribeRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a SubscribeRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a SubscribeRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for UnsubscribeRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::UnsubscribeRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a UnsubscribeRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a UnsubscribeRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for ListPromptsRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::ListPromptsRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListPromptsRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListPromptsRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for GetPromptRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::GetPromptRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a GetPromptRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a GetPromptRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for ListToolsRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::ListToolsRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListToolsRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListToolsRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for CallToolRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::CallToolRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CallToolRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CallToolRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for SetLevelRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::SetLevelRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a SetLevelRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a SetLevelRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromClient> for CompleteRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientRequest = value.try_into()?;
         if let ClientRequest::CompleteRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CompleteRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CompleteRequest".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromClient> for Result {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientResult = value.try_into()?;
         if let ClientResult::Result(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a Result".to_string()))
+            Err(RpcError::internal_error().with_message("Not a Result".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromClient> for CreateMessageResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientResult = value.try_into()?;
         if let ClientResult::CreateMessageResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CreateMessageResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CreateMessageResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromClient> for ListRootsResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientResult = value.try_into()?;
         if let ClientResult::ListRootsResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListRootsResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListRootsResult".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromClient> for CancelledNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientNotification = value.try_into()?;
         if let ClientNotification::CancelledNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CancelledNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CancelledNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromClient> for InitializedNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientNotification = value.try_into()?;
         if let ClientNotification::InitializedNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a InitializedNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a InitializedNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromClient> for ProgressNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientNotification = value.try_into()?;
         if let ClientNotification::ProgressNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ProgressNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ProgressNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromClient> for RootsListChangedNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
         let matched_type: ClientNotification = value.try_into()?;
         if let ClientNotification::RootsListChangedNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a RootsListChangedNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a RootsListChangedNotification".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromServer> for PingRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerRequest = value.try_into()?;
         if let ServerRequest::PingRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a PingRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a PingRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromServer> for CreateMessageRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerRequest = value.try_into()?;
         if let ServerRequest::CreateMessageRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CreateMessageRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CreateMessageRequest".to_string()))
         }
     }
 }
 impl TryFrom<RequestFromServer> for ListRootsRequest {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerRequest = value.try_into()?;
         if let ServerRequest::ListRootsRequest(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListRootsRequest".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListRootsRequest".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for Result {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::Result(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a Result".to_string()))
+            Err(RpcError::internal_error().with_message("Not a Result".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for InitializeResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::InitializeResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a InitializeResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a InitializeResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for ListResourcesResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::ListResourcesResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListResourcesResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListResourcesResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for ReadResourceResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::ReadResourceResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ReadResourceResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ReadResourceResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for ListPromptsResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::ListPromptsResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListPromptsResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListPromptsResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for GetPromptResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::GetPromptResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a GetPromptResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a GetPromptResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for ListToolsResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::ListToolsResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ListToolsResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ListToolsResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for CallToolResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::CallToolResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CallToolResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CallToolResult".to_string()))
         }
     }
 }
 impl TryFrom<ResultFromServer> for CompleteResult {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
         if let ServerResult::CompleteResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CompleteResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CompleteResult".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for CancelledNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::CancelledNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a CancelledNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CancelledNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for ProgressNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::ProgressNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ProgressNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ProgressNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for ResourceListChangedNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::ResourceListChangedNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ResourceListChangedNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ResourceListChangedNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for ResourceUpdatedNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::ResourceUpdatedNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ResourceUpdatedNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ResourceUpdatedNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for PromptListChangedNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::PromptListChangedNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a PromptListChangedNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a PromptListChangedNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for ToolListChangedNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::ToolListChangedNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a ToolListChangedNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a ToolListChangedNotification".to_string()))
         }
     }
 }
 impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
-    type Error = JsonrpcErrorError;
+    type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerNotification = value.try_into()?;
         if let ServerNotification::LoggingMessageNotification(result) = matched_type {
             Ok(result)
         } else {
-            Err(JsonrpcErrorError::internal_error().with_message("Not a LoggingMessageNotification".to_string()))
+            Err(RpcError::internal_error().with_message("Not a LoggingMessageNotification".to_string()))
         }
     }
 }
@@ -3641,10 +3568,10 @@ impl CallToolResultContentItem {
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
-    pub fn as_text_content(&self) -> std::result::Result<&TextContent, JsonrpcErrorError> {
+    pub fn as_text_content(&self) -> std::result::Result<&TextContent, RpcError> {
         match &self {
             CallToolResultContentItem::TextContent(text_content) => Ok(text_content),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+            _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
                 "TextContent"
@@ -3652,10 +3579,10 @@ impl CallToolResultContentItem {
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
-    pub fn as_image_content(&self) -> std::result::Result<&ImageContent, JsonrpcErrorError> {
+    pub fn as_image_content(&self) -> std::result::Result<&ImageContent, RpcError> {
         match &self {
             CallToolResultContentItem::ImageContent(image_content) => Ok(image_content),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+            _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
                 "ImageContent"
@@ -3663,10 +3590,10 @@ impl CallToolResultContentItem {
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
-    pub fn as_audio_content(&self) -> std::result::Result<&AudioContent, JsonrpcErrorError> {
+    pub fn as_audio_content(&self) -> std::result::Result<&AudioContent, RpcError> {
         match &self {
             CallToolResultContentItem::AudioContent(audio_content) => Ok(audio_content),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+            _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
                 "AudioContent"
@@ -3674,10 +3601,10 @@ impl CallToolResultContentItem {
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
-    pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, JsonrpcErrorError> {
+    pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, RpcError> {
         match &self {
             CallToolResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
-            _ => Err(JsonrpcErrorError::internal_error().with_message(format!(
+            _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
                 "EmbeddedResource"

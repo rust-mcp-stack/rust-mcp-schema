@@ -2,7 +2,7 @@ use rust_mcp_schema::schema_utils::*;
 use rust_mcp_schema::*;
 use std::str::FromStr;
 
-type AppError = JsonrpcErrorError;
+type AppError = RpcError;
 
 const SAMPLE_PAYLOAD: &str = r#"
 {
