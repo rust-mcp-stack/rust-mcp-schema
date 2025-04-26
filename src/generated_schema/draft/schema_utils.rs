@@ -251,7 +251,7 @@ impl RpcMessage for ClientMessage {
     }
 }
 
-// Implementing the `MCPMessage` trait for `ClientMessage`
+// Implementing the `McpMessage` trait for `ClientMessage`
 impl McpMessage for ClientMessage {
     // Returns true if the message is a response type
     fn is_response(&self) -> bool {
@@ -767,7 +767,7 @@ impl RpcMessage for ServerMessage {
     }
 }
 
-// Implementing the `MCPMessage` trait for `ServerMessage`
+// Implementing the `McpMessage` trait for `ServerMessage`
 impl McpMessage for ServerMessage {
     // Returns true if the message is a response type
     fn is_response(&self) -> bool {
@@ -1442,10 +1442,10 @@ impl CallToolRequest {
     }
 }
 
-#[deprecated(since = "0.3.1", note = "Use `RpcMessage` instead.")]
-pub type RPCMessage = dyn RpcMessage;
-#[deprecated(since = "0.3.1", note = "Use `McpMessage` instead.")]
-pub type MCPMessage = dyn McpMessage;
+#[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
+pub type RPCMessage = ();
+#[deprecated(since = "0.4.0", note = "This trait was renamed to McpMessage. Use McpMessage instead.")]
+pub type MCPMessage = ();
 
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
