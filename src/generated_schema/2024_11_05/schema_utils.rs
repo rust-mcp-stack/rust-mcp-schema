@@ -59,12 +59,12 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
 
 /// Represents a generic MCP (Model Context Protocol) message.
 /// This trait defines methods to classify and extract information from messages.
-pub trait RPCMessage: MCPMessage {
+pub trait RpcMessage: McpMessage {
     fn request_id(&self) -> Option<&RequestId>;
     fn jsonrpc(&self) -> &str;
 }
 
-pub trait MCPMessage {
+pub trait McpMessage {
     fn is_response(&self) -> bool;
     fn is_request(&self) -> bool;
     fn is_notification(&self) -> bool;
@@ -226,7 +226,7 @@ impl ClientMessage {
     }
 }
 
-impl RPCMessage for ClientMessage {
+impl RpcMessage for ClientMessage {
     // Retrieves the request ID associated with the message, if applicable
     fn request_id(&self) -> Option<&RequestId> {
         match self {
@@ -251,8 +251,8 @@ impl RPCMessage for ClientMessage {
     }
 }
 
-// Implementing the `MCPMessage` trait for `ClientMessage`
-impl MCPMessage for ClientMessage {
+// Implementing the `McpMessage` trait for `ClientMessage`
+impl McpMessage for ClientMessage {
     // Returns true if the message is a response type
     fn is_response(&self) -> bool {
         matches!(self, ClientMessage::Response(_))
@@ -738,7 +738,7 @@ impl ServerMessage {
     }
 }
 
-impl RPCMessage for ServerMessage {
+impl RpcMessage for ServerMessage {
     // Retrieves the request ID associated with the message, if applicable
     fn request_id(&self) -> Option<&RequestId> {
         match self {
@@ -767,8 +767,8 @@ impl RPCMessage for ServerMessage {
     }
 }
 
-// Implementing the `MCPMessage` trait for `ServerMessage`
-impl MCPMessage for ServerMessage {
+// Implementing the `McpMessage` trait for `ServerMessage`
+impl McpMessage for ServerMessage {
     // Returns true if the message is a response type
     fn is_response(&self) -> bool {
         matches!(self, ServerMessage::Response(_))
@@ -1183,7 +1183,7 @@ impl From<RpcError> for MessageFromServer {
     }
 }
 
-impl MCPMessage for MessageFromServer {
+impl McpMessage for MessageFromServer {
     fn is_response(&self) -> bool {
         matches!(self, MessageFromServer::ResultFromServer(_))
     }
@@ -1288,7 +1288,7 @@ impl From<RpcError> for MessageFromClient {
     }
 }
 
-impl MCPMessage for MessageFromClient {
+impl McpMessage for MessageFromClient {
     fn is_response(&self) -> bool {
         matches!(self, MessageFromClient::ResultFromClient(_))
     }
@@ -1441,6 +1441,11 @@ impl CallToolRequest {
         &self.params.name
     }
 }
+
+#[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
+pub type RPCMessage = ();
+#[deprecated(since = "0.4.0", note = "This trait was renamed to McpMessage. Use McpMessage instead.")]
+pub type MCPMessage = ();
 
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {

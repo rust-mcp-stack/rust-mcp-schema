@@ -107,7 +107,6 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 ServerResult::ListResourcesResult(list_resources_result) => {
                     dbg!(list_resources_result);
                 }
-                #[cfg(feature = "2024_11_05")]
                 ServerResult::ListResourceTemplatesResult(list_resource_templates_result) => {
                     dbg!(list_resource_templates_result);
                 }
