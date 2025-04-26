@@ -2,6 +2,7 @@
 #[cfg(feature = "2024_11_05")]
 #[path = "generated_schema/2024_11_05/mcp_schema.rs"]
 mod schema_2024_11_05;
+
 #[cfg(feature = "2024_11_05")]
 pub use schema_2024_11_05::*;
 
@@ -22,4 +23,22 @@ pub use schema_2025_03_26::*;
 #[cfg(all(feature = "schema_utils", feature = "2025_03_26"))]
 #[cfg(not(feature = "2024_11_05"))]
 #[path = "generated_schema/2025_03_26/schema_utils.rs"]
+pub mod schema_utils;
+
+/// Schema Version : draft
+#[cfg(feature = "draft")]
+#[cfg(not(feature = "2024_11_05"))]
+#[cfg(not(feature = "2025_03_26"))]
+#[path = "generated_schema/draft/mcp_schema.rs"]
+mod schema_draft;
+
+#[cfg(feature = "draft")]
+#[cfg(not(feature = "2024_11_05"))]
+#[cfg(not(feature = "2025_03_26"))]
+pub use schema_draft::*;
+
+#[cfg(all(feature = "schema_utils", feature = "draft"))]
+#[cfg(not(feature = "2024_11_05"))]
+#[cfg(not(feature = "2025_03_26"))]
+#[path = "generated_schema/draft/schema_utils.rs"]
 pub mod schema_utils;

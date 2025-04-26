@@ -264,7 +264,7 @@ mod test_serialize {
                     prompts: None,
                     resources: None,
                     tools: None,
-                    #[cfg(feature = "2025_03_26")]
+                    #[cfg(any(feature = "2025_03_26", feature = "draft"))]
                     completions: None,
                 },
                 instructions: None,
@@ -839,7 +839,6 @@ mod test_serialize {
                     mime_type: None,
                     name: "Resource 1".to_string(),
                     uri: "test://static/resource/1".to_string(),
-                    #[cfg(feature = "2024_11_05")]
                     size: None,
                 }],
             })),

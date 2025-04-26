@@ -6,11 +6,11 @@
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
 /// Hash : 5da5bac89165d68cad24a211119e4c1b61178d5a
-/// Generated at : 2025-04-26 11:32:53
+/// Generated at : 2025-04-26 11:32:54
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
-pub const LATEST_PROTOCOL_VERSION: &str = "2025-03-26";
+pub const LATEST_PROTOCOL_VERSION: &str = "DRAFT-2025-v2";
 /// JSON-RPC Version
 pub const JSONRPC_VERSION: &str = "2.0";
 /// Parse error. Invalid JSON was received. An error occurred while parsing the JSON text.

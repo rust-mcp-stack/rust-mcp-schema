@@ -52,7 +52,6 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                     dbg!(list_resources_request);
                 }
 
-                #[cfg(feature = "2024_11_05")]
                 ClientRequest::ListResourceTemplatesRequest(list_resource_templates_request) => {
                     dbg!(list_resource_templates_request);
                 }
