@@ -197,6 +197,8 @@ mod test_deserialize {
         ));
     }
 
+    //TODO: add test case for DRAFT version
+    #[cfg(any(feature = "2025_03_26", feature = "2024_11_05"))]
     #[test]
     fn test_server_call_tool_result() {
         let message = get_message("res_tools_call_1");

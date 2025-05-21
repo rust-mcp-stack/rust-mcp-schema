@@ -77,15 +77,15 @@ This repository provides all official released versions the schema , including d
 ### How to switch between different schema versions?
 
 Each schema version has a corresponding Cargo feature that can be enabled in your project's Cargo.toml.
-By default, the version `2024_11_05` of the schema is active.
+By default, the version `2025_03_26` of the schema is active.
 
-Example: enable `2025_03_26` version of the shema:
+Example: enable `2024_11_05` version of the shema:
 
 <!-- x-release-please-start-version -->
 
 ```toml
 # Cargo.toml
-rust-mcp-schema = { version: 0.4.0 , features=["2025_03_26"] }
+rust-mcp-schema = { version: 0.4.0 , features=["2024_11_05"] }
 ```
 
 Example: enable `latest` version of the shema:
@@ -95,11 +95,11 @@ Example: enable `latest` version of the shema:
 rust-mcp-schema = { version: 0.4.0 , features=["latest"] }
 ```
 
-Example: enable specific version of the shema (2024_11_05) :
+Example: enable `draft`` version of the shema (2024_11_05) :
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.4.0 , features=["2024_11_05"] }
+rust-mcp-schema = { version: 0.4.0 , features=["draft"] }
 ```
 
 <!-- x-release-please-end -->
@@ -324,7 +324,7 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
 
 We welcome everyone who wishes to contribute! Please refer to the [contributing guidelines](CONTRIBUTING.md) for more details.
 
-All contributions, including issues and pull requests, must follow  
+All contributions, including issues and pull requests, must follow
 [Rust's Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct).
 
 Unless explicitly stated otherwise, any contribution you submit for inclusion in `rust-mcp-schema` is provided under the terms of the MIT License, without any additional conditions or restrictions.

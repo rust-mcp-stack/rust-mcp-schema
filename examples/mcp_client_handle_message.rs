@@ -122,8 +122,17 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 ServerResult::ListToolsResult(list_tools_result) => {
                     dbg!(list_tools_result);
                 }
+                #[cfg(any(feature = "2025_03_26", feature = "2024_11_05"))]
                 ServerResult::CallToolResult(call_tool_result) => {
                     dbg!(call_tool_result);
+                }
+                #[cfg(feature = "draft")]
+                ServerResult::CallToolUnstructuredResult(call_tool_unstructured_result) => {
+                    dbg!(call_tool_unstructured_result);
+                }
+                #[cfg(feature = "draft")]
+                ServerResult::CallToolStructuredResult(call_tool_structured_result) => {
+                    dbg!(call_tool_structured_result);
                 }
                 ServerResult::CompleteResult(complete_result) => {
                     dbg!(complete_result);
