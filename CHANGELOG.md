@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.5.0...v0.5.1) (2025-05-23)
+
+
+### Features
+
+* update cargo docs to 2025_03_26 version ([dd1763b](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/dd1763bf41cb5411c8f24eb99c76b2e10f6fcd9e))
+
 ## [0.5.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.4.0...v0.5.0) (2025-05-22)
 
 
