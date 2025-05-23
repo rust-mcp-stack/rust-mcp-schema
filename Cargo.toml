@@ -24,11 +24,11 @@ json5 = { version = "0.4" }
 
 
 [package.metadata.docs.rs]
-features = ["2024_11_05", "schema_utils"]
+features = ["2025_03_26", "schema_utils"]
 rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
-features = ["2024_11_05", "schema_utils"]
+features = ["2025_03_26", "schema_utils"]
 
 ### FEATURES #################################################################
 
