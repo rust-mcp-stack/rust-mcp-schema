@@ -1071,7 +1071,6 @@ impl FromStr for ServerJsonrpcResponse {
 
 /// To determine standard and custom results from the server side
 /// Custom results (CustomResult) are of type serde_json::Value and can be deserialized into any custom type.
-#[allow(clippy::large_enum_variant)]
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum ResultFromServer {

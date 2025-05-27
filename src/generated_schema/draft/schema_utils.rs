@@ -1071,7 +1071,6 @@ impl FromStr for ServerJsonrpcResponse {
 
 /// To determine standard and custom results from the server side
 /// Custom results (CustomResult) are of type serde_json::Value and can be deserialized into any custom type.
-#[allow(clippy::large_enum_variant)]
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum ResultFromServer {
@@ -1422,11 +1421,11 @@ impl std::error::Error for CallToolError {
     }
 }
 
-/// Conversion of `CallToolError` into a `CallToolUnstructuredResult` with an error.
-impl From<CallToolError> for CallToolUnstructuredResult {
+/// Conversion of `CallToolError` into a `CallToolResult` with an error.
+impl From<CallToolError> for CallToolResult {
     fn from(value: CallToolError) -> Self {
-        // Convert `CallToolError` to a `CallToolUnstructuredResult` by using the `with_error` method
-        CallToolUnstructuredResult::with_error(value)
+        // Convert `CallToolError` to a `CallToolResult` by using the `with_error` method
+        CallToolResult::with_error(value)
     }
 }
 
@@ -2543,13 +2542,8 @@ impl From<ListToolsResult> for ResultFromServer {
         Self::ServerResult(value.into())
     }
 }
-impl From<CallToolUnstructuredResult> for ResultFromServer {
-    fn from(value: CallToolUnstructuredResult) -> Self {
-        Self::ServerResult(value.into())
-    }
-}
-impl From<CallToolStructuredResult> for ResultFromServer {
-    fn from(value: CallToolStructuredResult) -> Self {
+impl From<CallToolResult> for ResultFromServer {
+    fn from(value: CallToolResult) -> Self {
         Self::ServerResult(value.into())
     }
 }
@@ -2598,13 +2592,8 @@ impl From<ListToolsResult> for MessageFromServer {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
-impl From<CallToolUnstructuredResult> for MessageFromServer {
-    fn from(value: CallToolUnstructuredResult) -> Self {
-        MessageFromServer::ResultFromServer(value.into())
-    }
-}
-impl From<CallToolStructuredResult> for MessageFromServer {
-    fn from(value: CallToolStructuredResult) -> Self {
+impl From<CallToolResult> for MessageFromServer {
+    fn from(value: CallToolResult) -> Self {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
@@ -3039,11 +3028,8 @@ impl ToMessage<ServerMessage> for ListToolsResult {
         ServerMessage::from_message(self, request_id)
     }
 }
-impl FromMessage<CallToolUnstructuredResult> for ServerMessage {
-    fn from_message(
-        message: CallToolUnstructuredResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, RpcError> {
+impl FromMessage<CallToolResult> for ServerMessage {
+    fn from_message(message: CallToolResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
             request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
         Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
@@ -3052,25 +3038,7 @@ impl FromMessage<CallToolUnstructuredResult> for ServerMessage {
         )))
     }
 }
-impl ToMessage<ServerMessage> for CallToolUnstructuredResult {
-    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
-        ServerMessage::from_message(self, request_id)
-    }
-}
-impl FromMessage<CallToolStructuredResult> for ServerMessage {
-    fn from_message(
-        message: CallToolStructuredResult,
-        request_id: Option<RequestId>,
-    ) -> std::result::Result<Self, RpcError> {
-        let request_id =
-            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
-        Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
-            request_id,
-            message.into(),
-        )))
-    }
-}
-impl ToMessage<ServerMessage> for CallToolStructuredResult {
+impl ToMessage<ServerMessage> for CallToolResult {
     fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
@@ -3551,25 +3519,14 @@ impl TryFrom<ResultFromServer> for ListToolsResult {
         }
     }
 }
-impl TryFrom<ResultFromServer> for CallToolUnstructuredResult {
+impl TryFrom<ResultFromServer> for CallToolResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         let matched_type: ServerResult = value.try_into()?;
-        if let ServerResult::CallToolUnstructuredResult(result) = matched_type {
+        if let ServerResult::CallToolResult(result) = matched_type {
             Ok(result)
         } else {
-            Err(RpcError::internal_error().with_message("Not a CallToolUnstructuredResult".to_string()))
-        }
-    }
-}
-impl TryFrom<ResultFromServer> for CallToolStructuredResult {
-    type Error = RpcError;
-    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        let matched_type: ServerResult = value.try_into()?;
-        if let ServerResult::CallToolStructuredResult(result) = matched_type {
-            Ok(result)
-        } else {
-            Err(RpcError::internal_error().with_message("Not a CallToolStructuredResult".to_string()))
+            Err(RpcError::internal_error().with_message("Not a CallToolResult".to_string()))
         }
     }
 }
@@ -3661,12 +3618,12 @@ impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
         }
     }
 }
-impl CallToolUnstructuredResultContentItem {
-    ///Create a CallToolUnstructuredResultContentItem::TextContent
+impl CallToolResultContentItem {
+    ///Create a CallToolResultContentItem::TextContent
     pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<Annotations>) -> Self {
         TextContent::new(text, annotations).into()
     }
-    ///Create a CallToolUnstructuredResultContentItem::ImageContent
+    ///Create a CallToolResultContentItem::ImageContent
     pub fn image_content(
         data: ::std::string::String,
         mime_type: ::std::string::String,
@@ -3674,7 +3631,7 @@ impl CallToolUnstructuredResultContentItem {
     ) -> Self {
         ImageContent::new(data, mime_type, annotations).into()
     }
-    ///Create a CallToolUnstructuredResultContentItem::AudioContent
+    ///Create a CallToolResultContentItem::AudioContent
     pub fn audio_content(
         data: ::std::string::String,
         mime_type: ::std::string::String,
@@ -3682,23 +3639,23 @@ impl CallToolUnstructuredResultContentItem {
     ) -> Self {
         AudioContent::new(data, mime_type, annotations).into()
     }
-    ///Create a CallToolUnstructuredResultContentItem::EmbeddedResource
+    ///Create a CallToolResultContentItem::EmbeddedResource
     pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: ::std::option::Option<Annotations>) -> Self {
         EmbeddedResource::new(resource, annotations).into()
     }
     /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
     pub fn content_type(&self) -> &str {
         match self {
-            CallToolUnstructuredResultContentItem::TextContent(text_content) => text_content.type_(),
-            CallToolUnstructuredResultContentItem::ImageContent(image_content) => image_content.type_(),
-            CallToolUnstructuredResultContentItem::AudioContent(audio_content) => audio_content.type_(),
-            CallToolUnstructuredResultContentItem::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
+            CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
+            CallToolResultContentItem::ImageContent(image_content) => image_content.type_(),
+            CallToolResultContentItem::AudioContent(audio_content) => audio_content.type_(),
+            CallToolResultContentItem::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_text_content(&self) -> std::result::Result<&TextContent, RpcError> {
         match &self {
-            CallToolUnstructuredResultContentItem::TextContent(text_content) => Ok(text_content),
+            CallToolResultContentItem::TextContent(text_content) => Ok(text_content),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3709,7 +3666,7 @@ impl CallToolUnstructuredResultContentItem {
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_image_content(&self) -> std::result::Result<&ImageContent, RpcError> {
         match &self {
-            CallToolUnstructuredResultContentItem::ImageContent(image_content) => Ok(image_content),
+            CallToolResultContentItem::ImageContent(image_content) => Ok(image_content),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3720,7 +3677,7 @@ impl CallToolUnstructuredResultContentItem {
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_audio_content(&self) -> std::result::Result<&AudioContent, RpcError> {
         match &self {
-            CallToolUnstructuredResultContentItem::AudioContent(audio_content) => Ok(audio_content),
+            CallToolResultContentItem::AudioContent(audio_content) => Ok(audio_content),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3731,7 +3688,7 @@ impl CallToolUnstructuredResultContentItem {
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, RpcError> {
         match &self {
-            CallToolUnstructuredResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
+            CallToolResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3740,13 +3697,13 @@ impl CallToolUnstructuredResultContentItem {
         }
     }
 }
-
-impl CallToolUnstructuredResult {
+impl CallToolResult {
     pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<Annotations>) -> Self {
         Self {
             content: vec![TextContent::new(text, annotations).into()],
             is_error: None,
             meta: None,
+            structured_content: None,
         }
     }
     pub fn image_content(
@@ -3758,6 +3715,7 @@ impl CallToolUnstructuredResult {
             content: vec![ImageContent::new(data, mime_type, annotations).into()],
             is_error: None,
             meta: None,
+            structured_content: None,
         }
     }
     pub fn audio_content(
@@ -3769,6 +3727,7 @@ impl CallToolUnstructuredResult {
             content: vec![AudioContent::new(data, mime_type, annotations).into()],
             is_error: None,
             meta: None,
+            structured_content: None,
         }
     }
     pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: ::std::option::Option<Annotations>) -> Self {
@@ -3776,17 +3735,19 @@ impl CallToolUnstructuredResult {
             content: vec![EmbeddedResource::new(resource, annotations).into()],
             is_error: None,
             meta: None,
+            structured_content: None,
         }
     }
     /// Create a `CallToolResult` with an error, containing an error message in the content
     pub fn with_error(error: CallToolError) -> Self {
         Self {
-            content: vec![CallToolUnstructuredResultContentItem::TextContent(TextContent::new(
+            content: vec![CallToolResultContentItem::TextContent(TextContent::new(
                 error.to_string(),
                 None,
             ))],
             is_error: Some(true),
             meta: None,
+            structured_content: None,
         }
     }
     /// Adds metadata to the `CallToolResult`, allowing additional context or information to be included

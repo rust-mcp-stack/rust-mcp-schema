@@ -15,7 +15,7 @@ pub enum MessageTypes {
 /// Implements the `Display` trait for the `MessageTypes` enum,
 /// allowing it to be converted into a human-readable string.
 impl Display for MessageTypes {
-    /// Formats the `MessageTypes` enum variant as a string.   
+    /// Formats the `MessageTypes` enum variant as a string.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

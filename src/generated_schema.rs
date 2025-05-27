@@ -33,3 +33,7 @@ pub use mcp_schema::*;
 #[cfg(all(feature = "schema_utils", feature = "draft"))]
 #[path = "generated_schema/draft/schema_utils.rs"]
 pub mod schema_utils;
+
+#[path = "generated_schema/protocol_version.rs"]
+mod protocol_version;
+pub use protocol_version::*;
