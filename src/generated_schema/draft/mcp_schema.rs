@@ -6,7 +6,7 @@
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
 /// Hash : UNKNOWN
-/// Generated at : 2025-05-20 20:52:15
+/// Generated at : 2025-05-26 21:28:08
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -249,174 +249,13 @@ pub struct CallToolRequestParams {
     pub arguments: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub name: ::std::string::String,
 }
-/**The server's response to a tool call.
-Any errors that originate from the tool SHOULD be reported inside the result
-object, with isError set to true, _not_ as an MCP protocol-level error
-response. Otherwise, the LLM would not be able to see that an error occurred
-and self-correct.
-However, any errors in _finding_ the tool, an error indicating that the
-server does not support tool calls, or any other exceptional conditions,
-should be reported as an MCP error response.*/
+///The server's response to a tool call.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "The server's response to a tool call.\n\nAny errors that originate from the tool SHOULD be reported inside the result\nobject, with isError set to true, _not_ as an MCP protocol-level error\nresponse. Otherwise, the LLM would not be able to see that an error occurred\nand self-correct.\n\nHowever, any errors in _finding_ the tool, an error indicating that the\nserver does not support tool calls, or any other exceptional conditions,\nshould be reported as an MCP error response.",
-///  "anyOf": [
-///    {
-///      "$ref": "#/definitions/CallToolUnstructuredResult"
-///    },
-///    {
-///      "$ref": "#/definitions/CallToolStructuredResult"
-///    }
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum CallToolResult {
-    UnstructuredResult(CallToolUnstructuredResult),
-    StructuredResult(CallToolStructuredResult),
-}
-impl ::std::convert::From<CallToolUnstructuredResult> for CallToolResult {
-    fn from(value: CallToolUnstructuredResult) -> Self {
-        Self::UnstructuredResult(value)
-    }
-}
-impl ::std::convert::From<CallToolStructuredResult> for CallToolResult {
-    fn from(value: CallToolStructuredResult) -> Self {
-        Self::StructuredResult(value)
-    }
-}
-///Tool result for tools that do declare an outputSchema.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Tool result for tools that do declare an outputSchema.",
-///  "type": "object",
-///  "required": [
-///    "structuredContent"
-///  ],
-///  "properties": {
-///    "_meta": {
-///      "description": "This result property is reserved by the protocol to allow clients and servers to attach additional metadata to their responses.",
-///      "type": "object",
-///      "additionalProperties": {}
-///    },
-///    "content": {
-///      "description": "If the Tool defines an outputSchema, this field MAY be present in the result.\nTools should use this field to provide compatibility with older clients that do not support structured content.\nClients that support structured content should ignore this field.",
-///      "type": "array",
-///      "items": {
-///        "anyOf": [
-///          {
-///            "$ref": "#/definitions/TextContent"
-///          },
-///          {
-///            "$ref": "#/definitions/ImageContent"
-///          },
-///          {
-///            "$ref": "#/definitions/AudioContent"
-///          },
-///          {
-///            "$ref": "#/definitions/EmbeddedResource"
-///          }
-///        ]
-///      }
-///    },
-///    "isError": {
-///      "description": "Whether the tool call ended in an error.\n\nIf not set, this is assumed to be false (the call was successful).",
-///      "type": "boolean"
-///    },
-///    "structuredContent": {
-///      "description": "An object containing structured tool output.\n\nIf the Tool defines an outputSchema, this field MUST be present in the result, and contain a JSON object that matches the schema.",
-///      "type": "object",
-///      "additionalProperties": {}
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CallToolStructuredResult {
-    /**If the Tool defines an outputSchema, this field MAY be present in the result.
-    Tools should use this field to provide compatibility with older clients that do not support structured content.
-    Clients that support structured content should ignore this field.*/
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub content: ::std::vec::Vec<CallToolStructuredResultContentItem>,
-    /**Whether the tool call ended in an error.
-    If not set, this is assumed to be false (the call was successful).*/
-    #[serde(rename = "isError", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub is_error: ::std::option::Option<bool>,
-    ///This result property is reserved by the protocol to allow clients and servers to attach additional metadata to their responses.
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-    /**An object containing structured tool output.
-    If the Tool defines an outputSchema, this field MUST be present in the result, and contain a JSON object that matches the schema.*/
-    #[serde(rename = "structuredContent")]
-    pub structured_content: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-}
-///CallToolStructuredResultContentItem
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "anyOf": [
-///    {
-///      "$ref": "#/definitions/TextContent"
-///    },
-///    {
-///      "$ref": "#/definitions/ImageContent"
-///    },
-///    {
-///      "$ref": "#/definitions/AudioContent"
-///    },
-///    {
-///      "$ref": "#/definitions/EmbeddedResource"
-///    }
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum CallToolStructuredResultContentItem {
-    TextContent(TextContent),
-    ImageContent(ImageContent),
-    AudioContent(AudioContent),
-    EmbeddedResource(EmbeddedResource),
-}
-impl ::std::convert::From<TextContent> for CallToolStructuredResultContentItem {
-    fn from(value: TextContent) -> Self {
-        Self::TextContent(value)
-    }
-}
-impl ::std::convert::From<ImageContent> for CallToolStructuredResultContentItem {
-    fn from(value: ImageContent) -> Self {
-        Self::ImageContent(value)
-    }
-}
-impl ::std::convert::From<AudioContent> for CallToolStructuredResultContentItem {
-    fn from(value: AudioContent) -> Self {
-        Self::AudioContent(value)
-    }
-}
-impl ::std::convert::From<EmbeddedResource> for CallToolStructuredResultContentItem {
-    fn from(value: EmbeddedResource) -> Self {
-        Self::EmbeddedResource(value)
-    }
-}
-///Tool result for tools that do not declare an outputSchema.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Tool result for tools that do not declare an outputSchema.",
+///  "description": "The server's response to a tool call.",
 ///  "type": "object",
 ///  "required": [
 ///    "content"
@@ -428,7 +267,7 @@ impl ::std::convert::From<EmbeddedResource> for CallToolStructuredResultContentI
 ///      "additionalProperties": {}
 ///    },
 ///    "content": {
-///      "description": "A list of content objects that represent the result of the tool call.\n\nIf the Tool does not define an outputSchema, this field MUST be present in the result.",
+///      "description": "A list of content objects that represent the unstructured result of the tool call.",
 ///      "type": "array",
 ///      "items": {
 ///        "anyOf": [
@@ -448,27 +287,45 @@ impl ::std::convert::From<EmbeddedResource> for CallToolStructuredResultContentI
 ///      }
 ///    },
 ///    "isError": {
-///      "description": "Whether the tool call ended in an error.\n\nIf not set, this is assumed to be false (the call was successful).",
+///      "description": "Whether the tool call ended in an error.\n\nIf not set, this is assumed to be false (the call was successful).\n\nAny errors that originate from the tool SHOULD be reported inside the result\nobject, with isError set to true, _not_ as an MCP protocol-level error\nresponse. Otherwise, the LLM would not be able to see that an error occurred\nand self-correct.\n\nHowever, any errors in _finding_ the tool, an error indicating that the\nserver does not support tool calls, or any other exceptional conditions,\nshould be reported as an MCP error response.",
 ///      "type": "boolean"
+///    },
+///    "structuredContent": {
+///      "description": "An optional JSON object that represents the structured result of the tool call.",
+///      "type": "object",
+///      "additionalProperties": {}
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CallToolUnstructuredResult {
-    /**A list of content objects that represent the result of the tool call.
-    If the Tool does not define an outputSchema, this field MUST be present in the result.*/
-    pub content: ::std::vec::Vec<CallToolUnstructuredResultContentItem>,
+pub struct CallToolResult {
+    ///A list of content objects that represent the unstructured result of the tool call.
+    pub content: ::std::vec::Vec<CallToolResultContentItem>,
     /**Whether the tool call ended in an error.
-    If not set, this is assumed to be false (the call was successful).*/
+    If not set, this is assumed to be false (the call was successful).
+    Any errors that originate from the tool SHOULD be reported inside the result
+    object, with isError set to true, _not_ as an MCP protocol-level error
+    response. Otherwise, the LLM would not be able to see that an error occurred
+    and self-correct.
+    However, any errors in _finding_ the tool, an error indicating that the
+    server does not support tool calls, or any other exceptional conditions,
+    should be reported as an MCP error response.*/
     #[serde(rename = "isError", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub is_error: ::std::option::Option<bool>,
     ///This result property is reserved by the protocol to allow clients and servers to attach additional metadata to their responses.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    ///An optional JSON object that represents the structured result of the tool call.
+    #[serde(
+        rename = "structuredContent",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub structured_content: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///CallToolUnstructuredResultContentItem
+///CallToolResultContentItem
 ///
 /// <details><summary>JSON schema</summary>
 ///
@@ -493,28 +350,28 @@ pub struct CallToolUnstructuredResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
-pub enum CallToolUnstructuredResultContentItem {
+pub enum CallToolResultContentItem {
     TextContent(TextContent),
     ImageContent(ImageContent),
     AudioContent(AudioContent),
     EmbeddedResource(EmbeddedResource),
 }
-impl ::std::convert::From<TextContent> for CallToolUnstructuredResultContentItem {
+impl ::std::convert::From<TextContent> for CallToolResultContentItem {
     fn from(value: TextContent) -> Self {
         Self::TextContent(value)
     }
 }
-impl ::std::convert::From<ImageContent> for CallToolUnstructuredResultContentItem {
+impl ::std::convert::From<ImageContent> for CallToolResultContentItem {
     fn from(value: ImageContent) -> Self {
         Self::ImageContent(value)
     }
 }
-impl ::std::convert::From<AudioContent> for CallToolUnstructuredResultContentItem {
+impl ::std::convert::From<AudioContent> for CallToolResultContentItem {
     fn from(value: AudioContent) -> Self {
         Self::AudioContent(value)
     }
 }
-impl ::std::convert::From<EmbeddedResource> for CallToolUnstructuredResultContentItem {
+impl ::std::convert::From<EmbeddedResource> for CallToolResultContentItem {
     fn from(value: EmbeddedResource) -> Self {
         Self::EmbeddedResource(value)
     }
@@ -1191,86 +1048,6 @@ pub struct CompleteResultCompletion {
     pub total: ::std::option::Option<i64>,
     ///An array of completion values. Must not exceed 100 items.
     pub values: ::std::vec::Vec<::std::string::String>,
-}
-///ContentList
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "type": "array",
-///  "items": {
-///    "anyOf": [
-///      {
-///        "$ref": "#/definitions/TextContent"
-///      },
-///      {
-///        "$ref": "#/definitions/ImageContent"
-///      },
-///      {
-///        "$ref": "#/definitions/AudioContent"
-///      },
-///      {
-///        "$ref": "#/definitions/EmbeddedResource"
-///      }
-///    ]
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-#[serde(transparent)]
-pub struct ContentList(pub ::std::vec::Vec<ContentListItem>);
-///ContentListItem
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "anyOf": [
-///    {
-///      "$ref": "#/definitions/TextContent"
-///    },
-///    {
-///      "$ref": "#/definitions/ImageContent"
-///    },
-///    {
-///      "$ref": "#/definitions/AudioContent"
-///    },
-///    {
-///      "$ref": "#/definitions/EmbeddedResource"
-///    }
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum ContentListItem {
-    TextContent(TextContent),
-    ImageContent(ImageContent),
-    AudioContent(AudioContent),
-    EmbeddedResource(EmbeddedResource),
-}
-impl ::std::convert::From<TextContent> for ContentListItem {
-    fn from(value: TextContent) -> Self {
-        Self::TextContent(value)
-    }
-}
-impl ::std::convert::From<ImageContent> for ContentListItem {
-    fn from(value: ImageContent) -> Self {
-        Self::ImageContent(value)
-    }
-}
-impl ::std::convert::From<AudioContent> for ContentListItem {
-    fn from(value: AudioContent) -> Self {
-        Self::AudioContent(value)
-    }
-}
-impl ::std::convert::From<EmbeddedResource> for ContentListItem {
-    fn from(value: EmbeddedResource) -> Self {
-        Self::EmbeddedResource(value)
-    }
 }
 ///A request from the server to sample an LLM via the client. The client has full discretion over which model to select. The client should also inform the user before beginning sampling, to allow them to inspect the request (human in the loop) and decide whether to approve it.
 ///
@@ -5412,10 +5189,7 @@ impl ::std::convert::From<ListRootsRequest> for ServerRequest {
 ///      "$ref": "#/definitions/ListToolsResult"
 ///    },
 ///    {
-///      "$ref": "#/definitions/CallToolUnstructuredResult"
-///    },
-///    {
-///      "$ref": "#/definitions/CallToolStructuredResult"
+///      "$ref": "#/definitions/CallToolResult"
 ///    },
 ///    {
 ///      "$ref": "#/definitions/CompleteResult"
@@ -5434,8 +5208,7 @@ pub enum ServerResult {
     ListPromptsResult(ListPromptsResult),
     GetPromptResult(GetPromptResult),
     ListToolsResult(ListToolsResult),
-    CallToolUnstructuredResult(CallToolUnstructuredResult),
-    CallToolStructuredResult(CallToolStructuredResult),
+    CallToolResult(CallToolResult),
     CompleteResult(CompleteResult),
     Result(Result),
 }
@@ -5474,14 +5247,9 @@ impl ::std::convert::From<ListToolsResult> for ServerResult {
         Self::ListToolsResult(value)
     }
 }
-impl ::std::convert::From<CallToolUnstructuredResult> for ServerResult {
-    fn from(value: CallToolUnstructuredResult) -> Self {
-        Self::CallToolUnstructuredResult(value)
-    }
-}
-impl ::std::convert::From<CallToolStructuredResult> for ServerResult {
-    fn from(value: CallToolStructuredResult) -> Self {
-        Self::CallToolStructuredResult(value)
+impl ::std::convert::From<CallToolResult> for ServerResult {
+    fn from(value: CallToolResult) -> Self {
+        Self::CallToolResult(value)
     }
 }
 impl ::std::convert::From<CompleteResult> for ServerResult {
@@ -5793,7 +5561,7 @@ pub struct TextResourceContents {
 ///      "type": "string"
 ///    },
 ///    "outputSchema": {
-///      "description": "An optional JSON Schema object defining the structure of the tool's output.\n\nIf set, a CallToolResult for this Tool MUST contain a structuredContent field whose contents validate against this schema.\nIf not set, a CallToolResult for this Tool MUST contain a content field.",
+///      "description": "An optional JSON Schema object defining the structure of the tool's output returned in \nthe structuredContent field of a CallToolResult.",
 ///      "type": "object",
 ///      "required": [
 ///        "type"
@@ -6049,15 +5817,14 @@ pub struct ToolListChangedNotificationParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-/**An optional JSON Schema object defining the structure of the tool's output.
-If set, a CallToolResult for this Tool MUST contain a structuredContent field whose contents validate against this schema.
-If not set, a CallToolResult for this Tool MUST contain a content field.*/
+/**An optional JSON Schema object defining the structure of the tool's output returned in
+the structuredContent field of a CallToolResult.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "An optional JSON Schema object defining the structure of the tool's output.\n\nIf set, a CallToolResult for this Tool MUST contain a structuredContent field whose contents validate against this schema.\nIf not set, a CallToolResult for this Tool MUST contain a content field.",
+///  "description": "An optional JSON Schema object defining the structure of the tool's output returned in \nthe structuredContent field of a CallToolResult.",
 ///  "type": "object",
 ///  "required": [
 ///    "type"

@@ -388,26 +388,6 @@ mod test_serialize {
         ));
     }
 
-    #[cfg(feature = "draft")]
-    #[test]
-    fn test_server_call_tool_result() {
-        let message: ServerMessage = ServerMessage::Response(ServerJsonrpcResponse::new(
-            RequestId::Integer(15),
-            ResultFromServer::ServerResult(ServerResult::CallToolUnstructuredResult(CallToolUnstructuredResult {
-                meta: None,
-                content: vec![],
-                is_error: None,
-            })),
-        ));
-
-        let message: ServerMessage = re_serialize(message);
-
-        assert!(matches!(message, ServerMessage::Response(server_message)
-                if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
-                if matches!(server_result, ServerResult::CallToolUnstructuredResult(_)))
-        ));
-    }
-
     #[test]
     fn test_server_custom_result() {
         let custom_result: serde_json::Map<String, serde_json::Value> = json!({
