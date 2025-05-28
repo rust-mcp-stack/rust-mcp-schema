@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.5.1...v0.5.2) (2025-05-28)
+
+
+### Features
+
+* add protocol version enum, update draft version ([#71](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/71)) ([1040b11](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/1040b112e5a81e6b650cbe26dcfdd7c51841539a))
+
 ## [0.5.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.5.0...v0.5.1) (2025-05-23)
 
 
