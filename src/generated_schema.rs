@@ -1,38 +1,65 @@
-/// Schema Version: 2024_11_05
-#[cfg(feature = "2024_11_05")]
-#[path = "generated_schema/2024_11_05/mcp_schema.rs"]
-mod mcp_schema;
+macro_rules! define_schema_version {
+    (
+        $feature:literal,
+        $mod_name:ident,
+        $schema_path:literal,
+        $utils_path:literal,
+        $schema_mod:ident,
+        $utils_mod:ident
+    ) => {
+        #[cfg(feature = $feature)]
+        #[path = $schema_path]
+        mod $schema_mod;
 
-#[cfg(feature = "2024_11_05")]
-pub use mcp_schema::*;
+        #[cfg(all(feature = "schema_utils", feature = $feature))]
+        #[path = $utils_path]
+        mod $utils_mod;
 
-#[cfg(all(feature = "schema_utils", feature = "2024_11_05"))]
-#[path = "generated_schema/2024_11_05/schema_utils.rs"]
-pub mod schema_utils;
+        #[cfg(feature = $feature)]
+        pub mod $mod_name {
+            pub use super::$schema_mod::*;
 
-/// Schema Version: 2025_03_26
+            #[cfg(feature = "schema_utils")]
+            pub mod schema_utils {
+                pub use super::super::$utils_mod::*;
+            }
+        }
+    };
+}
+
+/// Latest MCP Protocol 2025_03_26
 #[cfg(feature = "2025_03_26")]
-#[path = "generated_schema/2025_03_26/mcp_schema.rs"]
-mod mcp_schema;
+pub use mcp_2025_03_26::*;
 
 #[cfg(feature = "2025_03_26")]
-pub use mcp_schema::*;
+define_schema_version!(
+    "2025_03_26",
+    mcp_2025_03_26,
+    "generated_schema/2025_03_26/mcp_schema.rs",
+    "generated_schema/2025_03_26/schema_utils.rs",
+    __int_2025_03_26,
+    __int_utils_2025_03_26
+);
 
-#[cfg(all(feature = "schema_utils", feature = "2025_03_26"))]
-#[path = "generated_schema/2025_03_26/schema_utils.rs"]
-pub mod schema_utils;
+#[cfg(feature = "2024_11_05")]
+define_schema_version!(
+    "2024_11_05",
+    mcp_2024_11_05,
+    "generated_schema/2024_11_05/mcp_schema.rs",
+    "generated_schema/2024_11_05/schema_utils.rs",
+    __int_2024_11_05,
+    __int_utils_2024_11_05
+);
 
-/// Schema Version: draft
 #[cfg(feature = "draft")]
-#[path = "generated_schema/draft/mcp_schema.rs"]
-mod mcp_schema;
-
-#[cfg(feature = "draft")]
-pub use mcp_schema::*;
-
-#[cfg(all(feature = "schema_utils", feature = "draft"))]
-#[path = "generated_schema/draft/schema_utils.rs"]
-pub mod schema_utils;
+define_schema_version!(
+    "draft",
+    mcp_draft,
+    "generated_schema/draft/mcp_schema.rs",
+    "generated_schema/draft/schema_utils.rs",
+    __int_draft,
+    __int_utils_draft
+);
 
 #[path = "generated_schema/protocol_version.rs"]
 mod protocol_version;

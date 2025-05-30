@@ -1,4 +1,3 @@
-use rust_mcp_schema::LATEST_PROTOCOL_VERSION;
 use serde_json::Value;
 use std::str::FromStr;
 use std::sync::OnceLock;
@@ -58,11 +57,11 @@ where
 }
 
 /// get a test message payload from the sample_mcp_messages.json by key
-pub fn get_message<T>(test_payload_key: &str) -> T
+pub fn get_message<T>(test_payload_key: &str, version: &str) -> T
 where
     T: FromStr + for<'de> serde::Deserialize<'de>,
     <T as FromStr>::Err: std::fmt::Debug,
 {
-    let message_str = get_test_payload(test_payload_key).replace("PROTOCOL_VERSION", LATEST_PROTOCOL_VERSION);
+    let message_str = get_test_payload(test_payload_key).replace("PROTOCOL_VERSION", version);
     T::from_str(&message_str).unwrap()
 }

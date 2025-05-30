@@ -2,7 +2,18 @@
 pub mod common;
 
 mod test_deserialize {
+    #[cfg(feature = "2024_11_05")]
+    use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
+    #[cfg(feature = "draft")]
+    use rust_mcp_schema::mcp_draft::schema_utils::*;
+    #[cfg(feature = "latest")]
     use rust_mcp_schema::schema_utils::*;
+
+    #[cfg(feature = "2024_11_05")]
+    use rust_mcp_schema::mcp_2024_11_05::*;
+    #[cfg(feature = "draft")]
+    use rust_mcp_schema::mcp_draft::*;
+    #[cfg(feature = "latest")]
     use rust_mcp_schema::*;
 
     use super::common::get_message;
@@ -10,7 +21,7 @@ mod test_deserialize {
     /* ---------------------- CLIENT REQUESTS ---------------------- */
     #[test]
     fn test_client_initialize_request() {
-        let message = get_message("req_initialize");
+        let message = get_message("req_initialize", LATEST_PROTOCOL_VERSION);
         assert!(matches!(&message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::InitializeRequest(_)))
@@ -38,7 +49,7 @@ mod test_deserialize {
 
     #[test]
     fn test_client_list_resources_request() {
-        let message = get_message("req_resource_list");
+        let message = get_message("req_resource_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::ListResourcesRequest(_)))
@@ -47,7 +58,7 @@ mod test_deserialize {
 
     #[test]
     fn test_client_read_resource_request() {
-        let message = get_message("req_resource_read");
+        let message = get_message("req_resource_read", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::ReadResourceRequest(_)))
@@ -56,7 +67,7 @@ mod test_deserialize {
 
     #[test]
     fn test_client_list_prompts_request() {
-        let message = get_message("req_prompts_list");
+        let message = get_message("req_prompts_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::ListPromptsRequest(_)))
@@ -65,13 +76,13 @@ mod test_deserialize {
 
     #[test]
     fn test_client_get_prompt_request() {
-        let message = get_message("req_prompts_get_1");
+        let message = get_message("req_prompts_get_1", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::GetPromptRequest(_)))
         ));
 
-        let message = get_message("req_prompts_get_2");
+        let message = get_message("req_prompts_get_2", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::GetPromptRequest(_)))
@@ -80,7 +91,7 @@ mod test_deserialize {
 
     #[test]
     fn test_client_list_tools_request() {
-        let message = get_message("req_tools_list");
+        let message = get_message("req_tools_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::ListToolsRequest(_)))
@@ -89,26 +100,26 @@ mod test_deserialize {
 
     #[test]
     fn test_client_call_tool_request() {
-        let message = get_message("req_tools_call_1");
+        let message = get_message("req_tools_call_1", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::CallToolRequest(_)))
         ));
 
-        let message = get_message("req_tools_call_2");
+        let message = get_message("req_tools_call_2", LATEST_PROTOCOL_VERSION);
 
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::CallToolRequest(_)))
         ));
 
-        let message = get_message("req_tools_call_3");
+        let message = get_message("req_tools_call_3", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::CallToolRequest(_)))
         ));
 
-        let message = get_message("req_tools_call_4");
+        let message = get_message("req_tools_call_4", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::CallToolRequest(_)))
@@ -117,7 +128,7 @@ mod test_deserialize {
 
     #[test]
     fn test_client_ping_request() {
-        let message = get_message("req_ping");
+        let message = get_message("req_ping", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::PingRequest(_)))
@@ -127,7 +138,7 @@ mod test_deserialize {
     /* ---------------------- CLIENT RESPONSES ---------------------- */
     #[test]
     fn test_list_tools_result() {
-        let message = get_message("res_sampling_create_message_2");
+        let message = get_message("res_sampling_create_message_2", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Response(client_message)
                 if matches!(&client_message.result, ResultFromClient::ClientResult(client_result)
                         if matches!( client_result, ClientResult::CreateMessageResult(_))
@@ -138,7 +149,7 @@ mod test_deserialize {
 
     #[test]
     fn test_server_initialize_result() {
-        let message = get_message("res_initialize");
+        let message = get_message("res_initialize", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::InitializeResult(_)))
@@ -147,7 +158,7 @@ mod test_deserialize {
 
     #[test]
     fn test_server_list_resources_result() {
-        let message = get_message("res_resource_list");
+        let message = get_message("res_resource_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::ListResourcesResult(_)))
@@ -156,7 +167,7 @@ mod test_deserialize {
 
     #[test]
     fn test_server_read_resource_result() {
-        let message = get_message("res_resource_read");
+        let message = get_message("res_resource_read", LATEST_PROTOCOL_VERSION);
 
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
@@ -166,7 +177,7 @@ mod test_deserialize {
 
     #[test]
     fn test_server_list_prompts_result() {
-        let message = get_message("res_prompts_list");
+        let message = get_message("res_prompts_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::ListPromptsResult(_)))
@@ -175,13 +186,13 @@ mod test_deserialize {
 
     #[test]
     fn test_server_get_prompt_result() {
-        let message = get_message("res_prompts_get_1");
+        let message = get_message("res_prompts_get_1", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::GetPromptResult(_)))
         ));
 
-        let message = get_message("res_prompts_get_2");
+        let message = get_message("res_prompts_get_2", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::GetPromptResult(_)))
@@ -190,7 +201,7 @@ mod test_deserialize {
 
     #[test]
     fn test_server_list_tools_result() {
-        let message = get_message("res_tools_list");
+        let message = get_message("res_tools_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::ListToolsResult(_)))
@@ -201,19 +212,19 @@ mod test_deserialize {
     #[cfg(any(feature = "2025_03_26", feature = "2024_11_05"))]
     #[test]
     fn test_server_call_tool_result() {
-        let message = get_message("res_tools_call_1");
+        let message = get_message("res_tools_call_1", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::CallToolResult(_)))
         ));
 
-        let message = get_message("res_tools_call_2");
+        let message = get_message("res_tools_call_2", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::CallToolResult(_)))
         ));
 
-        let message = get_message("res_tools_call_4");
+        let message = get_message("res_tools_call_4", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::CallToolResult(_)))
@@ -222,7 +233,7 @@ mod test_deserialize {
 
     #[test]
     fn test_server_ping_result() {
-        let message = get_message("res_ping");
+        let message = get_message("res_ping", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(_server_result))
         ));
@@ -233,21 +244,21 @@ mod test_deserialize {
     #[test]
     fn test_client_notifications() {
         //ClientInitializedNotification
-        let message = get_message("ntf_initialized");
+        let message = get_message("ntf_initialized", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Notification(client_message)
                 if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
                 if matches!( client_notification, ClientNotification::InitializedNotification(_)))
         ));
 
         //ClientRootsListChangedNotification
-        let message = get_message("ntf_root_list_changed");
+        let message = get_message("ntf_root_list_changed", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Notification(client_message)
                 if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
                 if matches!( client_notification, ClientNotification::RootsListChangedNotification(_)))
         ));
 
         //ClientCancelledNotification
-        let message = get_message("ntf_cancelled");
+        let message = get_message("ntf_cancelled", LATEST_PROTOCOL_VERSION);
 
         assert!(matches!(message, ClientMessage::Notification(client_message)
                 if matches!(&client_message.notification,NotificationFromClient::ClientNotification(client_notification)
@@ -259,13 +270,13 @@ mod test_deserialize {
     #[test]
     fn test_server_requests() {
         //ServerCreateMessageRequest
-        let message = get_message("req_sampling_create_message_1");
+        let message = get_message("req_sampling_create_message_1", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Request(server_message)
                 if matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
                 if matches!( server_request, ServerRequest::CreateMessageRequest(_)))
         ));
 
-        let message = get_message("req_sampling_create_message_2");
+        let message = get_message("req_sampling_create_message_2", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Request(server_message)
                 if matches!(&server_message.request,RequestFromServer::ServerRequest(server_request)
                 if matches!( server_request, ServerRequest::CreateMessageRequest(_)))
@@ -276,10 +287,10 @@ mod test_deserialize {
 
     #[test]
     fn test_errors() {
-        let message: ClientMessage = get_message("err_sampling_rejected");
+        let message: ClientMessage = get_message("err_sampling_rejected", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Error(_)));
 
-        let message: ServerMessage = get_message("err_sampling_rejected");
+        let message: ServerMessage = get_message("err_sampling_rejected", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Error(_)));
     }
 }
