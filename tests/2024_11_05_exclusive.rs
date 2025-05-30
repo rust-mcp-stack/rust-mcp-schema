@@ -4,8 +4,8 @@ pub mod common;
 
 #[cfg(feature = "2024_11_05")]
 mod test_2024_11_05_exclusive {
-    use rust_mcp_schema::schema_utils::*;
-    use rust_mcp_schema::*;
+    use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
+    use rust_mcp_schema::mcp_2024_11_05::*;
 
     use super::common::{get_message, re_serialize};
 
@@ -73,7 +73,7 @@ mod test_2024_11_05_exclusive {
 
     #[test]
     fn test_server_list_resource_templates_result_sample() {
-        let message = get_message("res_template_list");
+        let message = get_message("res_template_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Response(server_message)
                 if matches!(&server_message.result, ResultFromServer::ServerResult(server_result)
                 if matches!(server_result, ServerResult::ListResourceTemplatesResult(_)))
@@ -82,7 +82,7 @@ mod test_2024_11_05_exclusive {
 
     #[test]
     fn test_client_list_resource_templates_request_sample() {
-        let message = get_message("req_template_list");
+        let message = get_message("req_template_list", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ClientMessage::Request(client_message)
                 if matches!(&client_message.request, RequestFromClient::ClientRequest(client_request)
                 if matches!(client_request, ClientRequest::ListResourceTemplatesRequest(_)))
