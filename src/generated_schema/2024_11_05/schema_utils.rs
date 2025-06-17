@@ -1,4 +1,4 @@
-use crate::generated_schema::*;
+use crate::generated_schema::mcp_2024_11_05::*;
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};

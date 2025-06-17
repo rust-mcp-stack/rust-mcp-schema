@@ -2,6 +2,11 @@
 pub mod common;
 
 mod miscellaneous_tests {
+    #[cfg(feature = "2024_11_05")]
+    use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
+    #[cfg(feature = "draft")]
+    use rust_mcp_schema::mcp_draft::schema_utils::*;
+    #[cfg(feature = "latest")]
     use rust_mcp_schema::schema_utils::*;
 
     #[test]
