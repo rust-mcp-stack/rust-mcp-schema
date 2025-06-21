@@ -76,8 +76,14 @@ This repository provides all official released versions the schema , including d
 
 ### How to switch between different schema versions?
 
+By default, the latest version of the MCP Protocol schema is enabled.
+
 Each schema version has a corresponding Cargo feature that can be enabled in your project's Cargo.toml.
-By default, the version `2025_03_26` of the schema is active.
+
+Multiple schema versions may be enabled concurrently if needed. Non-default versions are available under explicitly named modules, for example:
+
+- rust_mcp_schema::mcp_2024_11_05
+- rust_mcp_schema::mcp_draft"
 
 Example: enable `2024_11_05` version of the shema:
 
@@ -85,21 +91,14 @@ Example: enable `2024_11_05` version of the shema:
 
 ```toml
 # Cargo.toml
-rust-mcp-schema = { version: 0.5.2 , features=["2024_11_05"] }
-```
-
-Example: enable `latest` version of the shema:
-
-```toml
-#Cargo.toml
-rust-mcp-schema = { version: 0.5.2 , features=["latest"] }
+rust-mcp-schema = { version: 0.6.0 , default-features = false, features=["2024_11_05"] }
 ```
 
 Example: enable `draft`` version of the shema (2024_11_05) :
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.5.2 , features=["draft"] }
+rust-mcp-schema = { version: 0.6.0 , default-features = false, features=["draft"] }
 ```
 
 <!-- x-release-please-end -->

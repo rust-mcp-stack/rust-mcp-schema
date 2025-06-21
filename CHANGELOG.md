@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.5.2...v0.6.0) (2025-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* add support for multiple active schema versions with versioned module access ([#73](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/73))
+
+### Features
+
+* add support for multiple active schema versions with versioned module access ([#73](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/73)) ([2570c2b](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/2570c2ba4c5f0f166b5d41158cbb2769a3fe399b))
+
 ## [0.5.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.5.1...v0.5.2) (2025-05-28)
 
 
