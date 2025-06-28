@@ -32,10 +32,14 @@ mod test_serialize {
                 experimental: None,
                 roots: None,
                 sampling: None,
+                #[cfg(any(feature = "2025_03_26", feature = "draft", feature = "2025_06_18"))]
+                elicitation: None,
             },
             client_info: Implementation {
                 name: "client-name".to_string(),
                 version: "0.0.1".to_string(),
+                #[cfg(any(feature = "2025_03_26", feature = "draft", feature = "2025_06_18"))]
+                title: None,
             },
             protocol_version: LATEST_PROTOCOL_VERSION.to_string(),
         });
@@ -223,7 +227,12 @@ mod test_serialize {
     #[test]
     fn test_list_tools_result() {
         let client_result = ClientResult::CreateMessageResult(CreateMessageResult {
-            content: CreateMessageResultContent::TextContent(TextContent::new("This is a stub response.".to_string(), None)),
+            content: CreateMessageResultContent::TextContent(TextContent::new(
+                "This is a stub response.".to_string(),
+                None,
+                #[cfg(any(feature = "draft", feature = "2025_06_18"))]
+                None,
+            )),
             meta: None,
             model: "stub-model".to_string(),
             role: Role::Assistant,
@@ -276,7 +285,7 @@ mod test_serialize {
                     prompts: None,
                     resources: None,
                     tools: None,
-                    #[cfg(any(feature = "2025_03_26", feature = "draft"))]
+                    #[cfg(any(feature = "2025_03_26", feature = "draft", feature = "2025_06_18"))]
                     completions: None,
                 },
                 instructions: None,
@@ -285,6 +294,8 @@ mod test_serialize {
                 server_info: Implementation {
                     name: "example-servers/everything".to_string(),
                     version: "1.0.0".to_string(),
+                    #[cfg(any(feature = "2025_06_18", feature = "draft"))]
+                    title: None,
                 },
             })),
         ));
@@ -853,6 +864,10 @@ mod test_serialize {
                     name: "Resource 1".to_string(),
                     uri: "test://static/resource/1".to_string(),
                     size: None,
+                    #[cfg(any(feature = "2025_06_18", feature = "draft"))]
+                    meta: None,
+                    #[cfg(any(feature = "2025_06_18", feature = "draft"))]
+                    title: None,
                 }],
             })),
         ));

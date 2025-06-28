@@ -1,4 +1,4 @@
-use crate::generated_schema::mcp_2024_11_05::*;
+use crate::generated_schema::*;
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
@@ -3639,7 +3639,7 @@ impl CallToolResultContentItem {
     ) -> Self {
         EmbeddedResource::new(resource, annotations).into()
     }
-    /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
+    ///Returns the content type as a string based on the variant of `CallToolResultContentItem`
     pub fn content_type(&self) -> &str {
         match self {
             CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
@@ -3721,7 +3721,7 @@ impl CallToolResult {
             meta: None,
         }
     }
-    /// Adds metadata to the `CallToolResult`, allowing additional context or information to be included
+    /// Assigns metadata to the CallToolResult, enabling the inclusion of extra context or details.
     pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
         self.meta = meta;
         self

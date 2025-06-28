@@ -149,13 +149,14 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 ClientResult::Result(_) => {
                     dbg!(client_result);
                 }
-
                 ClientResult::CreateMessageResult(create_message_result) => {
                     dbg!(create_message_result);
                 }
-
                 ClientResult::ListRootsResult(list_roots_result) => {
                     dbg!(list_roots_result);
+                }
+                ClientResult::ElicitResult(elicit_result) => {
+                    dbg!(elicit_result);
                 }
             },
 

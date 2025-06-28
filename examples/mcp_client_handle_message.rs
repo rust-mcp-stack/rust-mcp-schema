@@ -66,6 +66,9 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                     ServerRequest::ListRootsRequest(list_roots_request) => {
                         dbg!(list_roots_request);
                     }
+                    ServerRequest::ElicitRequest(elicit_request) => {
+                        dbg!(elicit_request);
+                    }
                 }
             }
             // Check if it's a CustomRequest; the value can be deserialized into your own custom types.
