@@ -318,7 +318,7 @@ impl Display for ClientJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -359,6 +359,7 @@ impl FromStr for ClientJsonrpcRequest {
 
 /// To determine standard and custom request from the client side
 /// Custom requests are of type serde_json::Value and can be deserialized into any custom type.
+#[allow(clippy::large_enum_variant)]
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum RequestFromClient {
@@ -446,7 +447,7 @@ impl Display for ClientJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -548,7 +549,7 @@ impl Display for ClientJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -567,6 +568,7 @@ impl FromStr for ClientJsonrpcResponse {
 
 /// To determine standard and custom results from the client side
 /// Custom results (CustomResult) are of type serde_json::Value and can be deserialized into any custom type.
+#[allow(clippy::large_enum_variant)]
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum ResultFromClient {
@@ -632,7 +634,7 @@ impl Display for ClientMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -814,7 +816,7 @@ impl Display for ServerMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -853,7 +855,7 @@ impl Display for ServerJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -959,7 +961,7 @@ impl Display for ServerJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1052,7 +1054,7 @@ impl Display for ServerJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1129,7 +1131,7 @@ impl Display for JsonrpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -2349,7 +2351,7 @@ impl Display for RpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }

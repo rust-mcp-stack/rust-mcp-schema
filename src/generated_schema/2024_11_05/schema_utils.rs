@@ -319,7 +319,7 @@ impl Display for ClientJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -447,7 +447,7 @@ impl Display for ClientJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -549,7 +549,7 @@ impl Display for ClientJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -633,7 +633,7 @@ impl Display for ClientMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -815,7 +815,7 @@ impl Display for ServerMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -854,7 +854,7 @@ impl Display for ServerJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -960,7 +960,7 @@ impl Display for ServerJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1053,7 +1053,7 @@ impl Display for ServerJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1130,7 +1130,7 @@ impl Display for JsonrpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -2347,7 +2347,7 @@ impl Display for RpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
