@@ -9,7 +9,7 @@
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/rust-mcp-stack/rust-mcp-schema/ci.yml?style=for-the-badge" height="22">
 ](https://github.com/rust-mcp-stack/rust-mcp-schema/actions/workflows/ci.yml)
 
-A type-safe Rust implementation of the official Model Context Protocol (MCP) schema, supporting all official released versions including `2024_11_05`, `2025_03_26`, and `draft` version for early adoption.
+A type-safe Rust implementation of the official Model Context Protocol (MCP) schema, supporting all official released versions including `2025_06_18`, `2025_03_26`, `2024_11_05` and `draft` version for early adoption.
 
 The MCP schemas in this repository are [automatically generated](#how-are-schemas-generated) from the official Model Context Protocol, ensuring they are always up-to-date and aligned with the latest official specifications.
 
@@ -46,7 +46,7 @@ Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp
 
 - 🧩 Type-safe implementation of the MCP protocol specification.
 - 💎 Auto-generated schemas are always synchronized with the official schema specifications.
-- 📜 Includes all official released versions : `2024_11_05` and `2025_03_26` and `draft` version for early adoption.
+- 📜 Includes all official released versions : `2025_06_18`, `2025_03_26`, `2024_11_05` and `draft` version for early adoption.
 - 🛠 Complimentary schema utility module (schema_utils) to boost productivity and ensure development integrity.
 
 ## How can this crate be used?
@@ -70,8 +70,9 @@ For more information on the MCP architecture, refer to the [official documentati
 
 This repository provides all official released versions the schema , including draft version, enabling you to prepare and adapt your applications ahead of upcoming official schema releases.
 
-- [2024_11_05](src/generated_schema/2024_11_05)
+- [2025_06_18](src/generated_schema/2025_06_18)
 - [2025_03_26](src/generated_schema/2025_03_26)
+- [2024_11_05](src/generated_schema/2024_11_05)
 - [draft](src/generated_schema/draft)
 
 ### How to switch between different schema versions?
