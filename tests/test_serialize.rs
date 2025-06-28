@@ -9,6 +9,12 @@ mod test_serialize {
     use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::*;
+
+    #[cfg(feature = "2025_03_26")]
+    use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
+    #[cfg(feature = "2025_03_26")]
+    use rust_mcp_schema::mcp_2025_03_26::*;
+
     #[cfg(feature = "draft")]
     use rust_mcp_schema::mcp_draft::schema_utils::*;
     #[cfg(feature = "draft")]
@@ -32,13 +38,13 @@ mod test_serialize {
                 experimental: None,
                 roots: None,
                 sampling: None,
-                #[cfg(any(feature = "2025_03_26", feature = "draft", feature = "2025_06_18"))]
+                #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 elicitation: None,
             },
             client_info: Implementation {
                 name: "client-name".to_string(),
                 version: "0.0.1".to_string(),
-                #[cfg(any(feature = "2025_03_26", feature = "draft", feature = "2025_06_18"))]
+                #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 title: None,
             },
             protocol_version: LATEST_PROTOCOL_VERSION.to_string(),

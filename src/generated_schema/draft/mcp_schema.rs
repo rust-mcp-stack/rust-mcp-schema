@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : UNKNOWN
-/// Generated at : 2025-06-28 11:41:57
+/// Hash : 169021c2e1332eb9197a6f47fb6ec30e0a70b1d0
+/// Generated at : 2025-06-28 14:42:13
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -1048,18 +1048,11 @@ pub struct CompleteRequestParamsArgument {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct CompleteRequestParamsContext {
     ///Previously-resolved variables in a URI template or prompt.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub arguments: ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
-}
-impl ::std::default::Default for CompleteRequestParamsContext {
-    fn default() -> Self {
-        Self {
-            arguments: Default::default(),
-        }
-    }
 }
 ///CompleteRequestParamsRef
 ///
