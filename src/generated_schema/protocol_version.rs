@@ -3,6 +3,7 @@ use std::fmt::Display;
 pub enum ProtocolVersion {
     V2024_11_05,
     V2025_03_26,
+    V2025_06_18,
     Draft,
 }
 impl Display for ProtocolVersion {
@@ -10,7 +11,8 @@ impl Display for ProtocolVersion {
         match self {
             ProtocolVersion::V2024_11_05 => write!(f, "2024-11-05"),
             ProtocolVersion::V2025_03_26 => write!(f, "2025-03-26"),
-            ProtocolVersion::Draft => write!(f, "DRAFT-2025-v2"),
+            ProtocolVersion::V2025_06_18 => write!(f, "2025-06-18"),
+            ProtocolVersion::Draft => write!(f, "DRAFT-2025-v3"),
         }
     }
 }
@@ -30,7 +32,8 @@ impl TryFrom<&str> for ProtocolVersion {
         match value {
             "2024-11-05" => Ok(ProtocolVersion::V2024_11_05),
             "2025-03-26" => Ok(ProtocolVersion::V2025_03_26),
-            "DRAFT-2025-v2" => Ok(ProtocolVersion::Draft),
+            "2025-06-18" => Ok(ProtocolVersion::V2025_06_18),
+            "DRAFT-2025-v3" => Ok(ProtocolVersion::Draft),
             other => Err(ParseProtocolVersionError {
                 details: other.to_string(),
             }),

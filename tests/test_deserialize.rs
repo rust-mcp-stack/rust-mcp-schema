@@ -4,16 +4,20 @@ pub mod common;
 mod test_deserialize {
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
+    #[cfg(feature = "2025_03_26")]
+    use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
     #[cfg(feature = "draft")]
     use rust_mcp_schema::mcp_draft::schema_utils::*;
-    #[cfg(feature = "latest")]
+    #[cfg(any(feature = "latest", feature = "2025_06_18"))]
     use rust_mcp_schema::schema_utils::*;
 
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::*;
+    #[cfg(feature = "2025_03_26")]
+    use rust_mcp_schema::mcp_2025_03_26::*;
     #[cfg(feature = "draft")]
     use rust_mcp_schema::mcp_draft::*;
-    #[cfg(feature = "latest")]
+    #[cfg(any(feature = "latest", feature = "2025_06_18"))]
     use rust_mcp_schema::*;
 
     use super::common::get_message;

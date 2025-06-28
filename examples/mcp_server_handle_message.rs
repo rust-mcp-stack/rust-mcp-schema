@@ -1,17 +1,28 @@
 #[cfg(feature = "latest")]
-use rust_mcp_schema::schema_utils::*;
-#[cfg(feature = "latest")]
-use rust_mcp_schema::*;
+mod schema {
+    pub use rust_mcp_schema::schema_utils::*;
+    pub use rust_mcp_schema::*;
+}
 
 #[cfg(feature = "2024_11_05")]
-use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
-#[cfg(feature = "2024_11_05")]
-use rust_mcp_schema::mcp_2024_11_05::*;
+mod schema {
+    pub use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
+    pub use rust_mcp_schema::mcp_2024_11_05::*;
+}
+
+#[cfg(feature = "2025_03_26")]
+mod schema {
+    pub use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
+    pub use rust_mcp_schema::mcp_2025_03_26::*;
+}
 
 #[cfg(feature = "draft")]
-use rust_mcp_schema::mcp_draft::schema_utils::*;
-#[cfg(feature = "draft")]
-use rust_mcp_schema::mcp_draft::*;
+mod schema {
+    pub use rust_mcp_schema::mcp_draft::schema_utils::*;
+    pub use rust_mcp_schema::mcp_draft::*;
+}
+
+use schema::*;
 
 use std::str::FromStr;
 
@@ -149,13 +160,15 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 ClientResult::Result(_) => {
                     dbg!(client_result);
                 }
-
                 ClientResult::CreateMessageResult(create_message_result) => {
                     dbg!(create_message_result);
                 }
-
                 ClientResult::ListRootsResult(list_roots_result) => {
                     dbg!(list_roots_result);
+                }
+                #[cfg(any(feature = "2025_06_18", feature = "draft"))]
+                ClientResult::ElicitResult(elicit_result) => {
+                    dbg!(elicit_result);
                 }
             },
 

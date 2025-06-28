@@ -1,4 +1,5 @@
 use crate::generated_schema::mcp_draft::*;
+
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
@@ -318,7 +319,7 @@ impl Display for ClientJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -359,6 +360,7 @@ impl FromStr for ClientJsonrpcRequest {
 
 /// To determine standard and custom request from the client side
 /// Custom requests are of type serde_json::Value and can be deserialized into any custom type.
+#[allow(clippy::large_enum_variant)]
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum RequestFromClient {
@@ -446,7 +448,7 @@ impl Display for ClientJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -548,7 +550,7 @@ impl Display for ClientJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -567,6 +569,7 @@ impl FromStr for ClientJsonrpcResponse {
 
 /// To determine standard and custom results from the client side
 /// Custom results (CustomResult) are of type serde_json::Value and can be deserialized into any custom type.
+#[allow(clippy::large_enum_variant)]
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum ResultFromClient {
@@ -632,7 +635,7 @@ impl Display for ClientMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -814,7 +817,7 @@ impl Display for ServerMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -853,7 +856,7 @@ impl Display for ServerJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -959,7 +962,7 @@ impl Display for ServerJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1052,7 +1055,7 @@ impl Display for ServerJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1129,7 +1132,7 @@ impl Display for JsonrpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1422,14 +1425,6 @@ impl std::error::Error for CallToolError {
     }
 }
 
-/// Conversion of `CallToolError` into a `CallToolResult` with an error.
-impl From<CallToolError> for CallToolResult {
-    fn from(value: CallToolError) -> Self {
-        // Convert `CallToolError` to a `CallToolResult` by using the `with_error` method
-        CallToolResult::with_error(value)
-    }
-}
-
 impl CallToolRequest {
     /// Retrieves the name of the tool from the request parameters.
     ///
@@ -1572,6 +1567,7 @@ impl ::serde::Serialize for ServerJsonrpcRequest {
                         state.serialize_field("params", params)?
                     }
                 }
+                ElicitRequest(msg) => state.serialize_field("params", &msg.params)?,
             },
             RequestFromServer::CustomRequest(value) => state.serialize_field("params", value)?,
         }
@@ -2105,6 +2101,11 @@ impl From<ListRootsResult> for ResultFromClient {
         Self::ClientResult(value.into())
     }
 }
+impl From<ElicitResult> for ResultFromClient {
+    fn from(value: ElicitResult) -> Self {
+        Self::ClientResult(value.into())
+    }
+}
 impl From<Result> for MessageFromClient {
     fn from(value: Result) -> Self {
         MessageFromClient::ResultFromClient(value.into())
@@ -2117,6 +2118,11 @@ impl From<CreateMessageResult> for MessageFromClient {
 }
 impl From<ListRootsResult> for MessageFromClient {
     fn from(value: ListRootsResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<ElicitResult> for MessageFromClient {
+    fn from(value: ElicitResult) -> Self {
         MessageFromClient::ResultFromClient(value.into())
     }
 }
@@ -2346,7 +2352,7 @@ impl Display for RpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -2488,6 +2494,11 @@ impl From<ListRootsRequest> for RequestFromServer {
         Self::ServerRequest(value.into())
     }
 }
+impl From<ElicitRequest> for RequestFromServer {
+    fn from(value: ElicitRequest) -> Self {
+        Self::ServerRequest(value.into())
+    }
+}
 impl From<PingRequest> for MessageFromServer {
     fn from(value: PingRequest) -> Self {
         MessageFromServer::RequestFromServer(value.into())
@@ -2500,6 +2511,11 @@ impl From<CreateMessageRequest> for MessageFromServer {
 }
 impl From<ListRootsRequest> for MessageFromServer {
     fn from(value: ListRootsRequest) -> Self {
+        MessageFromServer::RequestFromServer(value.into())
+    }
+}
+impl From<ElicitRequest> for MessageFromServer {
+    fn from(value: ElicitRequest) -> Self {
         MessageFromServer::RequestFromServer(value.into())
     }
 }
@@ -2807,6 +2823,21 @@ impl ToMessage<ClientMessage> for ListRootsResult {
         ClientMessage::from_message(self, request_id)
     }
 }
+impl FromMessage<ElicitResult> for ClientMessage {
+    fn from_message(message: ElicitResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ClientMessage> for ElicitResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
 impl FromMessage<CancelledNotification> for ClientMessage {
     fn from_message(message: CancelledNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         if request_id.is_some() {
@@ -2902,6 +2933,18 @@ impl FromMessage<ListRootsRequest> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for ListRootsRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<ElicitRequest> for ServerMessage {
+    fn from_message(message: ElicitRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for ElicitRequest {
     fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
@@ -3355,6 +3398,17 @@ impl TryFrom<ResultFromClient> for ListRootsResult {
         }
     }
 }
+impl TryFrom<ResultFromClient> for ElicitResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::ElicitResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ElicitResult".to_string()))
+        }
+    }
+}
 impl TryFrom<NotificationFromClient> for CancelledNotification {
     type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
@@ -3429,6 +3483,17 @@ impl TryFrom<RequestFromServer> for ListRootsRequest {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListRootsRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for ElicitRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::ElicitRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ElicitRequest".to_string()))
         }
     }
 }
@@ -3619,44 +3684,41 @@ impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
         }
     }
 }
-impl CallToolResultContentItem {
-    ///Create a CallToolResultContentItem::TextContent
-    pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<Annotations>) -> Self {
-        TextContent::new(text, annotations).into()
+impl ContentBlock {
+    ///Create a ContentBlock::TextContent
+    pub fn text_content(text: ::std::string::String) -> Self {
+        TextContent::new(text, None, None).into()
     }
-    ///Create a CallToolResultContentItem::ImageContent
-    pub fn image_content(
-        data: ::std::string::String,
-        mime_type: ::std::string::String,
-        annotations: ::std::option::Option<Annotations>,
-    ) -> Self {
-        ImageContent::new(data, mime_type, annotations).into()
+    ///Create a ContentBlock::ImageContent
+    pub fn image_content(data: ::std::string::String, mime_type: ::std::string::String) -> Self {
+        ImageContent::new(data, mime_type, None, None).into()
     }
-    ///Create a CallToolResultContentItem::AudioContent
-    pub fn audio_content(
-        data: ::std::string::String,
-        mime_type: ::std::string::String,
-        annotations: ::std::option::Option<Annotations>,
-    ) -> Self {
-        AudioContent::new(data, mime_type, annotations).into()
+    ///Create a ContentBlock::AudioContent
+    pub fn audio_content(data: ::std::string::String, mime_type: ::std::string::String) -> Self {
+        AudioContent::new(data, mime_type, None, None).into()
     }
-    ///Create a CallToolResultContentItem::EmbeddedResource
-    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: ::std::option::Option<Annotations>) -> Self {
-        EmbeddedResource::new(resource, annotations).into()
+    ///Create a ContentBlock::ResourceLink
+    pub fn resource_link(value: ResourceLink) -> Self {
+        value.into()
     }
-    /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
+    ///Create a ContentBlock::EmbeddedResource
+    pub fn embedded_resource(resource: EmbeddedResourceResource) -> Self {
+        EmbeddedResource::new(resource, None, None).into()
+    }
+    ///Returns the content type as a string based on the variant of `ContentBlock`
     pub fn content_type(&self) -> &str {
         match self {
-            CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
-            CallToolResultContentItem::ImageContent(image_content) => image_content.type_(),
-            CallToolResultContentItem::AudioContent(audio_content) => audio_content.type_(),
-            CallToolResultContentItem::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
+            ContentBlock::TextContent(text_content) => text_content.type_(),
+            ContentBlock::ImageContent(image_content) => image_content.type_(),
+            ContentBlock::AudioContent(audio_content) => audio_content.type_(),
+            ContentBlock::ResourceLink(resource_link) => resource_link.type_(),
+            ContentBlock::EmbeddedResource(embedded_resource) => embedded_resource.type_(),
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_text_content(&self) -> std::result::Result<&TextContent, RpcError> {
         match &self {
-            CallToolResultContentItem::TextContent(text_content) => Ok(text_content),
+            ContentBlock::TextContent(text_content) => Ok(text_content),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3667,7 +3729,7 @@ impl CallToolResultContentItem {
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_image_content(&self) -> std::result::Result<&ImageContent, RpcError> {
         match &self {
-            CallToolResultContentItem::ImageContent(image_content) => Ok(image_content),
+            ContentBlock::ImageContent(image_content) => Ok(image_content),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3678,7 +3740,7 @@ impl CallToolResultContentItem {
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_audio_content(&self) -> std::result::Result<&AudioContent, RpcError> {
         match &self {
-            CallToolResultContentItem::AudioContent(audio_content) => Ok(audio_content),
+            ContentBlock::AudioContent(audio_content) => Ok(audio_content),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
@@ -3687,74 +3749,26 @@ impl CallToolResultContentItem {
         }
     }
     /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
+    pub fn as_resource_link(&self) -> std::result::Result<&ResourceLink, RpcError> {
+        match &self {
+            ContentBlock::ResourceLink(resource_link) => Ok(resource_link),
+            _ => Err(RpcError::internal_error().with_message(format!(
+                "Invalid conversion, \"{}\" is not a {}",
+                self.content_type(),
+                "ResourceLink"
+            ))),
+        }
+    }
+    /// Converts the content to a reference to `TextContent`, returning an error if the conversion is invalid.
     pub fn as_embedded_resource(&self) -> std::result::Result<&EmbeddedResource, RpcError> {
         match &self {
-            CallToolResultContentItem::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
+            ContentBlock::EmbeddedResource(embedded_resource) => Ok(embedded_resource),
             _ => Err(RpcError::internal_error().with_message(format!(
                 "Invalid conversion, \"{}\" is not a {}",
                 self.content_type(),
                 "EmbeddedResource"
             ))),
         }
-    }
-}
-impl CallToolResult {
-    pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<Annotations>) -> Self {
-        Self {
-            content: vec![TextContent::new(text, annotations).into()],
-            is_error: None,
-            meta: None,
-            structured_content: None,
-        }
-    }
-    pub fn image_content(
-        data: ::std::string::String,
-        mime_type: ::std::string::String,
-        annotations: ::std::option::Option<Annotations>,
-    ) -> Self {
-        Self {
-            content: vec![ImageContent::new(data, mime_type, annotations).into()],
-            is_error: None,
-            meta: None,
-            structured_content: None,
-        }
-    }
-    pub fn audio_content(
-        data: ::std::string::String,
-        mime_type: ::std::string::String,
-        annotations: ::std::option::Option<Annotations>,
-    ) -> Self {
-        Self {
-            content: vec![AudioContent::new(data, mime_type, annotations).into()],
-            is_error: None,
-            meta: None,
-            structured_content: None,
-        }
-    }
-    pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: ::std::option::Option<Annotations>) -> Self {
-        Self {
-            content: vec![EmbeddedResource::new(resource, annotations).into()],
-            is_error: None,
-            meta: None,
-            structured_content: None,
-        }
-    }
-    /// Create a `CallToolResult` with an error, containing an error message in the content
-    pub fn with_error(error: CallToolError) -> Self {
-        Self {
-            content: vec![CallToolResultContentItem::TextContent(TextContent::new(
-                error.to_string(),
-                None,
-            ))],
-            is_error: Some(true),
-            meta: None,
-            structured_content: None,
-        }
-    }
-    /// Adds metadata to the `CallToolResult`, allowing additional context or information to be included
-    pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
-        self.meta = meta;
-        self
     }
 }
 /// END AUTO GENERATED

@@ -27,9 +27,19 @@ macro_rules! define_schema_version {
     };
 }
 
-/// Latest MCP Protocol 2025_03_26
-#[cfg(feature = "2025_03_26")]
-pub use mcp_2025_03_26::*;
+/// Latest MCP Protocol 2025_06_18
+#[cfg(feature = "2025_06_18")]
+pub use mcp_2025_06_18::*;
+
+#[cfg(feature = "2025_06_18")]
+define_schema_version!(
+    "2025_06_18",
+    mcp_2025_06_18,
+    "generated_schema/2025_06_18/mcp_schema.rs",
+    "generated_schema/2025_06_18/schema_utils.rs",
+    __int_2025_06_18,
+    __int_utils_2025_06_18
+);
 
 #[cfg(feature = "2025_03_26")]
 define_schema_version!(

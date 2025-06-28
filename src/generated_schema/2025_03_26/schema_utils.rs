@@ -1,4 +1,5 @@
-use crate::generated_schema::*;
+use crate::generated_schema::mcp_2025_03_26::*;
+
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
@@ -318,7 +319,7 @@ impl Display for ClientJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -446,7 +447,7 @@ impl Display for ClientJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -548,7 +549,7 @@ impl Display for ClientJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -632,7 +633,7 @@ impl Display for ClientMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -814,7 +815,7 @@ impl Display for ServerMessage {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -853,7 +854,7 @@ impl Display for ServerJsonrpcRequest {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -959,7 +960,7 @@ impl Display for ServerJsonrpcNotification {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1052,7 +1053,7 @@ impl Display for ServerJsonrpcResponse {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -1129,7 +1130,7 @@ impl Display for JsonrpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -2346,7 +2347,7 @@ impl Display for RpcError {
         write!(
             f,
             "{}",
-            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {}", err))
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
         )
     }
 }
@@ -3644,7 +3645,7 @@ impl CallToolResultContentItem {
     pub fn embedded_resource(resource: EmbeddedResourceResource, annotations: ::std::option::Option<Annotations>) -> Self {
         EmbeddedResource::new(resource, annotations).into()
     }
-    /// Returns the content type as a string based on the variant of `CallToolResultContentItem`.
+    ///Returns the content type as a string based on the variant of `CallToolResultContentItem`
     pub fn content_type(&self) -> &str {
         match self {
             CallToolResultContentItem::TextContent(text_content) => text_content.type_(),
@@ -3746,7 +3747,7 @@ impl CallToolResult {
             meta: None,
         }
     }
-    /// Adds metadata to the `CallToolResult`, allowing additional context or information to be included
+    /// Assigns metadata to the CallToolResult, enabling the inclusion of extra context or details.
     pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
         self.meta = meta;
         self
