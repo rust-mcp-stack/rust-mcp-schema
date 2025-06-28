@@ -50,3 +50,7 @@ latest = ["2025_06_18"]
 draft = []
 # Enables `schema_utils`, which provides utility types that simplify communication with MCP messages, improving ease of use while reducing potential mistakes and errors when constructing messages.
 schema_utils = []
+
+
+[package.metadata.typos]
+default.extend-ignore-re = ["a5ba501"]
