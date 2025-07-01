@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.0...v0.7.1) (2025-07-01)
+
+
+### Features
+
+* implement new utility functions for CallToolResult and TextContent ([#79](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/79)) ([1c8aa34](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/1c8aa34e9e68f0d94c9ab017adcfd55f0e5ed081))
+
 ## [0.7.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.6.0...v0.7.0) (2025-06-28)
 
 
