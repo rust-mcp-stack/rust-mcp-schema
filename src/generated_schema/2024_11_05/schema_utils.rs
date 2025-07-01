@@ -1444,6 +1444,12 @@ impl CallToolRequest {
     }
 }
 
+impl<T: Into<String>> From<T> for TextContent {
+    fn from(value: T) -> Self {
+        TextContent::new(value.into(), None)
+    }
+}
+
 #[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
 pub type RPCMessage = ();
 #[deprecated(since = "0.4.0", note = "This trait was renamed to McpMessage. Use McpMessage instead.")]

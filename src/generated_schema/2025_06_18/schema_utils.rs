@@ -1410,6 +1410,19 @@ impl From<CallToolError> for RpcError {
     }
 }
 
+/// Conversion of `CallToolError` into a `CallToolResult` with an error.
+impl From<CallToolError> for CallToolResult {
+    fn from(value: CallToolError) -> Self {
+        // Convert `CallToolError` to a `CallToolResult`
+        CallToolResult {
+            content: vec![TextContent::new(value.to_string(), None, None).into()],
+            is_error: Some(true),
+            meta: None,
+            structured_content: None,
+        }
+    }
+}
+
 // Implement `Display` for `CallToolError` to provide a user-friendly error message.
 impl core::fmt::Display for CallToolError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -1434,6 +1447,12 @@ impl CallToolRequest {
     /// A reference to the string containing the tool's name.
     pub fn tool_name(&self) -> &str {
         &self.params.name
+    }
+}
+
+impl<T: Into<String>> From<T> for TextContent {
+    fn from(value: T) -> Self {
+        TextContent::new(value.into(), None, None)
     }
 }
 
@@ -3768,6 +3787,70 @@ impl ContentBlock {
                 "EmbeddedResource"
             ))),
         }
+    }
+}
+impl CallToolResult {
+    pub fn text_content(content: Vec<TextContent>) -> Self {
+        Self {
+            content: content.into_iter().map(Into::into).collect(),
+            is_error: None,
+            meta: None,
+            structured_content: None,
+        }
+    }
+    pub fn image_content(content: Vec<ImageContent>) -> Self {
+        Self {
+            content: content.into_iter().map(Into::into).collect(),
+            is_error: None,
+            meta: None,
+            structured_content: None,
+        }
+    }
+    pub fn audio_content(content: Vec<AudioContent>) -> Self {
+        Self {
+            content: content.into_iter().map(Into::into).collect(),
+            is_error: None,
+            meta: None,
+            structured_content: None,
+        }
+    }
+    pub fn resource_link(content: Vec<ResourceLink>) -> Self {
+        Self {
+            content: content.into_iter().map(Into::into).collect(),
+            is_error: None,
+            meta: None,
+            structured_content: None,
+        }
+    }
+    pub fn embedded_resource(content: Vec<EmbeddedResource>) -> Self {
+        Self {
+            content: content.into_iter().map(Into::into).collect(),
+            is_error: None,
+            meta: None,
+            structured_content: None,
+        }
+    }
+    /// Create a `CallToolResult` with an error, containing an error message in the content
+    pub fn with_error(error: CallToolError) -> Self {
+        Self {
+            content: vec![ContentBlock::TextContent(TextContent::new(error.to_string(), None, None))],
+            is_error: Some(true),
+            meta: None,
+            structured_content: None,
+        }
+    }
+    /// Assigns metadata to the CallToolResult, enabling the inclusion of extra context or details.
+    pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
+        self.meta = meta;
+        self
+    }
+    /// Assigns structured_content to the CallToolResult
+    pub fn with_structured_content(
+        mut self,
+        structured_content: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+    ) -> Self {
+        self.structured_content = Some(structured_content);
+        self
     }
 }
 /// END AUTO GENERATED
