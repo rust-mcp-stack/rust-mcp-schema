@@ -3922,5 +3922,12 @@ mod tests {
         // default
         let result = detect_message_type(&json!({}));
         assert!(matches!(result, MessageTypes::Request));
+
+        // assert method type validation
+        let should_err:std::result::Result<PingRequest,_> = serde_json::from_value(json!({
+            "method":"wrong_method",
+            "params":null
+        }));
+        assert!(should_err.is_err());
     }
 }
