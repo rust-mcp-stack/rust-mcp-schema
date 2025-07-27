@@ -107,6 +107,12 @@ impl PartialEq for RequestId {
     }
 }
 
+impl PartialEq<RequestId> for &RequestId {
+    fn eq(&self, other: &RequestId) -> bool {
+        (*self).eq(other)
+    }
+}
+
 impl Eq for RequestId {}
 
 // Implement Hash for RequestId, so we can store it in HashMaps, HashSets, etc.
