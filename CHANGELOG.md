@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.1...v0.7.2) (2025-07-27)
+
+
+### Features
+
+* enhance schema utils types and utilities ([#82](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/82)) ([dc4a364](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/dc4a364533a97dab79b89af2017fcbcb0b42d1c1))
+
 ## [0.7.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.0...v0.7.1) (2025-07-01)
 
 
