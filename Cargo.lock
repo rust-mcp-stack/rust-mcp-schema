@@ -156,7 +156,7 @@ dependencies = [
 
 [[package]]
 name = "rust-mcp-schema"
-version = "0.7.1"
+version = "0.7.2"
 dependencies = [
  "json5",
  "serde",
