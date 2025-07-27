@@ -108,6 +108,12 @@ impl PartialEq for RequestId {
     }
 }
 
+impl PartialEq<RequestId> for &RequestId {
+    fn eq(&self, other: &RequestId) -> bool {
+        (*self).eq(other)
+    }
+}
+
 impl Eq for RequestId {}
 
 // Implement Hash for RequestId, so we can store it in HashMaps, HashSets, etc.
@@ -224,6 +230,29 @@ impl ClientMessage {
                 self.message_type()
             )))
         }
+    }
+
+    /// Returns `true` if message is an `InitializeRequest`.
+    pub fn is_initialize_request(&self) -> bool {
+        matches!(self, Self::Request(request) if request.request.is_initialize_request())
+    }
+}
+
+impl From<ClientJsonrpcNotification> for ClientMessage {
+    fn from(value: ClientJsonrpcNotification) -> Self {
+        Self::Notification(value)
+    }
+}
+
+impl From<ClientJsonrpcRequest> for ClientMessage {
+    fn from(value: ClientJsonrpcRequest) -> Self {
+        Self::Request(value)
+    }
+}
+
+impl From<ClientJsonrpcResponse> for ClientMessage {
+    fn from(value: ClientJsonrpcResponse) -> Self {
+        Self::Response(value)
     }
 }
 
@@ -385,6 +414,10 @@ impl RequestFromClient {
             RequestFromClient::ClientRequest(request) => request.method(),
             RequestFromClient::CustomRequest(request) => request["method"].as_str().unwrap(),
         }
+    }
+    /// Returns `true` if the request is an `InitializeRequest`.
+    pub fn is_initialize_request(&self) -> bool {
+        matches!(self, RequestFromClient::ClientRequest(ClientRequest::InitializeRequest(_)))
     }
 }
 
@@ -738,6 +771,24 @@ impl ServerMessage {
                 self.message_type()
             )))
         }
+    }
+}
+
+impl From<ServerJsonrpcNotification> for ServerMessage {
+    fn from(value: ServerJsonrpcNotification) -> Self {
+        Self::Notification(value)
+    }
+}
+
+impl From<ServerJsonrpcRequest> for ServerMessage {
+    fn from(value: ServerJsonrpcRequest) -> Self {
+        Self::Request(value)
+    }
+}
+
+impl From<ServerJsonrpcResponse> for ServerMessage {
+    fn from(value: ServerJsonrpcResponse) -> Self {
+        Self::Response(value)
     }
 }
 
@@ -1154,7 +1205,7 @@ impl FromStr for JsonrpcError {
 /// It provides a typed structure for the message payload while skipping internal details like
 /// `requestId` and protocol version, which are used solely by the transport layer and
 /// do not need to be exposed to the user.
-#[derive(::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Serialize, ::serde::Deserialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum MessageFromServer {
     RequestFromServer(RequestFromServer),
@@ -1259,13 +1310,20 @@ impl FromMessage<MessageFromServer> for ServerMessage {
 /// It provides a typed structure for the message payload while skipping internal details like
 /// `requestId` and protocol version, which are used solely by the transport layer and
 /// do not need to be exposed to the user.
-#[derive(::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Serialize, ::serde::Deserialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum MessageFromClient {
     RequestFromClient(RequestFromClient),
     ResultFromClient(ResultFromClient),
     NotificationFromClient(NotificationFromClient),
     Error(RpcError),
+}
+
+impl MessageFromClient {
+    /// Returns `true` if the request is an `InitializeRequest`.
+    pub fn is_initialize_request(&self) -> bool {
+        matches!(self, Self::RequestFromClient(request) if request.is_initialize_request())
+    }
 }
 
 impl From<RequestFromClient> for MessageFromClient {
@@ -1456,6 +1514,226 @@ impl<T: Into<String>> From<T> for TextContent {
         TextContent::new(value.into(), None, None)
     }
 }
+
+
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum ClientMessages {
+    Single(ClientMessage),
+    Batch(Vec<ClientMessage>),
+}
+
+impl ClientMessages {
+    pub fn is_batch(&self) -> bool {
+        matches!(self, ClientMessages::Batch(_))
+    }
+
+    pub fn includes_request(&self) -> bool {
+        match self {
+            ClientMessages::Single(client_message) => client_message.is_request(),
+            ClientMessages::Batch(client_messages) => client_messages.iter().any(ClientMessage::is_request),
+        }
+    }
+
+    pub fn as_single(self) -> result::Result<ClientMessage, SdkError> {
+        match self {
+            ClientMessages::Single(client_message) => Ok(client_message),
+            ClientMessages::Batch(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert ClientMessages::Batch to ClientMessage::Single")),
+        }
+    }
+    pub fn as_batch(self) -> result::Result<Vec<ClientMessage>, SdkError> {
+        match self {
+            ClientMessages::Single(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert ClientMessage::Single to ClientMessages::Batch")),
+            ClientMessages::Batch(client_messages) => Ok(client_messages),
+        }
+    }
+}
+
+impl From<ClientMessage> for ClientMessages {
+    fn from(value: ClientMessage) -> Self {
+        Self::Single(value)
+    }
+}
+
+impl From<Vec<ClientMessage>> for ClientMessages {
+    fn from(value: Vec<ClientMessage>) -> Self {
+        Self::Batch(value)
+    }
+}
+
+impl Display for ClientMessages {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
+        )
+    }
+}
+
+
+
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum ServerMessages {
+    Single(ServerMessage),
+    Batch(Vec<ServerMessage>),
+}
+
+impl ServerMessages {
+    pub fn is_batch(&self) -> bool {
+        matches!(self, ServerMessages::Batch(_))
+    }
+
+    pub fn includes_request(&self) -> bool {
+        match self {
+            ServerMessages::Single(server_message) => server_message.is_request(),
+            ServerMessages::Batch(server_messages) => server_messages.iter().any(ServerMessage::is_request),
+        }
+    }
+
+    pub fn as_single(self) -> result::Result<ServerMessage, SdkError> {
+        match self {
+            ServerMessages::Single(server_message) => Ok(server_message),
+            ServerMessages::Batch(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert ServerMessages::Batch to ServerMessage::Single")),
+        }
+    }
+    pub fn as_batch(self) -> result::Result<Vec<ServerMessage>, SdkError> {
+        match self {
+            ServerMessages::Single(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert ServerMessage::Single to ServerMessages::Batch")),
+            ServerMessages::Batch(server_messages) => Ok(server_messages),
+        }
+    }
+}
+
+impl From<ServerMessage> for ServerMessages {
+    fn from(value: ServerMessage) -> Self {
+        Self::Single(value)
+    }
+}
+
+impl From<Vec<ServerMessage>> for ServerMessages {
+    fn from(value: Vec<ServerMessage>) -> Self {
+        Self::Batch(value)
+    }
+}
+
+impl Display for ServerMessages {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string(self).unwrap_or_else(|err| format!("Serialization error: {err}"))
+        )
+    }
+}
+
+
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum MessagesFromServer {
+    Single(MessageFromServer),
+    Batch(Vec<MessageFromServer>),
+}
+
+impl MessagesFromServer {
+    pub fn is_batch(&self) -> bool {
+        matches!(self, MessagesFromServer::Batch(_))
+    }
+
+    pub fn includes_request(&self) -> bool {
+        match self {
+            MessagesFromServer::Single(server_message) => server_message.is_request(),
+            MessagesFromServer::Batch(server_messages) => server_messages.iter().any(MessageFromServer::is_request),
+        }
+    }
+
+    pub fn as_single(self) -> result::Result<MessageFromServer, SdkError> {
+        match self {
+            MessagesFromServer::Single(server_message) => Ok(server_message),
+            MessagesFromServer::Batch(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert MessagesFromServer::Batch to MessageFromServer::Single")),
+        }
+    }
+    pub fn as_batch(self) -> result::Result<Vec<MessageFromServer>, SdkError> {
+        match self {
+            MessagesFromServer::Single(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert MessageFromServer::Single to MessagesFromServer::Batch")),
+            MessagesFromServer::Batch(server_messages) => Ok(server_messages),
+        }
+    }
+}
+
+impl From<MessageFromServer> for MessagesFromServer {
+    fn from(value: MessageFromServer) -> Self {
+        Self::Single(value)
+    }
+}
+
+impl From<Vec<MessageFromServer>> for MessagesFromServer {
+    fn from(value: Vec<MessageFromServer>) -> Self {
+        Self::Batch(value)
+    }
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
+pub enum MessagesFromClient {
+    Single(MessageFromClient),
+    Batch(Vec<MessageFromClient>),
+}
+
+impl MessagesFromClient {
+    pub fn is_batch(&self) -> bool {
+        matches!(self, MessagesFromClient::Batch(_))
+    }
+
+    pub fn includes_request(&self) -> bool {
+        match self {
+            MessagesFromClient::Single(server_message) => server_message.is_request(),
+            MessagesFromClient::Batch(server_messages) => server_messages.iter().any(MessageFromClient::is_request),
+        }
+    }
+
+    pub fn as_single(self) -> result::Result<MessageFromClient, SdkError> {
+        match self {
+            MessagesFromClient::Single(server_message) => Ok(server_message),
+            MessagesFromClient::Batch(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert MessagesFromClient::Batch to MessageFromClient::Single")),
+        }
+    }
+    pub fn as_batch(self) -> result::Result<Vec<MessageFromClient>, SdkError> {
+        match self {
+            MessagesFromClient::Single(_) => Err(SdkError::internal_error()
+                .with_message("Error: cannot convert MessageFromClient::Single to MessagesFromClient::Batch")),
+            MessagesFromClient::Batch(server_messages) => Ok(server_messages),
+        }
+    }
+}
+
+impl From<MessageFromClient> for MessagesFromClient {
+    fn from(value: MessageFromClient) -> Self {
+        Self::Single(value)
+    }
+}
+
+impl From<Vec<MessageFromClient>> for MessagesFromClient {
+    fn from(value: Vec<MessageFromClient>) -> Self {
+        Self::Batch(value)
+    }
+}
+
 
 #[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
 pub type RPCMessage = ();
@@ -2150,12 +2428,28 @@ impl From<ElicitResult> for MessageFromClient {
 pub enum SdkErrorCodes {
     CONNECTION_CLOSED = -32000,
     REQUEST_TIMEOUT = -32001,
+    RESOURCE_NOT_FOUND = -32002,
+    BAD_REQUEST = -32015,
+    SESSION_NOT_FOUND = -32016,
+    INVALID_REQUEST = -32600,
+    METHOD_NOT_FOUND = -32601,
+    INVALID_PARAMS = -32602,
+    INTERNAL_ERROR = -32603,
+    PARSE_ERROR = -32700,
 }
 impl core::fmt::Display for SdkErrorCodes {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             SdkErrorCodes::CONNECTION_CLOSED => write!(f, "Connection closed"),
             SdkErrorCodes::REQUEST_TIMEOUT => write!(f, "Request timeout"),
+            SdkErrorCodes::INVALID_REQUEST => write!(f, "Invalid request"),
+            SdkErrorCodes::METHOD_NOT_FOUND => write!(f, "Method not found"),
+            SdkErrorCodes::INVALID_PARAMS => write!(f, "Invalid params"),
+            SdkErrorCodes::INTERNAL_ERROR => write!(f, "Internal error"),
+            SdkErrorCodes::PARSE_ERROR => write!(f, "Parse Error"),
+            SdkErrorCodes::RESOURCE_NOT_FOUND => write!(f, "Resource not found"),
+            SdkErrorCodes::BAD_REQUEST => write!(f, "Bad request"),
+            SdkErrorCodes::SESSION_NOT_FOUND => write!(f, "Session not found"),
         }
     }
 }
@@ -2164,7 +2458,7 @@ impl From<SdkErrorCodes> for i64 {
         code as i64
     }
 }
-#[derive(Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct SdkError {
     ///The error type that occurred.
     pub code: i64,
@@ -2208,6 +2502,70 @@ impl SdkError {
             data: Some(json!({ "timeout" : timeout })),
             message: SdkErrorCodes::REQUEST_TIMEOUT.to_string(),
         }
+    }
+    pub fn session_not_found() -> Self {
+        Self {
+            code: SdkErrorCodes::SESSION_NOT_FOUND.into(),
+            data: None,
+            message: SdkErrorCodes::SESSION_NOT_FOUND.to_string(),
+        }
+    }
+    pub fn invalid_request() -> Self {
+        Self {
+            code: SdkErrorCodes::INVALID_REQUEST.into(),
+            data: None,
+            message: SdkErrorCodes::INVALID_REQUEST.to_string(),
+        }
+    }
+    pub fn method_not_found() -> Self {
+        Self {
+            code: SdkErrorCodes::METHOD_NOT_FOUND.into(),
+            data: None,
+            message: SdkErrorCodes::METHOD_NOT_FOUND.to_string(),
+        }
+    }
+    pub fn invalid_params() -> Self {
+        Self {
+            code: SdkErrorCodes::INVALID_PARAMS.into(),
+            data: None,
+            message: SdkErrorCodes::INVALID_PARAMS.to_string(),
+        }
+    }
+    pub fn internal_error() -> Self {
+        Self {
+            code: SdkErrorCodes::INTERNAL_ERROR.into(),
+            data: None,
+            message: SdkErrorCodes::INTERNAL_ERROR.to_string(),
+        }
+    }
+    pub fn parse_error() -> Self {
+        Self {
+            code: SdkErrorCodes::PARSE_ERROR.into(),
+            data: None,
+            message: SdkErrorCodes::PARSE_ERROR.to_string(),
+        }
+    }
+    pub fn resource_not_found() -> Self {
+        Self {
+            code: SdkErrorCodes::RESOURCE_NOT_FOUND.into(),
+            data: None,
+            message: SdkErrorCodes::RESOURCE_NOT_FOUND.to_string(),
+        }
+    }
+    pub fn bad_request() -> Self {
+        Self {
+            code: SdkErrorCodes::BAD_REQUEST.into(),
+            data: None,
+            message: SdkErrorCodes::RESOURCE_NOT_FOUND.to_string(),
+        }
+    }
+    pub fn with_message(mut self, message: &str) -> Self {
+        self.message = message.to_string();
+        self
+    }
+    pub fn with_data(mut self, data: ::std::option::Option<::serde_json::Value>) -> Self {
+        self.data = data;
+        self
     }
 }
 /// Enum representing standard JSON-RPC error codes.
