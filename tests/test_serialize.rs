@@ -30,6 +30,7 @@ mod test_serialize {
     use super::common::re_serialize;
 
     /* ---------------------- CLIENT REQUESTS ---------------------- */
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_initialize_request() {
         // create a ClientMessage
@@ -85,6 +86,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_list_resources_request() {
         // create a ClientMessage
@@ -101,6 +103,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_read_resource_request() {
         // create a ClientMessage
@@ -121,6 +124,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_list_prompts_request() {
         let message: ClientMessage = ClientMessage::Request(ClientJsonrpcRequest::new(
@@ -136,6 +140,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_get_prompt_request() {
         let message: ClientMessage = ClientMessage::Request(ClientJsonrpcRequest::new(
@@ -155,6 +160,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_list_tools_request() {
         let message: ClientMessage = ClientMessage::Request(ClientJsonrpcRequest::new(
@@ -170,6 +176,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_call_tool_request() {
         let message: ClientMessage = ClientMessage::Request(ClientJsonrpcRequest::new(
@@ -188,6 +195,7 @@ mod test_serialize {
         ));
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_ping_request() {
         let message: ClientMessage = ClientMessage::Request(ClientJsonrpcRequest::new(
@@ -584,6 +592,7 @@ mod test_serialize {
     }
 
     /* ---------------------- SERVER REQUESTS ---------------------- */
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_server_requests() {
         let message: ServerMessage = ServerMessage::Request(ServerJsonrpcRequest::new(
@@ -798,6 +807,7 @@ mod test_serialize {
         matches!(error_object.data, Some(data) if data["details"].as_str().unwrap() == "error detail");
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_jsonrpc_request() {
         let message = ClientJsonrpcRequest::new(

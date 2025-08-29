@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 0695a497eb50a804fc0e88c18a93a21a675d6b3e
-/// Generated at : 2025-07-27 15:33:21
+/// Hash : a470342d05c345b580642821605b9c885bad237b
+/// Generated at : 2025-08-29 19:12:24
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -83,7 +83,7 @@ pub struct Annotations {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -115,7 +115,7 @@ pub struct AudioContent {
     pub annotations: ::std::option::Option<Annotations>,
     ///The base64-encoded audio data.
     pub data: ::std::string::String,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of the audio. Different providers may support different audio types.
@@ -195,7 +195,7 @@ pub struct BaseMetadata {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -221,7 +221,7 @@ pub struct BaseMetadata {
 pub struct BlobResourceContents {
     ///A base64-encoded string representing the binary data of the item.
     pub blob: ::std::string::String,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -298,10 +298,19 @@ impl BooleanSchema {
 ///  "description": "Used by the client to invoke a tool provided by the server.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "tools/call"
@@ -327,15 +336,22 @@ impl BooleanSchema {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CallToolRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: CallToolRequestParams,
 }
 impl CallToolRequest {
-    pub fn new(params: CallToolRequestParams) -> Self {
+    pub fn new(id: RequestId, params: CallToolRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "tools/call".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -385,7 +401,7 @@ pub struct CallToolRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -424,7 +440,7 @@ pub struct CallToolResult {
     should be reported as an MCP error response.*/
     #[serde(rename = "isError", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub is_error: ::std::option::Option<bool>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///An optional JSON object that represents the structured result of the tool call.
@@ -447,10 +463,15 @@ A client MUST NOT attempt to cancel its initialize request.*/
 ///  "description": "This notification can be sent by either side to indicate that it is cancelling a previously-issued request.\n\nThe request SHOULD still be in-flight, but due to communication latency, it is always possible that this notification MAY arrive after the request has already finished.\n\nThis notification indicates that the result will be unused, so any associated processing SHOULD cease.\n\nA client MUST NOT attempt to cancel its initialize request.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/cancelled"
@@ -477,15 +498,20 @@ A client MUST NOT attempt to cancel its initialize request.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CancelledNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: CancelledNotificationParams,
 }
 impl CancelledNotification {
     pub fn new(params: CancelledNotificationParams) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/cancelled".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -850,10 +876,19 @@ impl ::std::convert::From<Result> for ClientResult {
 ///  "description": "A request from the client to the server, to ask for completion options.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "completion/complete"
@@ -914,15 +949,22 @@ impl ::std::convert::From<Result> for ClientResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CompleteRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: CompleteRequestParams,
 }
 impl CompleteRequest {
-    pub fn new(params: CompleteRequestParams) -> Self {
+    pub fn new(id: RequestId, params: CompleteRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "completion/complete".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -1100,7 +1142,7 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestParamsRe
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1134,7 +1176,7 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestParamsRe
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CompleteResult {
     pub completion: CompleteResultCompletion,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -1248,10 +1290,19 @@ impl ::std::convert::From<EmbeddedResource> for ContentBlock {
 ///  "description": "A request from the server to sample an LLM via the client. The client has full discretion over which model to select. The client should also inform the user before beginning sampling, to allow them to inspect the request (human in the loop) and decide whether to approve it.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "sampling/createMessage"
@@ -1312,15 +1363,22 @@ impl ::std::convert::From<EmbeddedResource> for ContentBlock {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateMessageRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: CreateMessageRequestParams,
 }
 impl CreateMessageRequest {
-    pub fn new(params: CreateMessageRequestParams) -> Self {
+    pub fn new(id: RequestId, params: CreateMessageRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "sampling/createMessage".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -1462,7 +1520,7 @@ impl ::std::fmt::Display for CreateMessageRequestParamsIncludeContext {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1497,7 +1555,7 @@ impl ::std::fmt::Display for CreateMessageRequestParamsIncludeContext {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateMessageResult {
     pub content: CreateMessageResultContent,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The name of the model that generated the message.
@@ -1572,10 +1630,19 @@ pub struct Cursor(pub ::std::string::String);
 ///  "description": "A request from the server to elicit additional information from the user via the client.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "elicitation/create"
@@ -1625,15 +1692,22 @@ pub struct Cursor(pub ::std::string::String);
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ElicitRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: ElicitRequestParams,
 }
 impl ElicitRequest {
-    pub fn new(params: ElicitRequestParams) -> Self {
+    pub fn new(id: RequestId, params: ElicitRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "elicitation/create".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -1768,7 +1842,7 @@ impl ElicitRequestParamsRequestedSchema {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1807,7 +1881,7 @@ pub struct ElicitResult {
     Contains values matching the requested schema.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub content: ::std::option::Option<::std::collections::HashMap<::std::string::String, ElicitResultContentValue>>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -1895,7 +1969,7 @@ of the LLM and/or the user.*/
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1926,7 +2000,7 @@ pub struct EmbeddedResource {
     ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub annotations: ::std::option::Option<Annotations>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub resource: EmbeddedResourceResource,
@@ -2081,10 +2155,19 @@ impl EnumSchema {
 ///  "description": "Used by the client to get a prompt provided by the server.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "prompts/get"
@@ -2114,15 +2197,22 @@ impl EnumSchema {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct GetPromptRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: GetPromptRequestParams,
 }
 impl GetPromptRequest {
-    pub fn new(params: GetPromptRequestParams) -> Self {
+    pub fn new(id: RequestId, params: GetPromptRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "prompts/get".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -2178,7 +2268,7 @@ pub struct GetPromptRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2202,7 +2292,7 @@ pub struct GetPromptResult {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     pub messages: ::std::vec::Vec<PromptMessage>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -2221,7 +2311,7 @@ pub struct GetPromptResult {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2253,7 +2343,7 @@ pub struct ImageContent {
     pub annotations: ::std::option::Option<Annotations>,
     ///The base64-encoded image data.
     pub data: ::std::string::String,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of the image. Different providers may support different image types.
@@ -2334,10 +2424,19 @@ pub struct Implementation {
 ///  "description": "This request is sent from the client to the server when it first connects, asking it to begin initialization.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "initialize"
@@ -2368,15 +2467,22 @@ pub struct Implementation {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct InitializeRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: InitializeRequestParams,
 }
 impl InitializeRequest {
-    pub fn new(params: InitializeRequestParams) -> Self {
+    pub fn new(id: RequestId, params: InitializeRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "initialize".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -2436,7 +2542,7 @@ pub struct InitializeRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2465,7 +2571,7 @@ pub struct InitializeResult {
     This can be used by clients to improve the LLM's understanding of available tools, resources, etc. It can be thought of like a "hint" to the model. For example, this information MAY be added to the system prompt.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub instructions: ::std::option::Option<::std::string::String>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The version of the Model Context Protocol that the server wants to use. This may not match the version that the client requested. If the client cannot support this version, it MUST disconnect.
@@ -2483,9 +2589,14 @@ pub struct InitializeResult {
 ///  "description": "This notification is sent from the client to the server after initialization has finished.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/initialized"
@@ -2494,7 +2605,7 @@ pub struct InitializeResult {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -2507,6 +2618,7 @@ pub struct InitializeResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct InitializedNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<InitializedNotificationParams>,
@@ -2514,9 +2626,13 @@ pub struct InitializedNotification {
 impl InitializedNotification {
     pub fn new(params: ::std::option::Option<InitializedNotificationParams>) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/initialized".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -2534,7 +2650,7 @@ impl InitializedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -2545,7 +2661,7 @@ impl InitializedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct InitializedNotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2566,24 +2682,7 @@ pub struct InitializedNotificationParams {
 ///  ],
 ///  "properties": {
 ///    "error": {
-///      "type": "object",
-///      "required": [
-///        "code",
-///        "message"
-///      ],
-///      "properties": {
-///        "code": {
-///          "description": "The error type that occurred.",
-///          "type": "integer"
-///        },
-///        "data": {
-///          "description": "Additional information about the error. The value of this member is defined by the sender (e.g. detailed error information, nested errors etc.)."
-///        },
-///        "message": {
-///          "description": "A short description of the error. The message SHOULD be limited to a concise single sentence.",
-///          "type": "string"
-///        }
-///      }
+///      "$ref": "#/definitions/Error"
 ///    },
 ///    "id": {
 ///      "$ref": "#/definitions/RequestId"
@@ -2690,7 +2789,7 @@ impl ::std::convert::From<JsonrpcError> for JsonrpcMessage {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -2729,7 +2828,7 @@ impl JsonrpcNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -2740,7 +2839,7 @@ impl JsonrpcNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct JsonrpcNotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2774,7 +2873,7 @@ pub struct JsonrpcNotificationParams {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -2821,7 +2920,7 @@ impl JsonrpcRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -2843,13 +2942,13 @@ pub struct JsonrpcRequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -2924,9 +3023,18 @@ impl JsonrpcResponse {
 ///  "description": "Sent from the client to request a list of prompts and prompt templates the server has.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "prompts/list"
@@ -2946,16 +3054,23 @@ impl JsonrpcResponse {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListPromptsRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ListPromptsRequestParams>,
 }
 impl ListPromptsRequest {
-    pub fn new(params: ::std::option::Option<ListPromptsRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: ::std::option::Option<ListPromptsRequestParams>) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "prompts/list".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -3000,7 +3115,7 @@ pub struct ListPromptsRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3020,7 +3135,7 @@ pub struct ListPromptsRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListPromptsResult {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3038,9 +3153,18 @@ pub struct ListPromptsResult {
 ///  "description": "Sent from the client to request a list of resource templates the server has.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "resources/templates/list"
@@ -3060,16 +3184,23 @@ pub struct ListPromptsResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourceTemplatesRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ListResourceTemplatesRequestParams>,
 }
 impl ListResourceTemplatesRequest {
-    pub fn new(params: ::std::option::Option<ListResourceTemplatesRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: ::std::option::Option<ListResourceTemplatesRequestParams>) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "resources/templates/list".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -3114,7 +3245,7 @@ pub struct ListResourceTemplatesRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3134,7 +3265,7 @@ pub struct ListResourceTemplatesRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourceTemplatesResult {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3153,9 +3284,18 @@ pub struct ListResourceTemplatesResult {
 ///  "description": "Sent from the client to request a list of resources the server has.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "resources/list"
@@ -3175,16 +3315,23 @@ pub struct ListResourceTemplatesResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourcesRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ListResourcesRequestParams>,
 }
 impl ListResourcesRequest {
-    pub fn new(params: ::std::option::Option<ListResourcesRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: ::std::option::Option<ListResourcesRequestParams>) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "resources/list".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -3229,7 +3376,7 @@ pub struct ListResourcesRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3249,7 +3396,7 @@ pub struct ListResourcesRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourcesResult {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3272,9 +3419,18 @@ structure or access specific locations that the client has permission to read fr
 ///  "description": "Sent from the server to request a list of root URIs from the client. Roots allow\nservers to ask for specific directories or files to operate on. A common example\nfor roots is providing a set of repositories or directories a server should operate\non.\n\nThis request is typically used when the server needs to understand the file system\nstructure or access specific locations that the client has permission to read from.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "roots/list"
@@ -3283,7 +3439,7 @@ structure or access specific locations that the client has permission to read fr
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -3302,16 +3458,23 @@ structure or access specific locations that the client has permission to read fr
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ListRootsRequestParams>,
 }
 impl ListRootsRequest {
-    pub fn new(params: ::std::option::Option<ListRootsRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: ::std::option::Option<ListRootsRequestParams>) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "roots/list".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -3329,7 +3492,7 @@ impl ListRootsRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -3351,13 +3514,13 @@ pub struct ListRootsRequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -3392,7 +3555,7 @@ or file that the server can operate on.*/
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3408,7 +3571,7 @@ or file that the server can operate on.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsResult {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub roots: ::std::vec::Vec<Root>,
@@ -3422,9 +3585,18 @@ pub struct ListRootsResult {
 ///  "description": "Sent from the client to request a list of tools the server has.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "tools/list"
@@ -3444,16 +3616,23 @@ pub struct ListRootsResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListToolsRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ListToolsRequestParams>,
 }
 impl ListToolsRequest {
-    pub fn new(params: ::std::option::Option<ListToolsRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: ::std::option::Option<ListToolsRequestParams>) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "tools/list".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -3498,7 +3677,7 @@ pub struct ListToolsRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3518,7 +3697,7 @@ pub struct ListToolsRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListToolsResult {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3583,19 +3762,24 @@ impl ::std::fmt::Display for LoggingLevel {
         }
     }
 }
-///Notification of a log message passed from server to client. If no logging/setLevel request has been sent from the client, the server MAY decide which messages to send automatically.
+///JSONRPCNotification of a log message passed from server to client. If no logging/setLevel request has been sent from the client, the server MAY decide which messages to send automatically.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Notification of a log message passed from server to client. If no logging/setLevel request has been sent from the client, the server MAY decide which messages to send automatically.",
+///  "description": "JSONRPCNotification of a log message passed from server to client. If no logging/setLevel request has been sent from the client, the server MAY decide which messages to send automatically.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/message"
@@ -3626,15 +3810,20 @@ impl ::std::fmt::Display for LoggingLevel {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct LoggingMessageNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: LoggingMessageNotificationParams,
 }
 impl LoggingMessageNotification {
     pub fn new(params: LoggingMessageNotificationParams) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/message".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -3795,7 +3984,7 @@ pub struct ModelPreferences {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -3821,7 +4010,7 @@ pub struct Notification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -3832,7 +4021,7 @@ pub struct Notification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct NotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3922,9 +4111,18 @@ impl ::std::fmt::Display for NumberSchemaType {
 ///{
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string"
 ///    },
@@ -3943,9 +4141,24 @@ impl ::std::fmt::Display for NumberSchemaType {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct PaginatedRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     pub method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<PaginatedRequestParams>,
+}
+impl PaginatedRequest {
+    pub fn new(id: RequestId, method: ::std::string::String, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
+        Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
+            method,
+            params,
+        }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
+    }
 }
 ///PaginatedRequestParams
 ///
@@ -3979,7 +4192,7 @@ pub struct PaginatedRequestParams {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3993,7 +4206,7 @@ pub struct PaginatedRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct PaginatedResult {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -4010,9 +4223,18 @@ pub struct PaginatedResult {
 ///  "description": "A ping, issued by either the server or the client, to check that the other party is still alive. The receiver must promptly respond, or else may be disconnected.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "ping"
@@ -4021,7 +4243,7 @@ pub struct PaginatedResult {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -4040,16 +4262,23 @@ pub struct PaginatedResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct PingRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<PingRequestParams>,
 }
 impl PingRequest {
-    pub fn new(params: ::std::option::Option<PingRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: ::std::option::Option<PingRequestParams>) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "ping".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -4067,7 +4296,7 @@ impl PingRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -4089,13 +4318,13 @@ pub struct PingRequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -4177,10 +4406,15 @@ impl ::std::convert::From<EnumSchema> for PrimitiveSchemaDefinition {
 ///  "description": "An out-of-band notification used to inform the receiver of a progress update for a long-running request.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/progress"
@@ -4216,15 +4450,20 @@ impl ::std::convert::From<EnumSchema> for PrimitiveSchemaDefinition {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ProgressNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: ProgressNotificationParams,
 }
 impl ProgressNotification {
     pub fn new(params: ProgressNotificationParams) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/progress".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -4315,7 +4554,7 @@ impl ::std::convert::From<i64> for ProgressToken {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4350,7 +4589,7 @@ pub struct Prompt {
     ///An optional description of what this prompt provides
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
@@ -4422,9 +4661,14 @@ pub struct PromptArgument {
 ///  "description": "An optional notification from the server to the client, informing it that the list of prompts it offers has changed. This may be issued by servers without any previous subscription from the client.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/prompts/list_changed"
@@ -4433,7 +4677,7 @@ pub struct PromptArgument {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -4446,6 +4690,7 @@ pub struct PromptArgument {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct PromptListChangedNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<PromptListChangedNotificationParams>,
@@ -4453,9 +4698,13 @@ pub struct PromptListChangedNotification {
 impl PromptListChangedNotification {
     pub fn new(params: ::std::option::Option<PromptListChangedNotificationParams>) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/prompts/list_changed".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -4473,7 +4722,7 @@ impl PromptListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -4484,7 +4733,7 @@ impl PromptListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct PromptListChangedNotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4587,10 +4836,19 @@ impl PromptReference {
 ///  "description": "Sent from the client to the server, to read a specific resource URI.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "resources/read"
@@ -4614,15 +4872,22 @@ impl PromptReference {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ReadResourceRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: ReadResourceRequestParams,
 }
 impl ReadResourceRequest {
-    pub fn new(params: ReadResourceRequestParams) -> Self {
+    pub fn new(id: RequestId, params: ReadResourceRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "resources/read".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -4669,7 +4934,7 @@ pub struct ReadResourceRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4693,7 +4958,7 @@ pub struct ReadResourceRequestParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ReadResourceResult {
     pub contents: ::std::vec::Vec<ReadResourceResultContentsItem>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -4748,7 +5013,7 @@ impl ::std::convert::From<BlobResourceContents> for ReadResourceResultContentsIt
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -4805,7 +5070,7 @@ impl ::std::convert::From<i64> for RequestId {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -4827,13 +5092,13 @@ pub struct RequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -4867,7 +5132,7 @@ pub struct RequestParamsMeta {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4913,7 +5178,7 @@ pub struct Resource {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -4948,7 +5213,7 @@ pub struct Resource {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4967,7 +5232,7 @@ pub struct Resource {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceContents {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -4992,7 +5257,7 @@ Note: resource links returned by tools are not guaranteed to appear in the resul
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5042,7 +5307,7 @@ pub struct ResourceLink {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -5106,9 +5371,14 @@ impl ResourceLink {
 ///  "description": "An optional notification from the server to the client, informing it that the list of resources it can read from has changed. This may be issued by servers without any previous subscription from the client.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/resources/list_changed"
@@ -5117,7 +5387,7 @@ impl ResourceLink {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -5130,6 +5400,7 @@ impl ResourceLink {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceListChangedNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ResourceListChangedNotificationParams>,
@@ -5137,9 +5408,13 @@ pub struct ResourceListChangedNotification {
 impl ResourceListChangedNotification {
     pub fn new(params: ::std::option::Option<ResourceListChangedNotificationParams>) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/resources/list_changed".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -5157,7 +5432,7 @@ impl ResourceListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5168,7 +5443,7 @@ impl ResourceListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ResourceListChangedNotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5188,7 +5463,7 @@ pub struct ResourceListChangedNotificationParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5230,7 +5505,7 @@ pub struct ResourceTemplate {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type for all resources that match this template. This should only be included if all resources matching this template have the same type.
@@ -5305,10 +5580,15 @@ impl ResourceTemplateReference {
 ///  "description": "A notification from the server to the client, informing it that a resource has changed and may need to be read again. This should only be sent if the client previously sent a resources/subscribe request.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/resources/updated"
@@ -5332,15 +5612,20 @@ impl ResourceTemplateReference {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceUpdatedNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: ResourceUpdatedNotificationParams,
 }
 impl ResourceUpdatedNotification {
     pub fn new(params: ResourceUpdatedNotificationParams) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/resources/updated".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -5383,7 +5668,7 @@ pub struct ResourceUpdatedNotificationParams {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5394,7 +5679,7 @@ pub struct ResourceUpdatedNotificationParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct Result {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5443,7 +5728,7 @@ impl ::std::fmt::Display for Role {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5462,7 +5747,7 @@ impl ::std::fmt::Display for Role {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct Root {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An optional name for the root. This can be used to provide a human-readable
@@ -5486,9 +5771,14 @@ The server should then request an updated list of roots using the ListRootsReque
 ///  "description": "A notification from the client to the server, informing it that the list of roots has changed.\nThis notification should be sent whenever the client adds, removes, or modifies any root.\nThe server should then request an updated list of roots using the ListRootsRequest.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/roots/list_changed"
@@ -5497,7 +5787,7 @@ The server should then request an updated list of roots using the ListRootsReque
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -5510,6 +5800,7 @@ The server should then request an updated list of roots using the ListRootsReque
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct RootsListChangedNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<RootsListChangedNotificationParams>,
@@ -5517,9 +5808,13 @@ pub struct RootsListChangedNotification {
 impl RootsListChangedNotification {
     pub fn new(params: ::std::option::Option<RootsListChangedNotificationParams>) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/roots/list_changed".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -5537,7 +5832,7 @@ impl RootsListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5548,7 +5843,7 @@ impl RootsListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct RootsListChangedNotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6075,10 +6370,19 @@ impl ::std::convert::From<Result> for ServerResult {
 ///  "description": "A request from the client to the server, to enable or adjust logging.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "logging/setLevel"
@@ -6101,15 +6405,22 @@ impl ::std::convert::From<Result> for ServerResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct SetLevelRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: SetLevelRequestParams,
 }
 impl SetLevelRequest {
-    pub fn new(params: SetLevelRequestParams) -> Self {
+    pub fn new(id: RequestId, params: SetLevelRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "logging/setLevel".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -6267,10 +6578,19 @@ impl ::std::fmt::Display for StringSchemaFormat {
 ///  "description": "Sent from the client to request resources/updated notifications from the server whenever a particular resource changes.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "resources/subscribe"
@@ -6294,15 +6614,22 @@ impl ::std::fmt::Display for StringSchemaFormat {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct SubscribeRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: SubscribeRequestParams,
 }
 impl SubscribeRequest {
-    pub fn new(params: SubscribeRequestParams) -> Self {
+    pub fn new(id: RequestId, params: SubscribeRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "resources/subscribe".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -6350,7 +6677,7 @@ pub struct SubscribeRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6375,7 +6702,7 @@ pub struct TextContent {
     ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub annotations: ::std::option::Option<Annotations>,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The text content of the message.
@@ -6416,7 +6743,7 @@ impl TextContent {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6439,7 +6766,7 @@ impl TextContent {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct TextResourceContents {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -6464,7 +6791,7 @@ pub struct TextResourceContents {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6552,7 +6879,7 @@ pub struct Tool {
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(rename = "inputSchema")]
     pub input_schema: ToolInputSchema,
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
@@ -6710,9 +7037,14 @@ impl ToolInputSchema {
 ///  "description": "An optional notification from the server to the client, informing it that the list of tools it offers has changed. This may be issued by servers without any previous subscription from the client.",
 ///  "type": "object",
 ///  "required": [
+///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "notifications/tools/list_changed"
@@ -6721,7 +7053,7 @@ impl ToolInputSchema {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -6734,6 +7066,7 @@ impl ToolInputSchema {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ToolListChangedNotification {
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ToolListChangedNotificationParams>,
@@ -6741,9 +7074,13 @@ pub struct ToolListChangedNotification {
 impl ToolListChangedNotification {
     pub fn new(params: ::std::option::Option<ToolListChangedNotificationParams>) -> Self {
         Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "notifications/tools/list_changed".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -6761,7 +7098,7 @@ impl ToolListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/draft/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -6772,7 +7109,7 @@ impl ToolListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ToolListChangedNotificationParams {
-    ///See [specification/draft/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6855,10 +7192,19 @@ impl ToolOutputSchema {
 ///  "description": "Sent from the client to request cancellation of resources/updated notifications from the server. This should follow a previous resources/subscribe request.",
 ///  "type": "object",
 ///  "required": [
+///    "id",
+///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
+///    "id": {
+///      "$ref": "#/definitions/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "resources/unsubscribe"
@@ -6882,15 +7228,22 @@ impl ToolOutputSchema {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct UnsubscribeRequest {
+    pub id: RequestId,
+    jsonrpc: ::std::string::String,
     method: ::std::string::String,
     pub params: UnsubscribeRequestParams,
 }
 impl UnsubscribeRequest {
-    pub fn new(params: UnsubscribeRequestParams) -> Self {
+    pub fn new(id: RequestId, params: UnsubscribeRequestParams) -> Self {
         Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "resources/unsubscribe".to_string(),
             params,
         }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method

@@ -236,6 +236,11 @@ impl ClientMessage {
     pub fn is_initialize_request(&self) -> bool {
         matches!(self, Self::Request(request) if request.request.is_initialize_request())
     }
+
+    /// Returns `true` if the message is an `InitializedNotification`
+    pub fn is_initialized_notification(&self) -> bool {
+        matches!(self, Self::Notification(notofication) if notofication.notification.is_initialized_notification())
+    }
 }
 
 impl From<ClientJsonrpcNotification> for ClientMessage {
@@ -519,7 +524,7 @@ impl TryFrom<NotificationFromClient> for ClientNotification {
 }
 
 impl NotificationFromClient {
-    /// Checks if the current notification is an `InitializedNotification` from the client, indicating that the client has been initialized.
+    /// Returns `true` if the message is an `InitializedNotification`
     pub fn is_initialized_notification(&self) -> bool {
         matches!(
             self,
@@ -1318,9 +1323,14 @@ pub enum MessageFromClient {
 }
 
 impl MessageFromClient {
-    /// Returns `true` if the request is an `InitializeRequest`.
+    /// Returns `true` if the message is an `InitializeRequest`.
     pub fn is_initialize_request(&self) -> bool {
         matches!(self, Self::RequestFromClient(request) if request.is_initialize_request())
+    }
+
+    /// Returns `true` if the message is an `InitializedNotification`
+    pub fn is_initialized_notification(&self) -> bool {
+        matches!(self, Self::NotificationFromClient(notofication) if notofication.is_initialized_notification())
     }
 }
 
@@ -1450,11 +1460,59 @@ impl CallToolError {
     }
 
     /// Specific constructor to create a `CallToolError` for an `UnknownTool` error.
-    pub fn unknown_tool(tool_name: String) -> Self {
+    pub fn unknown_tool(tool_name: impl Into<String>) -> Self {
         // Create a `CallToolError` from an `UnknownTool` error (wrapped in a `Box`).
-        CallToolError(Box::new(UnknownTool(tool_name)))
+        CallToolError(Box::new(UnknownTool(tool_name.into())))
+    }
+
+    pub fn invalid_arguments(tool_name: impl Into<String>, message: Option<impl Into<String>>) -> Self {
+        let tool_name = tool_name.into();
+        let message = message.map(|m| m.into());
+
+        let full_message = match message {
+            Some(msg) => format!("Invalid arguments for tool '{tool_name}': {msg}" ),
+            None => format!("Invalid arguments for tool '{tool_name}'"),
+        };
+        Self::from_message(full_message)
+    }
+
+    /// Creates a new `CallToolError` from a string message.
+    ///
+    /// This is useful for generating ad-hoc or one-off errors without defining a custom error type.
+    /// Internally, it wraps the string in a lightweight error type that implements the `Error` trait.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let err = CallToolError::from_message("Something went wrong");
+    /// println!("{:?}", err);
+    /// ```
+    ///
+    /// # Parameters
+    ///
+    /// - `message`: Any type that can be converted into a `String` (e.g., `&str` or `String`)
+    ///
+    /// # Returns
+    ///
+    /// A `CallToolError` wrapping a dynamic error created from the provided message.
+    pub fn from_message(message: impl Into<String>) -> Self {
+        struct MsgError(String);
+        impl std::fmt::Debug for MsgError {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
+        impl std::fmt::Display for MsgError {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
+        impl std::error::Error for MsgError {}
+
+        CallToolError::new(MsgError(message.into()))
     }
 }
+
 
 /// Converts a `CallToolError` into a `RpcError`.
 ///
@@ -1507,8 +1565,6 @@ impl<T: Into<String>> From<T> for TextContent {
         TextContent::new(value.into(), None)
     }
 }
-
-
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(untagged)]
@@ -1568,8 +1624,6 @@ impl Display for ClientMessages {
     }
 }
 
-
-
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -1627,8 +1681,6 @@ impl Display for ServerMessages {
         )
     }
 }
-
-
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(untagged)]
