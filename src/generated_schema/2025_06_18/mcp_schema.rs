@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 0695a497eb50a804fc0e88c18a93a21a675d6b3e
-/// Generated at : 2025-07-27 15:33:21
+/// Hash : a470342d05c345b580642821605b9c885bad237b
+/// Generated at : 2025-08-29 19:12:24
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -83,7 +83,7 @@ pub struct Annotations {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -115,7 +115,7 @@ pub struct AudioContent {
     pub annotations: ::std::option::Option<Annotations>,
     ///The base64-encoded audio data.
     pub data: ::std::string::String,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of the audio. Different providers may support different audio types.
@@ -195,7 +195,7 @@ pub struct BaseMetadata {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -221,7 +221,7 @@ pub struct BaseMetadata {
 pub struct BlobResourceContents {
     ///A base64-encoded string representing the binary data of the item.
     pub blob: ::std::string::String,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -385,7 +385,7 @@ pub struct CallToolRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -424,7 +424,7 @@ pub struct CallToolResult {
     should be reported as an MCP error response.*/
     #[serde(rename = "isError", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub is_error: ::std::option::Option<bool>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///An optional JSON object that represents the structured result of the tool call.
@@ -1100,7 +1100,7 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestParamsRe
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1134,7 +1134,7 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestParamsRe
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CompleteResult {
     pub completion: CompleteResultCompletion,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -1462,7 +1462,7 @@ impl ::std::fmt::Display for CreateMessageRequestParamsIncludeContext {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1497,7 +1497,7 @@ impl ::std::fmt::Display for CreateMessageRequestParamsIncludeContext {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateMessageResult {
     pub content: CreateMessageResultContent,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The name of the model that generated the message.
@@ -1768,7 +1768,7 @@ impl ElicitRequestParamsRequestedSchema {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1807,7 +1807,7 @@ pub struct ElicitResult {
     Contains values matching the requested schema.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub content: ::std::option::Option<::std::collections::HashMap<::std::string::String, ElicitResultContentValue>>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -1895,7 +1895,7 @@ of the LLM and/or the user.*/
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1926,7 +1926,7 @@ pub struct EmbeddedResource {
     ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub annotations: ::std::option::Option<Annotations>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub resource: EmbeddedResourceResource,
@@ -2178,7 +2178,7 @@ pub struct GetPromptRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2202,7 +2202,7 @@ pub struct GetPromptResult {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     pub messages: ::std::vec::Vec<PromptMessage>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -2221,7 +2221,7 @@ pub struct GetPromptResult {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2253,7 +2253,7 @@ pub struct ImageContent {
     pub annotations: ::std::option::Option<Annotations>,
     ///The base64-encoded image data.
     pub data: ::std::string::String,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of the image. Different providers may support different image types.
@@ -2436,7 +2436,7 @@ pub struct InitializeRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2465,7 +2465,7 @@ pub struct InitializeResult {
     This can be used by clients to improve the LLM's understanding of available tools, resources, etc. It can be thought of like a "hint" to the model. For example, this information MAY be added to the system prompt.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub instructions: ::std::option::Option<::std::string::String>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The version of the Model Context Protocol that the server wants to use. This may not match the version that the client requested. If the client cannot support this version, it MUST disconnect.
@@ -2494,7 +2494,7 @@ pub struct InitializeResult {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -2534,7 +2534,7 @@ impl InitializedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -2545,7 +2545,7 @@ impl InitializedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct InitializedNotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2690,7 +2690,7 @@ impl ::std::convert::From<JsonrpcError> for JsonrpcMessage {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -2729,7 +2729,7 @@ impl JsonrpcNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -2740,7 +2740,7 @@ impl JsonrpcNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct JsonrpcNotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2774,7 +2774,7 @@ pub struct JsonrpcNotificationParams {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -2821,7 +2821,7 @@ impl JsonrpcRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -2843,13 +2843,13 @@ pub struct JsonrpcRequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -3000,7 +3000,7 @@ pub struct ListPromptsRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3020,7 +3020,7 @@ pub struct ListPromptsRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListPromptsResult {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3114,7 +3114,7 @@ pub struct ListResourceTemplatesRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3134,7 +3134,7 @@ pub struct ListResourceTemplatesRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourceTemplatesResult {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3229,7 +3229,7 @@ pub struct ListResourcesRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3249,7 +3249,7 @@ pub struct ListResourcesRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourcesResult {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3283,7 +3283,7 @@ structure or access specific locations that the client has permission to read fr
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -3329,7 +3329,7 @@ impl ListRootsRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -3351,13 +3351,13 @@ pub struct ListRootsRequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -3392,7 +3392,7 @@ or file that the server can operate on.*/
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3408,7 +3408,7 @@ or file that the server can operate on.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsResult {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub roots: ::std::vec::Vec<Root>,
@@ -3498,7 +3498,7 @@ pub struct ListToolsRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3518,7 +3518,7 @@ pub struct ListToolsRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListToolsResult {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -3795,7 +3795,7 @@ pub struct ModelPreferences {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -3821,7 +3821,7 @@ pub struct Notification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -3832,7 +3832,7 @@ pub struct Notification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct NotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3979,7 +3979,7 @@ pub struct PaginatedRequestParams {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3993,7 +3993,7 @@ pub struct PaginatedRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct PaginatedResult {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -4021,7 +4021,7 @@ pub struct PaginatedResult {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -4067,7 +4067,7 @@ impl PingRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -4089,13 +4089,13 @@ pub struct PingRequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -4315,7 +4315,7 @@ impl ::std::convert::From<i64> for ProgressToken {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4350,7 +4350,7 @@ pub struct Prompt {
     ///An optional description of what this prompt provides
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
@@ -4433,7 +4433,7 @@ pub struct PromptArgument {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -4473,7 +4473,7 @@ impl PromptListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -4484,7 +4484,7 @@ impl PromptListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct PromptListChangedNotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4669,7 +4669,7 @@ pub struct ReadResourceRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4693,7 +4693,7 @@ pub struct ReadResourceRequestParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ReadResourceResult {
     pub contents: ::std::vec::Vec<ReadResourceResultContentsItem>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -4748,7 +4748,7 @@ impl ::std::convert::From<BlobResourceContents> for ReadResourceResultContentsIt
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "properties": {
 ///            "progressToken": {
@@ -4805,7 +4805,7 @@ impl ::std::convert::From<i64> for RequestId {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -4827,13 +4827,13 @@ pub struct RequestParams {
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///  "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -4867,7 +4867,7 @@ pub struct RequestParamsMeta {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4913,7 +4913,7 @@ pub struct Resource {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -4948,7 +4948,7 @@ pub struct Resource {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4967,7 +4967,7 @@ pub struct Resource {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceContents {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -4992,7 +4992,7 @@ Note: resource links returned by tools are not guaranteed to appear in the resul
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5042,7 +5042,7 @@ pub struct ResourceLink {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -5117,7 +5117,7 @@ impl ResourceLink {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -5157,7 +5157,7 @@ impl ResourceListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5168,7 +5168,7 @@ impl ResourceListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ResourceListChangedNotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5188,7 +5188,7 @@ pub struct ResourceListChangedNotificationParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5230,7 +5230,7 @@ pub struct ResourceTemplate {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type for all resources that match this template. This should only be included if all resources matching this template have the same type.
@@ -5383,7 +5383,7 @@ pub struct ResourceUpdatedNotificationParams {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5394,7 +5394,7 @@ pub struct ResourceUpdatedNotificationParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct Result {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5443,7 +5443,7 @@ impl ::std::fmt::Display for Role {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5462,7 +5462,7 @@ impl ::std::fmt::Display for Role {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct Root {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An optional name for the root. This can be used to provide a human-readable
@@ -5497,7 +5497,7 @@ The server should then request an updated list of roots using the ListRootsReque
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -5537,7 +5537,7 @@ impl RootsListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5548,7 +5548,7 @@ impl RootsListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct RootsListChangedNotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6350,7 +6350,7 @@ pub struct SubscribeRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6375,7 +6375,7 @@ pub struct TextContent {
     ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub annotations: ::std::option::Option<Annotations>,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The text content of the message.
@@ -6416,7 +6416,7 @@ impl TextContent {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6439,7 +6439,7 @@ impl TextContent {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct TextResourceContents {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -6464,7 +6464,7 @@ pub struct TextResourceContents {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6552,7 +6552,7 @@ pub struct Tool {
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(rename = "inputSchema")]
     pub input_schema: ToolInputSchema,
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
@@ -6721,7 +6721,7 @@ impl ToolInputSchema {
 ///      "type": "object",
 ///      "properties": {
 ///        "_meta": {
-///          "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///          "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///          "type": "object",
 ///          "additionalProperties": {}
 ///        }
@@ -6761,7 +6761,7 @@ impl ToolListChangedNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.",
+///      "description": "See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -6772,7 +6772,7 @@ impl ToolListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ToolListChangedNotificationParams {
-    ///See [specification/2025-06-18/basic/index#general-fields] for notes on _meta usage.
+    ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
