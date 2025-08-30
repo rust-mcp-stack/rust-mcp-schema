@@ -1480,7 +1480,7 @@ impl CallToolError {
         let message = message.unwrap_or(default_message);
 
         // Format the full error message
-        let full_message = format!("Invalid arguments for tool '{}': {}", tool_name, message);
+        let full_message = format!("Invalid arguments for tool '{tool_name}': {message}");
 
         Self::from_message(full_message)
     }
