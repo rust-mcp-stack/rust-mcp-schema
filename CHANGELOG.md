@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.2...v0.7.3) (2025-08-30)
+
+
+### Features
+
+* enhance CallToolError API and Introduce is_initialized_notification to ([#85](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/85)) ([83734bf](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/83734bf8a6956c779be6533e3dee16caa45a6884))
+
 ## [0.7.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.1...v0.7.2) (2025-07-27)
 
 
