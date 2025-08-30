@@ -1465,12 +1465,12 @@ impl CallToolError {
         CallToolError(Box::new(UnknownTool(tool_name.into())))
     }
 
-    pub fn invalid_arguments(tool_name: impl Into<String>, message: Option<impl Into<String>>) -> Self {
+    pub fn invalid_arguments<M: Into<String>>(tool_name: M, message: Option<M>) -> Self {
         let tool_name = tool_name.into();
         let message = message.map(|m| m.into());
 
         let full_message = match message {
-            Some(msg) => format!("Invalid arguments for tool '{tool_name}': {msg}" ),
+            Some(msg) => format!("Invalid arguments for tool '{tool_name}': {msg}"),
             None => format!("Invalid arguments for tool '{tool_name}'"),
         };
         Self::from_message(full_message)
@@ -1512,7 +1512,6 @@ impl CallToolError {
         CallToolError::new(MsgError(message.into()))
     }
 }
-
 
 /// Converts a `CallToolError` into a `RpcError`.
 ///

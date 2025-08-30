@@ -1468,14 +1468,22 @@ impl CallToolError {
         CallToolError(Box::new(UnknownTool(tool_name.into())))
     }
 
-    pub fn invalid_arguments(tool_name: impl Into<String>, message: Option<impl Into<String>>) -> Self {
-        let tool_name = tool_name.into();
-        let message = message.map(|m| m.into());
+    /// Creates a `CallToolError` for invalid arguments with optional details.
+    ///
+    pub fn invalid_arguments(tool_name: impl AsRef<str>, message: Option<String>) -> Self {
+        // Trim tool_name to remove whitespace and check for emptiness
+        let tool_name = tool_name.as_ref().trim();
+        if tool_name.is_empty() {
+            return Self::from_message("Invalid arguments: tool name cannot be empty".to_string());
+        }
 
-        let full_message = match message {
-            Some(msg) => format!("Invalid arguments for tool '{tool_name}': {msg}"),
-            None => format!("Invalid arguments for tool '{tool_name}'"),
-        };
+        // Use a descriptive default message if none provided
+        let default_message = "no additional details provided".to_string();
+        let message = message.unwrap_or(default_message);
+
+        // Format the full error message
+        let full_message = format!("Invalid arguments for tool '{}': {}", tool_name, message);
+
         Self::from_message(full_message)
     }
 
