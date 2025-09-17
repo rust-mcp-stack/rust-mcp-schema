@@ -1791,6 +1791,122 @@ impl From<Vec<MessageFromClient>> for MessagesFromClient {
     }
 }
 
+#[derive(Debug)]
+pub struct StringSchemaFormatError {
+    invalid_value: String,
+}
+
+impl core::fmt::Display for StringSchemaFormatError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "Invalid string schema format: '{}'", self.invalid_value)
+    }
+}
+
+impl std::error::Error for StringSchemaFormatError {}
+
+impl FromStr for StringSchemaFormat {
+    type Err = StringSchemaFormatError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "date" => Ok(Self::Date),
+            "date-time" => Ok(Self::DateTime),
+            "email" => Ok(Self::Email),
+            "uri" => Ok(Self::Uri),
+            _ => Err(StringSchemaFormatError {
+                invalid_value: s.to_string(),
+            }),
+        }
+    }
+}
+
+impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
+    type Error = RpcError;
+
+    fn try_from(value: &serde_json::Map<String, serde_json::Value>) -> result::Result<Self, Self::Error> {
+        let input_type = value
+            .get("type")
+            .and_then(|v| v.as_str())
+            .or_else(|| value.get("oneOf").map(|_| "enum")) // if "oneOf" exists, return "enum"
+            .ok_or_else(|| {
+                RpcError::parse_error().with_message("'type' is missing and data type is not supported!".to_string())
+            })?;
+
+        let description = value.get("description").and_then(|v| v.as_str().map(|s| s.to_string()));
+        let title = value.get("title").and_then(|v| v.as_str().map(|s| s.to_string()));
+
+        let schema_definition: PrimitiveSchemaDefinition = match input_type {
+            "string" => {
+                let max_length = value.get("maxLength").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
+                let min_length = value.get("minLength").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
+
+                let format_str = value.get("format").and_then(|v| v.as_str());
+                let format = format_str.and_then(|s| StringSchemaFormat::from_str(s).ok());
+
+                PrimitiveSchemaDefinition::StringSchema(StringSchema::new(
+                    description,
+                    format,
+                    max_length,
+                    min_length,
+                    title,
+                ))
+            }
+            "number" | "integer" => {
+                let maximum = value.get("maximum").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
+                let minimum = value.get("minimum").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
+                PrimitiveSchemaDefinition::NumberSchema(NumberSchema {
+                    description,
+                    maximum,
+                    minimum,
+                    title,
+                    type_: if input_type == "integer" {
+                        NumberSchemaType::Integer
+                    } else {
+                        NumberSchemaType::Number
+                    },
+                })
+            }
+            "boolean" => {
+                let default = value.get("default").and_then(|v| v.as_bool().map(|s| s.to_owned()));
+                PrimitiveSchemaDefinition::BooleanSchema(BooleanSchema::new(default, description, title))
+            }
+
+            "enum" => {
+                let mut enum_values: ::std::vec::Vec<::std::string::String> = vec![];
+                let mut enum_names: ::std::vec::Vec<::std::string::String> = vec![];
+                let values = value.get("oneOf").and_then(|v| v.as_array()).ok_or_else(|| {
+                    RpcError::parse_error()
+                        .with_message("Unsupported enum type, only simple enums are supported!".to_string())
+                })?;
+
+                for v in values {
+                    let title = v.get("title").and_then(|v| v.as_str().map(|s| s.to_string()));
+                    let enum_value = v.get("enum").and_then(|v| v.as_array()).ok_or_else(|| {
+                        RpcError::parse_error()
+                            .with_message("Unsupported enum type. only simple enums are supported!".to_string())
+                    })?;
+                    let enum_value = enum_value
+                        .first()
+                        .and_then(|s| s.as_str().map(|s| s.to_string()))
+                        .ok_or_else(|| {
+                            RpcError::parse_error()
+                                .with_message("Unsupported enum value, only simple enums are supported!".to_string())
+                        })?;
+
+                    enum_values.push(enum_value.to_owned());
+                    enum_names.push(title.unwrap_or(enum_value));
+                }
+                PrimitiveSchemaDefinition::EnumSchema(EnumSchema::new(enum_values, enum_names, description, title))
+            }
+            other => {
+                panic!("'{other}' type is not currently supported");
+            }
+        };
+
+        Ok(schema_definition)
+    }
+}
+
 #[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
 pub type RPCMessage = ();
 #[deprecated(since = "0.4.0", note = "This trait was renamed to McpMessage. Use McpMessage instead.")]

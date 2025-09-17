@@ -306,6 +306,10 @@ mod test_serialize {
                 meta: None,
                 protocol_version: LATEST_PROTOCOL_VERSION.to_string(),
                 server_info: Implementation {
+                    #[cfg(feature = "draft")]
+                    icons: vec![],
+                    #[cfg(feature = "draft")]
+                    website_url: None,
                     name: "example-servers/everything".to_string(),
                     version: "1.0.0".to_string(),
                     #[cfg(any(feature = "2025_06_18", feature = "draft"))]
@@ -874,6 +878,8 @@ mod test_serialize {
                 meta: None,
                 next_cursor: None,
                 resources: vec![Resource {
+                    #[cfg(feature = "draft")]
+                    icons: vec![],
                     annotations: None,
                     description: None,
                     mime_type: None,

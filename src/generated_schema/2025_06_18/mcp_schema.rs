@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : a470342d05c345b580642821605b9c885bad237b
-/// Generated at : 2025-08-29 19:12:24
+/// Hash : 3473e6e72b222f44163b41eab8d4b0973ac106b6
+/// Generated at : 2025-09-17 19:15:50
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -1693,7 +1693,7 @@ pub struct ElicitRequestParams {
     ///The message to present to the user.
     pub message: ::std::string::String,
     #[serde(rename = "requestedSchema")]
-    pub requested_schema: ElicitRequestParamsRequestedSchema,
+    pub requested_schema: ElicitRequestedSchema,
 }
 /**A restricted subset of JSON Schema.
 Only top-level properties are allowed, without nesting.*/
@@ -1730,14 +1730,14 @@ Only top-level properties are allowed, without nesting.*/
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitRequestParamsRequestedSchema {
+pub struct ElicitRequestedSchema {
     pub properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "type")]
     type_: ::std::string::String,
 }
-impl ElicitRequestParamsRequestedSchema {
+impl ElicitRequestedSchema {
     pub fn new(
         properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
         required: ::std::vec::Vec<::std::string::String>,
@@ -7169,3 +7169,5 @@ impl ServerNotification {
 }
 #[deprecated(since = "0.3.0", note = "Use `RpcError` instead.")]
 pub type JsonrpcErrorError = RpcError;
+#[deprecated(since = "0.7.0", note = "Use `ElicitRequestedSchema` instead.")]
+pub type ElicitRequestParamsRequestedSchema = ElicitRequestedSchema;
