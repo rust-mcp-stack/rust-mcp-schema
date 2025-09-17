@@ -1,3 +1,4 @@
+#[allow(clippy::large_enum_variant)]
 /// modules
 mod generated_schema;
 

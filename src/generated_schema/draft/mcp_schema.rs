@@ -5,8 +5,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : a470342d05c345b580642821605b9c885bad237b
-/// Generated at : 2025-08-29 19:12:24
+/// Hash : 3473e6e72b222f44163b41eab8d4b0973ac106b6
+/// Generated at : 2025-09-17 19:15:51
 /// ----------------------------------------------------------------------------
 ///
 /// MCP Protocol Version
@@ -1767,7 +1767,7 @@ pub struct ElicitRequestParams {
     ///The message to present to the user.
     pub message: ::std::string::String,
     #[serde(rename = "requestedSchema")]
-    pub requested_schema: ElicitRequestParamsRequestedSchema,
+    pub requested_schema: ElicitRequestedSchema,
 }
 /**A restricted subset of JSON Schema.
 Only top-level properties are allowed, without nesting.*/
@@ -1804,14 +1804,14 @@ Only top-level properties are allowed, without nesting.*/
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitRequestParamsRequestedSchema {
+pub struct ElicitRequestedSchema {
     pub properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "type")]
     type_: ::std::string::String,
 }
-impl ElicitRequestParamsRequestedSchema {
+impl ElicitRequestedSchema {
     pub fn new(
         properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
         required: ::std::vec::Vec<::std::string::String>,
@@ -2085,6 +2085,9 @@ pub struct EmptyResult(pub Result);
 ///    "type"
 ///  ],
 ///  "properties": {
+///    "default": {
+///      "type": "string"
+///    },
 ///    "description": {
 ///      "type": "string"
 ///    },
@@ -2114,6 +2117,8 @@ pub struct EmptyResult(pub Result);
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct EnumSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub default: ::std::option::Option<::std::string::String>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(rename = "enum")]
     pub enum_: ::std::vec::Vec<::std::string::String>,
@@ -2128,10 +2133,12 @@ impl EnumSchema {
     pub fn new(
         enum_: ::std::vec::Vec<::std::string::String>,
         enum_names: ::std::vec::Vec<::std::string::String>,
+        default: ::std::option::Option<::std::string::String>,
         description: ::std::option::Option<::std::string::String>,
         title: ::std::option::Option<::std::string::String>,
     ) -> Self {
         Self {
+            default,
             description,
             enum_,
             enum_names,
@@ -2296,6 +2303,86 @@ pub struct GetPromptResult {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
+///An optionally-sized icon that can be displayed in a user interface.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "An optionally-sized icon that can be displayed in a user interface.",
+///  "type": "object",
+///  "required": [
+///    "src"
+///  ],
+///  "properties": {
+///    "mimeType": {
+///      "description": "Optional MIME type override if the source MIME type is missing or generic.\nFor example: \"image/png\", \"image/jpeg\", or \"image/svg+xml\".",
+///      "type": "string"
+///    },
+///    "sizes": {
+///      "description": "Optional string that specifies one or more sizes at which the icon can be used.\nFor example: \"48x48\", \"48x48 96x96\", or \"any\" for scalable formats like SVG.\n\nIf not provided, the client should assume that the icon can be used at any size.",
+///      "type": "string"
+///    },
+///    "src": {
+///      "description": "A standard URI pointing to an icon resource. May be an HTTP/HTTPS URL or a\ndata: URI with Base64-encoded image data.\n\nConsumers SHOULD takes steps to ensure URLs serving icons are from the\nsame domain as the client/server or a trusted domain.\n\nConsumers SHOULD take appropriate precautions when consuming SVGs as they can contain\nexecutable JavaScript.",
+///      "type": "string",
+///      "format": "uri"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct Icon {
+    /**Optional MIME type override if the source MIME type is missing or generic.
+    For example: "image/png", "image/jpeg", or "image/svg+xml".*/
+    #[serde(rename = "mimeType", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub mime_type: ::std::option::Option<::std::string::String>,
+    /**Optional string that specifies one or more sizes at which the icon can be used.
+    For example: "48x48", "48x48 96x96", or "any" for scalable formats like SVG.
+    If not provided, the client should assume that the icon can be used at any size.*/
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub sizes: ::std::option::Option<::std::string::String>,
+    /**A standard URI pointing to an icon resource. May be an HTTP/HTTPS URL or a
+    data: URI with Base64-encoded image data.
+    Consumers SHOULD takes steps to ensure URLs serving icons are from the
+    same domain as the client/server or a trusted domain.
+    Consumers SHOULD take appropriate precautions when consuming SVGs as they can contain
+    executable JavaScript.*/
+    pub src: ::std::string::String,
+}
+///Base interface to add icons property.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Base interface to add icons property.",
+///  "type": "object",
+///  "properties": {
+///    "icons": {
+///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Icon"
+///      }
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct Icons {
+    /**Optional set of sized icons that the client can display in a user interface.
+    Clients that support rendering icons MUST support at least the following MIME types:
+    - image/png - PNG images (safe, universal compatibility)
+    - image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)
+    Clients that support rendering icons SHOULD also support:
+    - image/svg+xml - SVG images (scalable but requires security precautions)
+    - image/webp - WebP images (modern, efficient format)*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub icons: ::std::vec::Vec<Icon>,
+}
 ///An image provided to or from an LLM.
 ///
 /// <details><summary>JSON schema</summary>
@@ -2374,19 +2461,26 @@ impl ImageContent {
         "image".to_string()
     }
 }
-///Describes the name and version of an MCP implementation, with an optional title for UI representation.
+///Describes the MCP implementation
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Describes the name and version of an MCP implementation, with an optional title for UI representation.",
+///  "description": "Describes the MCP implementation",
 ///  "type": "object",
 ///  "required": [
 ///    "name",
 ///    "version"
 ///  ],
 ///  "properties": {
+///    "icons": {
+///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Icon"
+///      }
+///    },
 ///    "name": {
 ///      "description": "Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).",
 ///      "type": "string"
@@ -2397,6 +2491,11 @@ impl ImageContent {
 ///    },
 ///    "version": {
 ///      "type": "string"
+///    },
+///    "websiteUrl": {
+///      "description": "An optional URL of the website for this implementation.",
+///      "type": "string",
+///      "format": ": uri"
 ///    }
 ///  }
 ///}
@@ -2404,6 +2503,15 @@ impl ImageContent {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct Implementation {
+    /**Optional set of sized icons that the client can display in a user interface.
+    Clients that support rendering icons MUST support at least the following MIME types:
+    - image/png - PNG images (safe, universal compatibility)
+    - image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)
+    Clients that support rendering icons SHOULD also support:
+    - image/svg+xml - SVG images (scalable but requires security precautions)
+    - image/webp - WebP images (modern, efficient format)*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub icons: ::std::vec::Vec<Icon>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
     pub name: ::std::string::String,
     /**Intended for UI and end-user contexts — optimized to be human-readable and easily understood,
@@ -2414,6 +2522,9 @@ pub struct Implementation {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<::std::string::String>,
     pub version: ::std::string::String,
+    ///An optional URL of the website for this implementation.
+    #[serde(rename = "websiteUrl", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub website_url: ::std::option::Option<::std::string::String>,
 }
 ///This request is sent from the client to the server when it first connects, asking it to begin initialization.
 ///
@@ -4038,6 +4149,9 @@ pub struct NotificationParams {
 ///    "type"
 ///  ],
 ///  "properties": {
+///    "default": {
+///      "type": "integer"
+///    },
 ///    "description": {
 ///      "type": "string"
 ///    },
@@ -4063,6 +4177,8 @@ pub struct NotificationParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct NumberSchema {
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub default: ::std::option::Option<i64>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4569,6 +4685,13 @@ impl ::std::convert::From<i64> for ProgressToken {
 ///      "description": "An optional description of what this prompt provides",
 ///      "type": "string"
 ///    },
+///    "icons": {
+///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Icon"
+///      }
+///    },
 ///    "name": {
 ///      "description": "Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).",
 ///      "type": "string"
@@ -4589,6 +4712,15 @@ pub struct Prompt {
     ///An optional description of what this prompt provides
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
+    /**Optional set of sized icons that the client can display in a user interface.
+    Clients that support rendering icons MUST support at least the following MIME types:
+    - image/png - PNG images (safe, universal compatibility)
+    - image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)
+    Clients that support rendering icons SHOULD also support:
+    - image/svg+xml - SVG images (scalable but requires security precautions)
+    - image/webp - WebP images (modern, efficient format)*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub icons: ::std::vec::Vec<Icon>,
     ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
@@ -5144,6 +5276,13 @@ pub struct RequestParamsMeta {
 ///      "description": "A description of what this resource represents.\n\nThis can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a \"hint\" to the model.",
 ///      "type": "string"
 ///    },
+///    "icons": {
+///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Icon"
+///      }
+///    },
 ///    "mimeType": {
 ///      "description": "The MIME type of this resource, if known.",
 ///      "type": "string"
@@ -5178,6 +5317,15 @@ pub struct Resource {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
+    /**Optional set of sized icons that the client can display in a user interface.
+    Clients that support rendering icons MUST support at least the following MIME types:
+    - image/png - PNG images (safe, universal compatibility)
+    - image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)
+    Clients that support rendering icons SHOULD also support:
+    - image/svg+xml - SVG images (scalable but requires security precautions)
+    - image/webp - WebP images (modern, efficient format)*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub icons: ::std::vec::Vec<Icon>,
     ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
@@ -5269,6 +5417,13 @@ Note: resource links returned by tools are not guaranteed to appear in the resul
 ///      "description": "A description of what this resource represents.\n\nThis can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a \"hint\" to the model.",
 ///      "type": "string"
 ///    },
+///    "icons": {
+///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Icon"
+///      }
+///    },
 ///    "mimeType": {
 ///      "description": "The MIME type of this resource, if known.",
 ///      "type": "string"
@@ -5307,6 +5462,15 @@ pub struct ResourceLink {
     This can be used by clients to improve the LLM's understanding of available resources. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
+    /**Optional set of sized icons that the client can display in a user interface.
+    Clients that support rendering icons MUST support at least the following MIME types:
+    - image/png - PNG images (safe, universal compatibility)
+    - image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)
+    Clients that support rendering icons SHOULD also support:
+    - image/svg+xml - SVG images (scalable but requires security precautions)
+    - image/webp - WebP images (modern, efficient format)*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub icons: ::std::vec::Vec<Icon>,
     ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
@@ -5334,6 +5498,7 @@ pub struct ResourceLink {
 impl ResourceLink {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
+        icons: ::std::vec::Vec<Icon>,
         name: ::std::string::String,
         uri: ::std::string::String,
         annotations: ::std::option::Option<Annotations>,
@@ -5346,6 +5511,7 @@ impl ResourceLink {
         Self {
             annotations,
             description,
+            icons,
             meta,
             mime_type,
             name,
@@ -6464,6 +6630,9 @@ pub struct SetLevelRequestParams {
 ///    "type"
 ///  ],
 ///  "properties": {
+///    "default": {
+///      "type": "string"
+///    },
 ///    "description": {
 ///      "type": "string"
 ///    },
@@ -6496,6 +6665,8 @@ pub struct SetLevelRequestParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct StringSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub default: ::std::option::Option<::std::string::String>,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub format: ::std::option::Option<StringSchemaFormat>,
@@ -6510,6 +6681,7 @@ pub struct StringSchema {
 }
 impl StringSchema {
     pub fn new(
+        default: ::std::option::Option<::std::string::String>,
         description: ::std::option::Option<::std::string::String>,
         format: ::std::option::Option<StringSchemaFormat>,
         max_length: ::std::option::Option<i64>,
@@ -6517,6 +6689,7 @@ impl StringSchema {
         title: ::std::option::Option<::std::string::String>,
     ) -> Self {
         Self {
+            default,
             description,
             format,
             max_length,
@@ -6803,6 +6976,13 @@ pub struct TextResourceContents {
 ///      "description": "A human-readable description of the tool.\n\nThis can be used by clients to improve the LLM's understanding of available tools. It can be thought of like a \"hint\" to the model.",
 ///      "type": "string"
 ///    },
+///    "icons": {
+///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/definitions/Icon"
+///      }
+///    },
 ///    "inputSchema": {
 ///      "description": "A JSON Schema object defining the expected parameters for the tool.",
 ///      "type": "object",
@@ -6877,6 +7057,15 @@ pub struct Tool {
     This can be used by clients to improve the LLM's understanding of available tools. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
+    /**Optional set of sized icons that the client can display in a user interface.
+    Clients that support rendering icons MUST support at least the following MIME types:
+    - image/png - PNG images (safe, universal compatibility)
+    - image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)
+    Clients that support rendering icons SHOULD also support:
+    - image/svg+xml - SVG images (scalable but requires security precautions)
+    - image/webp - WebP images (modern, efficient format)*/
+    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+    pub icons: ::std::vec::Vec<Icon>,
     #[serde(rename = "inputSchema")]
     pub input_schema: ToolInputSchema,
     ///See [General fields: _meta](/specification/draft/basic/index#meta) for notes on _meta usage.
@@ -7522,3 +7711,5 @@ impl ServerNotification {
 }
 #[deprecated(since = "0.3.0", note = "Use `RpcError` instead.")]
 pub type JsonrpcErrorError = RpcError;
+#[deprecated(since = "0.7.0", note = "Use `ElicitRequestedSchema` instead.")]
+pub type ElicitRequestParamsRequestedSchema = ElicitRequestedSchema;
