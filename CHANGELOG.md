@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.3...v0.7.4) (2025-09-17)
+
+
+### Features
+
+* elicit helper methods ([#88](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/88)) ([d8df8d0](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/d8df8d06b626ef9519b26f0a4dfd1af1f02603c5))
+
 ## [0.7.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.2...v0.7.3) (2025-08-30)
 
 
