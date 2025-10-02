@@ -1312,6 +1312,8 @@ impl ::std::convert::From<EmbeddedResource> for ContentBlock {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateMessageRequest {
+    // This field requires custom deserialization for validation.
+    #[serde(deserialize_with = "server_request_method_validation::deserialize_CreateMessageRequest_method")]
     method: ::std::string::String,
     pub params: CreateMessageRequestParams,
 }
@@ -1625,6 +1627,8 @@ pub struct Cursor(pub ::std::string::String);
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ElicitRequest {
+    // This field requires custom deserialization for validation.
+    #[serde(deserialize_with = "server_request_method_validation::deserialize_ElicitRequest_method")]
     method: ::std::string::String,
     pub params: ElicitRequestParams,
 }
@@ -3302,6 +3306,8 @@ structure or access specific locations that the client has permission to read fr
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsRequest {
+    // This field requires custom deserialization for validation.
+    #[serde(deserialize_with = "server_request_method_validation::deserialize_ListRootsRequest_method")]
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<ListRootsRequestParams>,
@@ -4040,6 +4046,8 @@ pub struct PaginatedResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct PingRequest {
+    // This field requires custom deserialization for validation.
+    #[serde(deserialize_with = "server_request_method_validation::deserialize_PingRequest_method")]
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<PingRequestParams>,
@@ -7167,6 +7175,112 @@ impl ServerNotification {
         }
     }
 }
+
+// Custom module for deserialization function to prevent name conflicts.
+mod server_request_method_validation{
+
+    // Custom deserialization function, following the `deserialize_#StructName_#FieldName` format.
+    #[allow(non_snake_case)]
+    pub(super) fn deserialize_PingRequest_method<'de, D>(
+        deserializer: D,
+    ) -> std::result::Result<String, D::Error>
+    where
+        D: serde::de::Deserializer<'de>,
+    {
+        let value = serde::Deserialize::deserialize(deserializer)?;
+        // The expected constant value.
+        let expected = "ping";
+
+        // Validate the deserialized value.
+        if value == expected {
+            Ok(value)
+        } else {
+            // The error message with format
+            // "Expected field `#FieldName` in struct `#StructName` as const value '{}', but got '{}'"
+            Err(serde::de::Error::custom(format!(
+                "Expected field `method` in struct `PingRequest` as const value '{}', but got '{}'",
+                expected, value
+            )))
+        }
+    }
+
+    // Custom deserialization function, following the `deserialize_#StructName_#FieldName` format.
+    #[allow(non_snake_case)]
+    pub(super) fn deserialize_CreateMessageRequest_method<'de, D>(
+        deserializer: D,
+    ) -> std::result::Result<String, D::Error>
+    where
+        D: serde::de::Deserializer<'de>,
+    {
+        let value = serde::Deserialize::deserialize(deserializer)?;
+        // The expected constant value.
+        let expected = "sampling/createMessage";
+
+        // Validate the deserialized value.
+        if value == expected {
+            Ok(value)
+        } else {
+            // The error message with format
+            // "Expected field `#FieldName` in struct `#StructName` as const value '{}', but got '{}'"
+            Err(serde::de::Error::custom(format!(
+                "Expected field `method` in struct `CreateMessageRequest` as const value '{}', but got '{}'",
+                expected, value
+            )))
+        }
+    }
+
+    // Custom deserialization function, following the `deserialize_#StructName_#FieldName` format.
+    #[allow(non_snake_case)]
+    pub(super) fn deserialize_ListRootsRequest_method<'de, D>(
+        deserializer: D,
+    ) -> std::result::Result<String, D::Error>
+    where
+        D: serde::de::Deserializer<'de>,
+    {
+        let value = serde::Deserialize::deserialize(deserializer)?;
+        // The expected constant value.
+        let expected = "roots/list";
+
+        // Validate the deserialized value.
+        if value == expected {
+            Ok(value)
+        } else {
+            // The error message with format
+            // "Expected field `#FieldName` in struct `#StructName` as const value '{}', but got '{}'"
+            Err(serde::de::Error::custom(format!(
+                "Expected field `method` in struct `ListRootsRequest` as const value '{}', but got '{}'",
+                expected, value
+            )))
+        }
+    }
+
+    // Custom deserialization function, following the `deserialize_#StructName_#FieldName` format.
+    #[allow(non_snake_case)]
+    pub(super) fn deserialize_ElicitRequest_method<'de, D>(
+        deserializer: D,
+    ) -> std::result::Result<String, D::Error>
+    where
+        D: serde::de::Deserializer<'de>,
+    {
+        let value = serde::Deserialize::deserialize(deserializer)?;
+        // The expected constant value.
+        let expected = "elicitation/create";
+
+        // Validate the deserialized value.
+        if value == expected {
+            Ok(value)
+        } else {
+            // The error message with format
+            // "Expected field `#FieldName` in struct `#StructName` as const value '{}', but got '{}'"
+            Err(serde::de::Error::custom(format!(
+                "Expected field `method` in struct `ElicitRequest` as const value '{}', but got '{}'",
+                expected, value
+            )))
+        }
+    }
+
+}
+
 #[deprecated(since = "0.3.0", note = "Use `RpcError` instead.")]
 pub type JsonrpcErrorError = RpcError;
 #[deprecated(since = "0.7.0", note = "Use `ElicitRequestedSchema` instead.")]
