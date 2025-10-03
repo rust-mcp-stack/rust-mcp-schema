@@ -63,5 +63,6 @@ where
     <T as FromStr>::Err: std::fmt::Debug,
 {
     let message_str = get_test_payload(test_payload_key).replace("PROTOCOL_VERSION", version);
+    //{"id":13,"jsonrpc":"2.0","method":"tools/list","params":{}}
     T::from_str(&message_str).unwrap()
 }

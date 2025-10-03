@@ -86,7 +86,7 @@ Multiple schema versions may be enabled concurrently if needed. Non-default vers
 - rust_mcp_schema::mcp_2024_11_05
 - rust_mcp_schema::mcp_draft"
 
-Example: enable `2024_11_05` version of the shema:
+Example: enable `2024_11_05` version of the schema:
 
 <!-- x-release-please-start-version -->
 
@@ -95,7 +95,7 @@ Example: enable `2024_11_05` version of the shema:
 rust-mcp-schema = { version: 0.7.4 , default-features = false, features=["2024_11_05"] }
 ```
 
-Example: enable `draft`` version of the shema (2024_11_05) :
+Example: enable `draft`` version of the schema (2024_11_05) :
 
 ```toml
 #Cargo.toml
