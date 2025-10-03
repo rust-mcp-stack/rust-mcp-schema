@@ -143,7 +143,7 @@
 
 ### Bug Fixes
 
-* custom result deserialization conflic with rust_mcp_schema::Result ([#44](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/44)) ([f141060](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/f14106047ee6fdc499f0915ea2029954cf06d634))
+* custom result deserialization conflict with rust_mcp_schema::Result ([#44](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/44)) ([f141060](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/f14106047ee6fdc499f0915ea2029954cf06d634))
 
 ## [0.1.9](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.1.8...v0.1.9) (2025-03-02)
 
