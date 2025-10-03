@@ -19,6 +19,7 @@ mod test_deserialize {
     use rust_mcp_schema::mcp_draft::*;
     #[cfg(any(feature = "latest", feature = "2025_06_18"))]
     use rust_mcp_schema::*;
+    use serde_json::json;
 
     use super::common::get_message;
 
@@ -296,5 +297,40 @@ mod test_deserialize {
 
         let message: ServerMessage = get_message("err_sampling_rejected", LATEST_PROTOCOL_VERSION);
         assert!(matches!(message, ServerMessage::Error(_)));
+    }
+
+    #[test]
+    fn test_deserialize_with_wrong_method() {
+        let payload = r#"{"method":"sampling/INVALID","params":{"maxTokens":0,"messages":[]}}"#;
+        let result = serde_json::from_str::<CreateMessageRequest>(payload);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_deserialize_with_wrong_jsonrpc_version() {
+        let payload = r#"{"error":{"code":-32603,"message":"Internal error"},"id":0,"jsonrpc":"1.0"}"#;
+
+        let result = serde_json::from_str::<JsonrpcError>(payload);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_server_notification_deserialization() {
+        let json = json!({
+            "method": "notifications/progress",
+            "params": {
+                "progress": 50,
+                "status": "test",
+                "task_id": "test",
+                "progressToken":"xyz"
+            }
+        });
+
+        let notif: ServerNotification = serde_json::from_value(json).unwrap();
+        if let ServerNotification::ProgressNotification(req) = notif {
+            assert_eq!(req.method(), "notifications/progress");
+        } else {
+            panic!("Unexpected variant");
+        }
     }
 }

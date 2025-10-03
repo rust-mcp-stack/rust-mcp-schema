@@ -884,6 +884,7 @@ impl Display for ServerMessage {
 
 /// "Similar to JsonrpcRequest , but with the variants restricted to client-side requests."
 #[derive(Clone, Debug)]
+#[allow(clippy::large_enum_variant)]
 pub struct ServerJsonrpcRequest {
     pub id: RequestId,
     jsonrpc: ::std::string::String,
