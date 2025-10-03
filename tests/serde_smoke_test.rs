@@ -1,17 +1,15 @@
 mod test_deserialize {
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
-    #[cfg(feature = "2025_03_26")]
-    use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
-    #[cfg(feature = "draft")]
-    use rust_mcp_schema::mcp_draft::schema_utils::*;
     #[cfg(any(feature = "latest", feature = "2025_06_18"))]
-    use rust_mcp_schema::schema_utils::*;
-
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::*;
     #[cfg(feature = "2025_03_26")]
+    use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
+    #[cfg(feature = "2025_03_26")]
     use rust_mcp_schema::mcp_2025_03_26::*;
+    #[cfg(feature = "draft")]
+    use rust_mcp_schema::mcp_draft::schema_utils::*;
     #[cfg(feature = "draft")]
     use rust_mcp_schema::mcp_draft::*;
     #[cfg(any(feature = "latest", feature = "2025_06_18"))]
@@ -39,7 +37,7 @@ mod test_deserialize {
         let json_deserialized = serde_json::to_string(&deserialized).expect("Failed to serialize deserialized object");
 
         // Compare the JSON strings to ensure consistency
-        assert_eq!(json, json_deserialized, "JSON serialization mismatch for {:?}", original);
+        assert_eq!(json, json_deserialized, "JSON serialization mismatch for {original:?}");
     }
 
     #[cfg(not(feature = "2024_11_05"))]
