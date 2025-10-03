@@ -1,24 +1,21 @@
 mod test_deserialize {
-    #[cfg(feature = "2024_11_05")]
-    use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
-    #[cfg(any(feature = "latest", feature = "2025_06_18"))]
+
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::*;
-    #[cfg(feature = "2025_03_26")]
-    use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
+
     #[cfg(feature = "2025_03_26")]
     use rust_mcp_schema::mcp_2025_03_26::*;
-    #[cfg(feature = "draft")]
-    use rust_mcp_schema::mcp_draft::schema_utils::*;
+
     #[cfg(feature = "draft")]
     use rust_mcp_schema::mcp_draft::*;
+
     #[cfg(any(feature = "latest", feature = "2025_06_18"))]
     use rust_mcp_schema::*;
-    use serde_json::json;
-    use std::collections::HashMap;
 
     use serde::{Deserialize, Serialize};
+    use serde_json::json;
     use serde_json::{Map, Value};
+    use std::collections::HashMap;
 
     /* ---------------------- TESTS ---------------------- */
 
@@ -134,6 +131,7 @@ mod test_deserialize {
         test_serde(&schema_min);
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_call_tool_request() {
         let params = CallToolRequestParams {
@@ -243,6 +241,7 @@ mod test_deserialize {
         test_serde(&notif);
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_client_request() {
         let req = ClientRequest::CallToolRequest(CallToolRequest::new(CallToolRequestParams {
@@ -269,6 +268,7 @@ mod test_deserialize {
         test_serde(&result);
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_complete_request() {
         let argument = CompleteRequestParamsArgument {
@@ -328,7 +328,11 @@ mod test_deserialize {
             temperature: None,
         };
 
-        let req = CreateMessageRequest::new(params);
+        let req = CreateMessageRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -357,7 +361,11 @@ mod test_deserialize {
             requested_schema: ElicitRequestedSchema::new(HashMap::new(), vec![]),
         };
 
-        let req = ElicitRequest::new(params);
+        let req = ElicitRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -397,7 +405,11 @@ mod test_deserialize {
             arguments: None,
         };
 
-        let req = GetPromptRequest::new(params);
+        let req = GetPromptRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -452,10 +464,18 @@ mod test_deserialize {
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 title: Some("title".to_string()),
                 version: "version".to_string(),
+                #[cfg(feature = "draft")]
+                icons: vec![],
+                #[cfg(feature = "draft")]
+                website_url: Some("https://github.com/rust-mcp-stack/rust-mcp-sdk".to_string()),
             },
         };
 
-        let req = InitializeRequest::new(params);
+        let req = InitializeRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -471,6 +491,10 @@ mod test_deserialize {
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 title: Some("title".to_string()),
                 version: "version".to_string(),
+                #[cfg(feature = "draft")]
+                icons: vec![],
+                #[cfg(feature = "draft")]
+                website_url: Some("https://github.com/rust-mcp-stack/rust-mcp-sdk".to_string()),
             },
         };
         test_serde(&result);
@@ -500,7 +524,11 @@ mod test_deserialize {
     fn test_list_prompts_request() {
         let params = ListPromptsRequestParams { cursor: None };
 
-        let req = ListPromptsRequest::new(Some(params));
+        let req = ListPromptsRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            Some(params),
+        );
         test_serde(&req);
     }
 
@@ -518,7 +546,11 @@ mod test_deserialize {
     fn test_list_resources_request() {
         let params = ListResourcesRequestParams { cursor: None };
 
-        let req = ListResourcesRequest::new(Some(params));
+        let req = ListResourcesRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            Some(params),
+        );
         test_serde(&req);
     }
 
@@ -536,7 +568,11 @@ mod test_deserialize {
     fn test_list_resource_templates_request() {
         let params = ListResourceTemplatesRequestParams { cursor: None };
 
-        let req = ListResourceTemplatesRequest::new(Some(params));
+        let req = ListResourceTemplatesRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            Some(params),
+        );
         test_serde(&req);
     }
 
@@ -555,6 +591,8 @@ mod test_deserialize {
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 title: None,
                 uri_template: "ice://something".to_string(),
+                #[cfg(feature = "draft")]
+                icons: vec![],
             }],
         };
         test_serde(&result);
@@ -562,7 +600,11 @@ mod test_deserialize {
 
     #[test]
     fn test_list_roots_request() {
-        let req = ListRootsRequest::new(Some(ListRootsRequestParams { meta: None, extra: None }));
+        let req = ListRootsRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            Some(ListRootsRequestParams { meta: None, extra: None }),
+        );
         test_serde(&req);
     }
 
@@ -578,7 +620,11 @@ mod test_deserialize {
     #[test]
     fn test_list_tools_request() {
         let params = ListToolsRequestParams { cursor: None };
-        let req = ListToolsRequest::new(Some(params));
+        let req = ListToolsRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            Some(params),
+        );
         test_serde(&req);
     }
 
@@ -612,6 +658,8 @@ mod test_deserialize {
             minimum: None,
             title: None,
             type_: NumberSchemaType::Integer,
+            #[cfg(feature = "draft")]
+            default: None,
         };
         test_serde(&schema);
     }
@@ -619,7 +667,11 @@ mod test_deserialize {
     #[test]
     fn test_ping_request() {
         let params = PingRequestParams { meta: None, extra: None };
-        let req = PingRequest::new(Some(params));
+        let req = PingRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            Some(params),
+        );
         test_serde(&req);
     }
 
@@ -653,6 +705,8 @@ mod test_deserialize {
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 title: None,
             }],
+            #[cfg(feature = "draft")]
+            icons: vec![],
         };
         test_serde(&prompt);
     }
@@ -678,7 +732,11 @@ mod test_deserialize {
     #[test]
     fn test_read_resource_request() {
         let params = ReadResourceRequestParams { uri: "test".to_string() };
-        let req = ReadResourceRequest::new(params);
+        let req = ReadResourceRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -708,8 +766,18 @@ mod test_deserialize {
         let name = "name".to_string();
         let size = None;
         let title = None;
-        let link = ResourceLink::new(name, uri, annotations, description, meta, mime_type, size, title);
-
+        let link = ResourceLink::new(
+            #[cfg(feature = "draft")]
+            vec![],
+            name,
+            uri,
+            annotations,
+            description,
+            meta,
+            mime_type,
+            size,
+            title,
+        );
         test_serde(&link);
     }
 
@@ -732,6 +800,8 @@ mod test_deserialize {
             title: None,
             mime_type: Some("mime/pine".to_string()),
             uri_template: "ice://something".to_string(),
+            #[cfg(feature = "draft")]
+            icons: vec![],
         };
         test_serde(&template);
     }
@@ -805,7 +875,11 @@ mod test_deserialize {
 
     #[test]
     fn test_server_request() {
-        let req = ServerRequest::PingRequest(PingRequest::new(None));
+        let req = ServerRequest::PingRequest(PingRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(97),
+            None,
+        ));
         test_serde(&req);
     }
 
@@ -821,6 +895,10 @@ mod test_deserialize {
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 title: Some("title".to_string()),
                 version: "version".to_string(),
+                #[cfg(feature = "draft")]
+                icons: vec![],
+                #[cfg(feature = "draft")]
+                website_url: Some("https://github.com/rust-mcp-stack/rust-mcp-sdk".to_string()),
             },
         });
         test_serde(&result);
@@ -832,7 +910,11 @@ mod test_deserialize {
             level: LoggingLevel::Info,
         };
 
-        let req = SetLevelRequest::new(params);
+        let req = SetLevelRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(23),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -840,6 +922,8 @@ mod test_deserialize {
     #[test]
     fn test_string_schema() {
         let schema = StringSchema::new(
+            #[cfg(feature = "draft")]
+            Some("default".to_string()),
             Some("description".to_string()),
             None,
             Some(21),
@@ -854,7 +938,11 @@ mod test_deserialize {
     fn test_subscribe_request() {
         let params = SubscribeRequestParams { uri: "test".to_string() };
 
-        let req = SubscribeRequest::new(params);
+        let req = SubscribeRequest::new(
+            #[cfg(feature = "draft")]
+            RequestId::Integer(22),
+            params,
+        );
         test_serde(&req);
     }
 
@@ -896,6 +984,8 @@ mod test_deserialize {
             output_schema: None,
             #[cfg(any(feature = "draft", feature = "2025_06_18"))]
             title: None,
+            #[cfg(feature = "draft")]
+            icons: vec![],
         };
         test_serde(&tool);
     }
@@ -926,6 +1016,7 @@ mod test_deserialize {
         test_serde(&schema);
     }
 
+    #[cfg(not(feature = "draft"))]
     #[test]
     fn test_unsubscribe_request() {
         let params = UnsubscribeRequestParams { uri: "test".to_string() };
