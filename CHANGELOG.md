@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.5](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.4...v0.7.5) (2025-10-03)
+
+
+### Features
+
+* added method value validation and more strickt restriction on const values ([#91](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/91)) ([5b81b64](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/5b81b64cf06a12b2c2dd6bc57ccae21c630e2383))
+* **validation:** support validation for subtypes of `ServerRequest` enum. ([#81](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/81)) ([83ad262](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/83ad262d425d5b9de694a2e68385fa5b68c4f155))
+
 ## [0.7.4](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.3...v0.7.4) (2025-09-17)
 
 
