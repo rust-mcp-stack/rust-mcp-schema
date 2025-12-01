@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.5...v0.8.0) (2025-12-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* support mcp protocol version 2025-11-25  ([#93](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/93))
+
+### Features
+
+* support mcp protocol version 2025-11-25  ([#93](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/93)) ([6c7b555](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/6c7b5555e4823b8cfb98da39d6d07d71c741d599))
+
 ## [0.7.5](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.4...v0.7.5) (2025-10-03)
 
 
