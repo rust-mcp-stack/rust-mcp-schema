@@ -144,7 +144,7 @@ pub enum ClientMessage {
     Request(ClientJsonrpcRequest),
     Notification(ClientJsonrpcNotification),
     Response(ClientJsonrpcResponse),
-    Error(JsonrpcError),
+    Error(JsonrpcErrorResponse),
 }
 
 impl ClientMessage {
@@ -211,16 +211,16 @@ impl ClientMessage {
         }
     }
 
-    /// Converts the current message into a `JsonrpcError` if it's of the correct type.
+    /// Converts the current message into a `JsonrpcErrorResponse` if it's of the correct type.
     ///
     /// This function checks if the current message is of type `Error`. If so, it returns the
-    /// `JsonrpcError` wrapped in a `Result::Ok`. If the message is not a `Error`,
+    /// `JsonrpcErrorResponse` wrapped in a `Result::Ok`. If the message is not a `Error`,
     /// it returns an error with a descriptive message indicating the mismatch in expected message types.
     ///
     /// # Returns
-    /// - `Ok(JsonrpcError)` if the message is a valid `Error`.
+    /// - `Ok(JsonrpcErrorResponse)` if the message is a valid `Error`.
     /// - `Err(RpcError)` if the message type is invalid
-    pub fn as_error(self) -> std::result::Result<JsonrpcError, RpcError> {
+    pub fn as_error(self) -> std::result::Result<JsonrpcErrorResponse, RpcError> {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
@@ -272,7 +272,7 @@ impl RpcMessage for ClientMessage {
             // If the message is a response, return the associated request ID
             ClientMessage::Response(client_jsonrpc_response) => Some(&client_jsonrpc_response.id),
             // If the message is an error, return the associated request ID
-            ClientMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
+            ClientMessage::Error(jsonrpc_error) => jsonrpc_error.id.as_ref(),
         }
     }
 
@@ -690,7 +690,7 @@ pub enum ServerMessage {
     Request(ServerJsonrpcRequest),
     Notification(ServerJsonrpcNotification),
     Response(ServerJsonrpcResponse),
-    Error(JsonrpcError),
+    Error(JsonrpcErrorResponse),
 }
 
 impl ServerMessage {
@@ -757,16 +757,16 @@ impl ServerMessage {
         }
     }
 
-    /// Converts the current message into a `JsonrpcError` if it's of the correct type.
+    /// Converts the current message into a `JsonrpcErrorResponse` if it's of the correct type.
     ///
     /// This function checks if the current message is of type `Error`. If so, it returns the
-    /// `JsonrpcError` wrapped in a `Result::Ok`. If the message is not a `Error`,
+    /// `JsonrpcErrorResponse` wrapped in a `Result::Ok`. If the message is not a `Error`,
     /// it returns an error with a descriptive message indicating the mismatch in expected message types.
     ///
     /// # Returns
-    /// - `Ok(JsonrpcError)` if the message is a valid `Error`.
+    /// - `Ok(JsonrpcErrorResponse)` if the message is a valid `Error`.
     /// - `Err(RpcError)` if the message type is invalid
-    pub fn as_error(self) -> std::result::Result<JsonrpcError, RpcError> {
+    pub fn as_error(self) -> std::result::Result<JsonrpcErrorResponse, RpcError> {
         if let Self::Error(error) = self {
             Ok(error)
         } else {
@@ -808,7 +808,7 @@ impl RpcMessage for ServerMessage {
             // If the message is a response, return the associated request ID
             ServerMessage::Response(server_jsonrpc_response) => Some(&server_jsonrpc_response.id),
             // If the message is an error, return the associated request ID
-            ServerMessage::Error(jsonrpc_error) => Some(&jsonrpc_error.id),
+            ServerMessage::Error(jsonrpc_error) => jsonrpc_error.id.as_ref(),
         }
     }
 
@@ -1180,11 +1180,11 @@ impl<'de> serde::Deserialize<'de> for ResultFromServer {
 }
 
 //***************************//
-//** impl for JsonrpcError **//
+//** impl for JsonrpcErrorResponse **//
 //***************************//
 
 /// Formats the ServerJsonrpcResponse as a JSON string.
-impl Display for JsonrpcError {
+impl Display for JsonrpcErrorResponse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -1194,7 +1194,7 @@ impl Display for JsonrpcError {
     }
 }
 
-impl FromStr for JsonrpcError {
+impl FromStr for JsonrpcErrorResponse {
     type Err = RpcError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
@@ -1300,9 +1300,7 @@ impl FromMessage<MessageFromServer> for ServerMessage {
                 )))
             }
             MessageFromServer::Error(jsonrpc_error_error) => {
-                let request_id =
-                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
-                Ok(ServerMessage::Error(JsonrpcError::new(jsonrpc_error_error, request_id)))
+                Ok(ServerMessage::Error(JsonrpcErrorResponse::new(jsonrpc_error_error, request_id)))
             }
         }
     }
@@ -1418,9 +1416,7 @@ impl FromMessage<MessageFromClient> for ClientMessage {
                 )))
             }
             MessageFromClient::Error(jsonrpc_error_error) => {
-                let request_id =
-                    request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
-                Ok(ClientMessage::Error(JsonrpcError::new(jsonrpc_error_error, request_id)))
+                Ok(ClientMessage::Error(JsonrpcErrorResponse::new(jsonrpc_error_error, request_id)))
             }
         }
     }
@@ -1495,7 +1491,7 @@ impl CallToolError {
     /// # Examples
     ///
     /// ```
-    /// let err = CallToolError::from_message("Something went wrong");
+    /// let err = rust_mcp_schema::schema_utils::CallToolError::from_message("Something went wrong");
     /// println!("{:?}", err);
     /// ```
     ///
@@ -1822,10 +1818,76 @@ impl FromStr for StringSchemaFormat {
     }
 }
 
+
+// Helper: handle all single-select enum variants
+fn try_from_enum_schema(map: &serde_json::Map<String, Value>) -> result::Result<PrimitiveSchemaDefinition, RpcError> {
+    // All enum schemas should have type: "string" (or missing, but usually present)
+    let has_one_of = map.contains_key("oneOf");
+    let has_enum = map.contains_key("enum");
+    let has_enum_names = map.contains_key("enumNames");
+
+    if has_one_of {
+        let schema: TitledSingleSelectEnumSchema = serde_json::from_value(Value::Object(map.clone())).map_err(|e| {
+            RpcError::parse_error().with_message(format!("Failed to parse TitledSingleSelectEnumSchema: {e}"))
+        })?;
+
+        Ok(PrimitiveSchemaDefinition::TitledSingleSelectEnumSchema(schema))
+    } else if has_enum && has_enum_names {
+        let schema: LegacyTitledEnumSchema = serde_json::from_value(Value::Object(map.clone()))
+            .map_err(|e| RpcError::parse_error().with_message(format!("Failed to parse LegacyTitledEnumSchema: {e}")))?;
+        Ok(PrimitiveSchemaDefinition::LegacyTitledEnumSchema(schema))
+    } else if has_enum {
+        let schema: UntitledSingleSelectEnumSchema = serde_json::from_value(Value::Object(map.clone())).map_err(|e| {
+            RpcError::parse_error().with_message(format!("Failed to parse UntitledSingleSelectEnumSchema: {e}"))
+        })?;
+        Ok(PrimitiveSchemaDefinition::UntitledSingleSelectEnumSchema(schema))
+    } else {
+        Err(RpcError::parse_error().with_message("Invalid enum schema: missing 'enum' or 'oneOf'".to_string()))
+    }
+}
+
+// Helper: handle multi-select (array) enum schemas
+fn try_from_multi_select_schema(
+    map: &serde_json::Map<String, Value>,
+) -> result::Result<PrimitiveSchemaDefinition, RpcError> {
+    let items = map
+        .get("items")
+        .ok_or(RpcError::parse_error().with_message("Array schema missing 'items' field".to_string()))?;
+
+    let items_obj = items
+        .as_object()
+        .ok_or(RpcError::parse_error().with_message("Field 'items' must be an object".to_string()))?;
+
+    if items_obj.contains_key("anyOf") {
+        let schema: TitledMultiSelectEnumSchema = serde_json::from_value(Value::Object(map.clone())).map_err(|e| {
+            RpcError::parse_error().with_message(format!("Failed to parse TitledMultiSelectEnumSchema: {e}"))
+        })?;
+        Ok(PrimitiveSchemaDefinition::TitledMultiSelectEnumSchema(schema))
+    } else if items_obj.contains_key("enum") {
+        let schema: UntitledMultiSelectEnumSchema = serde_json::from_value(Value::Object(map.clone())).map_err(|e| {
+            RpcError::parse_error().with_message(format!("Failed to parse UntitledMultiSelectEnumSchema: {e}"))
+        })?;
+        Ok(PrimitiveSchemaDefinition::UntitledMultiSelectEnumSchema(schema))
+    } else {
+        Err(RpcError::parse_error()
+            .with_message("Array schema 'items' must contain 'enum' or 'oneOf' to be a multi-select enum".to_string()))
+    }
+}
+
 impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
     type Error = RpcError;
 
     fn try_from(value: &serde_json::Map<String, serde_json::Value>) -> result::Result<Self, Self::Error> {
+        // 1. First: detect enum schemas (they look like strings but have enum/oneOf)
+        if value.contains_key("enum") || value.contains_key("oneOf") {
+            return try_from_enum_schema(value);
+        }
+
+        // 2. Then: detect multi-select array schemas (type: "array" + items with enum/oneOf)
+        if value.get("type").and_then(|v| v.as_str()) == Some("array") {
+            return try_from_multi_select_schema(value);
+        }
+
         let input_type = value
             .get("type")
             .and_then(|v| v.as_str())
@@ -1877,38 +1939,8 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
                 let default = value.get("default").and_then(|v| v.as_bool().map(|s| s.to_owned()));
                 PrimitiveSchemaDefinition::BooleanSchema(BooleanSchema::new(default, description, title))
             }
-
-            "enum" => {
-                let mut enum_values: ::std::vec::Vec<::std::string::String> = vec![];
-                let mut enum_names: ::std::vec::Vec<::std::string::String> = vec![];
-                let default = value.get("default").and_then(|v| v.as_str().map(|s| s.to_string()));
-
-                let values = value.get("oneOf").and_then(|v| v.as_array()).ok_or_else(|| {
-                    RpcError::parse_error()
-                        .with_message("Unsupported enum type, only simple enums are supported!".to_string())
-                })?;
-
-                for v in values {
-                    let title = v.get("title").and_then(|v| v.as_str().map(|s| s.to_string()));
-                    let enum_value = v.get("enum").and_then(|v| v.as_array()).ok_or_else(|| {
-                        RpcError::parse_error()
-                            .with_message("Unsupported enum type. only simple enums are supported!".to_string())
-                    })?;
-                    let enum_value = enum_value
-                        .first()
-                        .and_then(|s| s.as_str().map(|s| s.to_string()))
-                        .ok_or_else(|| {
-                            RpcError::parse_error()
-                                .with_message("Unsupported enum value, only simple enums are supported!".to_string())
-                        })?;
-
-                    enum_values.push(enum_value.to_owned());
-                    enum_names.push(title.unwrap_or(enum_value));
-                }
-                PrimitiveSchemaDefinition::EnumSchema(EnumSchema::new(enum_values, enum_names, default, description, title))
-            }
             other => {
-                panic!("'{other}' type is not currently supported");
+                return Err(RpcError::parse_error().with_message(format!("'{other}' type is not currently supported")));
             }
         };
 
@@ -1961,6 +1993,10 @@ impl ::serde::Serialize for ClientJsonrpcRequest {
                     }
                 }
                 CallToolRequest(msg) => state.serialize_field("params", &msg.params)?,
+                GetTaskRequest(msg) => state.serialize_field("params", &msg.params)?,
+                GetTaskPayloadRequest(msg) => state.serialize_field("params", &msg.params)?,
+                CancelTaskRequest(msg) => state.serialize_field("params", &msg.params)?,
+                ListTasksRequest(msg) => state.serialize_field("params", &msg.params)?,
                 SetLevelRequest(msg) => state.serialize_field("params", &msg.params)?,
                 CompleteRequest(msg) => state.serialize_field("params", &msg.params)?,
             },
@@ -2039,6 +2075,10 @@ impl ::serde::Serialize for ServerJsonrpcRequest {
                         state.serialize_field("params", params)?
                     }
                 }
+                GetTaskRequest(msg) => state.serialize_field("params", &msg.params)?,
+                GetTaskPayloadRequest(msg) => state.serialize_field("params", &msg.params)?,
+                CancelTaskRequest(msg) => state.serialize_field("params", &msg.params)?,
+                ListTasksRequest(msg) => state.serialize_field("params", &msg.params)?,
                 CreateMessageRequest(msg) => state.serialize_field("params", &msg.params)?,
                 ListRootsRequest(msg) => {
                     if let Some(params) = &msg.params {
@@ -2123,6 +2163,7 @@ impl ::serde::Serialize for ClientJsonrpcNotification {
                     }
                 }
                 ProgressNotification(msg) => state.serialize_field("params", &msg.params)?,
+                TaskStatusNotification(msg) => state.serialize_field("params", &msg.params)?,
                 RootsListChangedNotification(msg) => {
                     if let Some(params) = &msg.params {
                         state.serialize_field("params", params)?
@@ -2213,7 +2254,9 @@ impl ::serde::Serialize for ServerJsonrpcNotification {
                         state.serialize_field("params", params)?
                     }
                 }
+                TaskStatusNotification(msg) => state.serialize_field("params", &msg.params)?,
                 LoggingMessageNotification(msg) => state.serialize_field("params", &msg.params)?,
+                ElicitationCompleteNotification(msg) => state.serialize_field("params", &msg.params)?,
             },
             NotificationFromServer::CustomNotification(value) => state.serialize_field("params", value)?,
         }
@@ -2429,6 +2472,26 @@ impl From<CallToolRequest> for RequestFromClient {
         Self::ClientRequest(value.into())
     }
 }
+impl From<GetTaskRequest> for RequestFromClient {
+    fn from(value: GetTaskRequest) -> Self {
+        Self::ClientRequest(value.into())
+    }
+}
+impl From<GetTaskPayloadRequest> for RequestFromClient {
+    fn from(value: GetTaskPayloadRequest) -> Self {
+        Self::ClientRequest(value.into())
+    }
+}
+impl From<CancelTaskRequest> for RequestFromClient {
+    fn from(value: CancelTaskRequest) -> Self {
+        Self::ClientRequest(value.into())
+    }
+}
+impl From<ListTasksRequest> for RequestFromClient {
+    fn from(value: ListTasksRequest) -> Self {
+        Self::ClientRequest(value.into())
+    }
+}
 impl From<SetLevelRequest> for RequestFromClient {
     fn from(value: SetLevelRequest) -> Self {
         Self::ClientRequest(value.into())
@@ -2494,6 +2557,26 @@ impl From<CallToolRequest> for MessageFromClient {
         MessageFromClient::RequestFromClient(value.into())
     }
 }
+impl From<GetTaskRequest> for MessageFromClient {
+    fn from(value: GetTaskRequest) -> Self {
+        MessageFromClient::RequestFromClient(value.into())
+    }
+}
+impl From<GetTaskPayloadRequest> for MessageFromClient {
+    fn from(value: GetTaskPayloadRequest) -> Self {
+        MessageFromClient::RequestFromClient(value.into())
+    }
+}
+impl From<CancelTaskRequest> for MessageFromClient {
+    fn from(value: CancelTaskRequest) -> Self {
+        MessageFromClient::RequestFromClient(value.into())
+    }
+}
+impl From<ListTasksRequest> for MessageFromClient {
+    fn from(value: ListTasksRequest) -> Self {
+        MessageFromClient::RequestFromClient(value.into())
+    }
+}
 impl From<SetLevelRequest> for MessageFromClient {
     fn from(value: SetLevelRequest) -> Self {
         MessageFromClient::RequestFromClient(value.into())
@@ -2519,6 +2602,11 @@ impl From<ProgressNotification> for NotificationFromClient {
         Self::ClientNotification(value.into())
     }
 }
+impl From<TaskStatusNotification> for NotificationFromClient {
+    fn from(value: TaskStatusNotification) -> Self {
+        Self::ClientNotification(value.into())
+    }
+}
 impl From<RootsListChangedNotification> for NotificationFromClient {
     fn from(value: RootsListChangedNotification) -> Self {
         Self::ClientNotification(value.into())
@@ -2536,6 +2624,11 @@ impl From<InitializedNotification> for ClientJsonrpcNotification {
 }
 impl From<ProgressNotification> for ClientJsonrpcNotification {
     fn from(value: ProgressNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<TaskStatusNotification> for ClientJsonrpcNotification {
+    fn from(value: TaskStatusNotification) -> Self {
         Self::new(value.into())
     }
 }
@@ -2559,6 +2652,11 @@ impl From<ProgressNotification> for MessageFromClient {
         MessageFromClient::NotificationFromClient(value.into())
     }
 }
+impl From<TaskStatusNotification> for MessageFromClient {
+    fn from(value: TaskStatusNotification) -> Self {
+        MessageFromClient::NotificationFromClient(value.into())
+    }
+}
 impl From<RootsListChangedNotification> for MessageFromClient {
     fn from(value: RootsListChangedNotification) -> Self {
         MessageFromClient::NotificationFromClient(value.into())
@@ -2566,6 +2664,26 @@ impl From<RootsListChangedNotification> for MessageFromClient {
 }
 impl From<Result> for ResultFromClient {
     fn from(value: Result) -> Self {
+        Self::ClientResult(value.into())
+    }
+}
+impl From<GetTaskResult> for ResultFromClient {
+    fn from(value: GetTaskResult) -> Self {
+        Self::ClientResult(value.into())
+    }
+}
+impl From<GetTaskPayloadResult> for ResultFromClient {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        Self::ClientResult(value.into())
+    }
+}
+impl From<CancelTaskResult> for ResultFromClient {
+    fn from(value: CancelTaskResult) -> Self {
+        Self::ClientResult(value.into())
+    }
+}
+impl From<ListTasksResult> for ResultFromClient {
+    fn from(value: ListTasksResult) -> Self {
         Self::ClientResult(value.into())
     }
 }
@@ -2586,6 +2704,26 @@ impl From<ElicitResult> for ResultFromClient {
 }
 impl From<Result> for MessageFromClient {
     fn from(value: Result) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<GetTaskResult> for MessageFromClient {
+    fn from(value: GetTaskResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<GetTaskPayloadResult> for MessageFromClient {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<CancelTaskResult> for MessageFromClient {
+    fn from(value: CancelTaskResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<ListTasksResult> for MessageFromClient {
+    fn from(value: ListTasksResult) -> Self {
         MessageFromClient::ResultFromClient(value.into())
     }
 }
@@ -2617,6 +2755,7 @@ pub enum SdkErrorCodes {
     INVALID_PARAMS = -32602,
     INTERNAL_ERROR = -32603,
     PARSE_ERROR = -32700,
+    URL_ELICITATION_REQUIRED = -32042,
 }
 impl core::fmt::Display for SdkErrorCodes {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -2631,6 +2770,12 @@ impl core::fmt::Display for SdkErrorCodes {
             SdkErrorCodes::RESOURCE_NOT_FOUND => write!(f, "Resource not found"),
             SdkErrorCodes::BAD_REQUEST => write!(f, "Bad request"),
             SdkErrorCodes::SESSION_NOT_FOUND => write!(f, "Session not found"),
+            SdkErrorCodes::URL_ELICITATION_REQUIRED => {
+                write!(
+                    f,
+                    "A required URL was not provided. Please supply the requested URL to continue."
+                )
+            }
         }
     }
 }
@@ -2726,6 +2871,24 @@ impl SdkError {
             message: SdkErrorCodes::PARSE_ERROR.to_string(),
         }
     }
+    /// Creates a new `RpcError` indicating that a URL elicitation failed
+    /// and was required for the operation to continue.
+    ///
+    /// The resulting error uses the -32042 value as introduced in mcp protocol 2025-11-25
+    /// The result json matches a UrlElicitError and the `data` value could be deserialized into UrlElicitErrorData
+    ///
+    pub fn url_elicit_required(elicit_url_params: Vec<ElicitRequestUrlParams>) -> Self {
+        Self {
+            code: UrlElicitError::code_value(),
+            data: Some(serde_json::to_value(elicit_url_params).unwrap_or_else(|_| {
+                json!(
+                    { "elicitations" : [], "error" :
+                    "failed to UrlElicitError data" }
+                )
+            })),
+            message: "URL required. Please provide a URL.".to_string(),
+        }
+    }
     pub fn resource_not_found() -> Self {
         Self {
             code: SdkErrorCodes::RESOURCE_NOT_FOUND.into(),
@@ -2749,7 +2912,7 @@ impl SdkError {
         self
     }
 }
-/// Enum representing standard JSON-RPC error codes.
+/// Enum representing standard and mcp specific JSON-RPC error codes.
 #[allow(non_camel_case_types)]
 pub enum RpcErrorCodes {
     PARSE_ERROR = -32700isize,
@@ -2757,6 +2920,7 @@ pub enum RpcErrorCodes {
     METHOD_NOT_FOUND = -32601isize,
     INVALID_PARAMS = -32602isize,
     INTERNAL_ERROR = -32603isize,
+    URL_ELICITATION_REQUIRED = -32042isize,
 }
 impl From<RpcErrorCodes> for i64 {
     fn from(code: RpcErrorCodes) -> Self {
@@ -2806,6 +2970,24 @@ impl RpcError {
             code: RpcErrorCodes::METHOD_NOT_FOUND.into(),
             data: None,
             message: "Method not found".to_string(),
+        }
+    }
+    /// Creates a new `RpcError` indicating that a URL elicitation failed
+    /// and was required for the operation to continue.
+    ///
+    /// The resulting error uses the -32042 value as introduced in mcp protocol 2025-11-25
+    /// The result json matches a UrlElicitError and the `data` value could be deserialized into UrlElicitErrorData
+    ///
+    pub fn url_elicit_required(elicit_url_params: Vec<ElicitRequestUrlParams>) -> Self {
+        Self {
+            code: UrlElicitError::code_value(),
+            data: Some(serde_json::to_value(elicit_url_params).unwrap_or_else(|_| {
+                json!(
+                    { "elicitations" : [], "error" :
+                    "failed to UrlElicitError data" }
+                )
+            })),
+            message: "URL required. Please provide a URL.".to_string(),
         }
     }
     /// Creates a new `RpcError` for "Invalid parameters".
@@ -2921,10 +3103,10 @@ impl FromStr for RpcError {
             .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
-/// Constructs a new JsonrpcError using the provided arguments.
-impl JsonrpcError {
+///Constructs a new `JsonrpcErrorResponse` using the provided arguments.
+impl JsonrpcErrorResponse {
     pub fn create(
-        id: RequestId,
+        id: Option<RequestId>,
         error_code: RpcErrorCodes,
         error_message: ::std::string::String,
         error_data: ::std::option::Option<::serde_json::Value>,
@@ -2962,8 +3144,18 @@ impl From<ToolListChangedNotification> for NotificationFromServer {
         Self::ServerNotification(value.into())
     }
 }
+impl From<TaskStatusNotification> for NotificationFromServer {
+    fn from(value: TaskStatusNotification) -> Self {
+        Self::ServerNotification(value.into())
+    }
+}
 impl From<LoggingMessageNotification> for NotificationFromServer {
     fn from(value: LoggingMessageNotification) -> Self {
+        Self::ServerNotification(value.into())
+    }
+}
+impl From<ElicitationCompleteNotification> for NotificationFromServer {
+    fn from(value: ElicitationCompleteNotification) -> Self {
         Self::ServerNotification(value.into())
     }
 }
@@ -2997,8 +3189,18 @@ impl From<ToolListChangedNotification> for ServerJsonrpcNotification {
         Self::new(value.into())
     }
 }
+impl From<TaskStatusNotification> for ServerJsonrpcNotification {
+    fn from(value: TaskStatusNotification) -> Self {
+        Self::new(value.into())
+    }
+}
 impl From<LoggingMessageNotification> for ServerJsonrpcNotification {
     fn from(value: LoggingMessageNotification) -> Self {
+        Self::new(value.into())
+    }
+}
+impl From<ElicitationCompleteNotification> for ServerJsonrpcNotification {
+    fn from(value: ElicitationCompleteNotification) -> Self {
         Self::new(value.into())
     }
 }
@@ -3032,13 +3234,43 @@ impl From<ToolListChangedNotification> for MessageFromServer {
         MessageFromServer::NotificationFromServer(value.into())
     }
 }
+impl From<TaskStatusNotification> for MessageFromServer {
+    fn from(value: TaskStatusNotification) -> Self {
+        MessageFromServer::NotificationFromServer(value.into())
+    }
+}
 impl From<LoggingMessageNotification> for MessageFromServer {
     fn from(value: LoggingMessageNotification) -> Self {
         MessageFromServer::NotificationFromServer(value.into())
     }
 }
+impl From<ElicitationCompleteNotification> for MessageFromServer {
+    fn from(value: ElicitationCompleteNotification) -> Self {
+        MessageFromServer::NotificationFromServer(value.into())
+    }
+}
 impl From<PingRequest> for RequestFromServer {
     fn from(value: PingRequest) -> Self {
+        Self::ServerRequest(value.into())
+    }
+}
+impl From<GetTaskRequest> for RequestFromServer {
+    fn from(value: GetTaskRequest) -> Self {
+        Self::ServerRequest(value.into())
+    }
+}
+impl From<GetTaskPayloadRequest> for RequestFromServer {
+    fn from(value: GetTaskPayloadRequest) -> Self {
+        Self::ServerRequest(value.into())
+    }
+}
+impl From<CancelTaskRequest> for RequestFromServer {
+    fn from(value: CancelTaskRequest) -> Self {
+        Self::ServerRequest(value.into())
+    }
+}
+impl From<ListTasksRequest> for RequestFromServer {
+    fn from(value: ListTasksRequest) -> Self {
         Self::ServerRequest(value.into())
     }
 }
@@ -3059,6 +3291,26 @@ impl From<ElicitRequest> for RequestFromServer {
 }
 impl From<PingRequest> for MessageFromServer {
     fn from(value: PingRequest) -> Self {
+        MessageFromServer::RequestFromServer(value.into())
+    }
+}
+impl From<GetTaskRequest> for MessageFromServer {
+    fn from(value: GetTaskRequest) -> Self {
+        MessageFromServer::RequestFromServer(value.into())
+    }
+}
+impl From<GetTaskPayloadRequest> for MessageFromServer {
+    fn from(value: GetTaskPayloadRequest) -> Self {
+        MessageFromServer::RequestFromServer(value.into())
+    }
+}
+impl From<CancelTaskRequest> for MessageFromServer {
+    fn from(value: CancelTaskRequest) -> Self {
+        MessageFromServer::RequestFromServer(value.into())
+    }
+}
+impl From<ListTasksRequest> for MessageFromServer {
+    fn from(value: ListTasksRequest) -> Self {
         MessageFromServer::RequestFromServer(value.into())
     }
 }
@@ -3122,6 +3374,26 @@ impl From<CallToolResult> for ResultFromServer {
         Self::ServerResult(value.into())
     }
 }
+impl From<GetTaskResult> for ResultFromServer {
+    fn from(value: GetTaskResult) -> Self {
+        Self::ServerResult(value.into())
+    }
+}
+impl From<GetTaskPayloadResult> for ResultFromServer {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        Self::ServerResult(value.into())
+    }
+}
+impl From<CancelTaskResult> for ResultFromServer {
+    fn from(value: CancelTaskResult) -> Self {
+        Self::ServerResult(value.into())
+    }
+}
+impl From<ListTasksResult> for ResultFromServer {
+    fn from(value: ListTasksResult) -> Self {
+        Self::ServerResult(value.into())
+    }
+}
 impl From<CompleteResult> for ResultFromServer {
     fn from(value: CompleteResult) -> Self {
         Self::ServerResult(value.into())
@@ -3169,6 +3441,26 @@ impl From<ListToolsResult> for MessageFromServer {
 }
 impl From<CallToolResult> for MessageFromServer {
     fn from(value: CallToolResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<GetTaskResult> for MessageFromServer {
+    fn from(value: GetTaskResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<GetTaskPayloadResult> for MessageFromServer {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<CancelTaskResult> for MessageFromServer {
+    fn from(value: CancelTaskResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ListTasksResult> for MessageFromServer {
+    fn from(value: ListTasksResult) -> Self {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
@@ -3312,6 +3604,54 @@ impl ToMessage<ClientMessage> for CallToolRequest {
         ClientMessage::from_message(self, request_id)
     }
 }
+impl FromMessage<GetTaskRequest> for ClientMessage {
+    fn from_message(message: GetTaskRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ClientMessage> for GetTaskRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<GetTaskPayloadRequest> for ClientMessage {
+    fn from_message(message: GetTaskPayloadRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ClientMessage> for GetTaskPayloadRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<CancelTaskRequest> for ClientMessage {
+    fn from_message(message: CancelTaskRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ClientMessage> for CancelTaskRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<ListTasksRequest> for ClientMessage {
+    fn from_message(message: ListTasksRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Request(ClientJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ClientMessage> for ListTasksRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
 impl FromMessage<SetLevelRequest> for ClientMessage {
     fn from_message(message: SetLevelRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
@@ -3347,6 +3687,66 @@ impl FromMessage<Result> for ClientMessage {
     }
 }
 impl ToMessage<ClientMessage> for Result {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<GetTaskResult> for ClientMessage {
+    fn from_message(message: GetTaskResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ClientMessage> for GetTaskResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<GetTaskPayloadResult> for ClientMessage {
+    fn from_message(message: GetTaskPayloadResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ClientMessage> for GetTaskPayloadResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<CancelTaskResult> for ClientMessage {
+    fn from_message(message: CancelTaskResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ClientMessage> for CancelTaskResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<ListTasksResult> for ClientMessage {
+    fn from_message(message: ListTasksResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ClientMessage::Response(ClientJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ClientMessage> for ListTasksResult {
     fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
         ClientMessage::from_message(self, request_id)
     }
@@ -3441,6 +3841,21 @@ impl ToMessage<ClientMessage> for ProgressNotification {
         ClientMessage::from_message(self, request_id)
     }
 }
+impl FromMessage<TaskStatusNotification> for ClientMessage {
+    fn from_message(message: TaskStatusNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        if request_id.is_some() {
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
+        }
+        Ok(ClientMessage::Notification(ClientJsonrpcNotification::new(message.into())))
+    }
+}
+impl ToMessage<ClientMessage> for TaskStatusNotification {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ClientMessage, RpcError> {
+        ClientMessage::from_message(self, request_id)
+    }
+}
 impl FromMessage<RootsListChangedNotification> for ClientMessage {
     fn from_message(
         message: RootsListChangedNotification,
@@ -3467,6 +3882,54 @@ impl FromMessage<PingRequest> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for PingRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<GetTaskRequest> for ServerMessage {
+    fn from_message(message: GetTaskRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for GetTaskRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<GetTaskPayloadRequest> for ServerMessage {
+    fn from_message(message: GetTaskPayloadRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for GetTaskPayloadRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<CancelTaskRequest> for ServerMessage {
+    fn from_message(message: CancelTaskRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for CancelTaskRequest {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<ListTasksRequest> for ServerMessage {
+    fn from_message(message: ListTasksRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Request(ServerJsonrpcRequest::new(request_id, message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for ListTasksRequest {
     fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
@@ -3645,6 +4108,66 @@ impl ToMessage<ServerMessage> for CallToolResult {
         ServerMessage::from_message(self, request_id)
     }
 }
+impl FromMessage<GetTaskResult> for ServerMessage {
+    fn from_message(message: GetTaskResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ServerMessage> for GetTaskResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<GetTaskPayloadResult> for ServerMessage {
+    fn from_message(message: GetTaskPayloadResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ServerMessage> for GetTaskPayloadResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<CancelTaskResult> for ServerMessage {
+    fn from_message(message: CancelTaskResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ServerMessage> for CancelTaskResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<ListTasksResult> for ServerMessage {
+    fn from_message(message: ListTasksResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        let request_id =
+            request_id.ok_or_else(|| RpcError::internal_error().with_message("request_id is None!".to_string()))?;
+        Ok(ServerMessage::Response(ServerJsonrpcResponse::new(
+            request_id,
+            message.into(),
+        )))
+    }
+}
+impl ToMessage<ServerMessage> for ListTasksResult {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
 impl FromMessage<CompleteResult> for ServerMessage {
     fn from_message(message: CompleteResult, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
@@ -3762,6 +4285,21 @@ impl ToMessage<ServerMessage> for ToolListChangedNotification {
         ServerMessage::from_message(self, request_id)
     }
 }
+impl FromMessage<TaskStatusNotification> for ServerMessage {
+    fn from_message(message: TaskStatusNotification, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
+        if request_id.is_some() {
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
+        }
+        Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for TaskStatusNotification {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
 impl FromMessage<LoggingMessageNotification> for ServerMessage {
     fn from_message(
         message: LoggingMessageNotification,
@@ -3776,6 +4314,24 @@ impl FromMessage<LoggingMessageNotification> for ServerMessage {
     }
 }
 impl ToMessage<ServerMessage> for LoggingMessageNotification {
+    fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
+        ServerMessage::from_message(self, request_id)
+    }
+}
+impl FromMessage<ElicitationCompleteNotification> for ServerMessage {
+    fn from_message(
+        message: ElicitationCompleteNotification,
+        request_id: Option<RequestId>,
+    ) -> std::result::Result<Self, RpcError> {
+        if request_id.is_some() {
+            return Err(
+                RpcError::internal_error().with_message("request_id expected to be None for Notifications!".to_string())
+            );
+        }
+        Ok(ServerMessage::Notification(ServerJsonrpcNotification::new(message.into())))
+    }
+}
+impl ToMessage<ServerMessage> for ElicitationCompleteNotification {
     fn to_message(self, request_id: Option<RequestId>) -> std::result::Result<ServerMessage, RpcError> {
         ServerMessage::from_message(self, request_id)
     }
@@ -3901,6 +4457,50 @@ impl TryFrom<RequestFromClient> for CallToolRequest {
         }
     }
 }
+impl TryFrom<RequestFromClient> for GetTaskRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::GetTaskRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for GetTaskPayloadRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::GetTaskPayloadRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskPayloadRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for CancelTaskRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::CancelTaskRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CancelTaskRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromClient> for ListTasksRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientRequest = value.try_into()?;
+        if let ClientRequest::ListTasksRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ListTasksRequest".to_string()))
+        }
+    }
+}
 impl TryFrom<RequestFromClient> for SetLevelRequest {
     type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
@@ -3931,6 +4531,50 @@ impl TryFrom<ResultFromClient> for Result {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a Result".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for GetTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::GetTaskResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for GetTaskPayloadResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::GetTaskPayloadResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskPayloadResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for CancelTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::CancelTaskResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CancelTaskResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for ListTasksResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientResult = value.try_into()?;
+        if let ClientResult::ListTasksResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ListTasksResult".to_string()))
         }
     }
 }
@@ -4000,6 +4644,17 @@ impl TryFrom<NotificationFromClient> for ProgressNotification {
         }
     }
 }
+impl TryFrom<NotificationFromClient> for TaskStatusNotification {
+    type Error = RpcError;
+    fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ClientNotification = value.try_into()?;
+        if let ClientNotification::TaskStatusNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a TaskStatusNotification".to_string()))
+        }
+    }
+}
 impl TryFrom<NotificationFromClient> for RootsListChangedNotification {
     type Error = RpcError;
     fn try_from(value: NotificationFromClient) -> std::result::Result<Self, Self::Error> {
@@ -4019,6 +4674,50 @@ impl TryFrom<RequestFromServer> for PingRequest {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a PingRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for GetTaskRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::GetTaskRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for GetTaskPayloadRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::GetTaskPayloadRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskPayloadRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for CancelTaskRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::CancelTaskRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CancelTaskRequest".to_string()))
+        }
+    }
+}
+impl TryFrom<RequestFromServer> for ListTasksRequest {
+    type Error = RpcError;
+    fn try_from(value: RequestFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerRequest = value.try_into()?;
+        if let ServerRequest::ListTasksRequest(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ListTasksRequest".to_string()))
         }
     }
 }
@@ -4154,6 +4853,50 @@ impl TryFrom<ResultFromServer> for CallToolResult {
         }
     }
 }
+impl TryFrom<ResultFromServer> for GetTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::GetTaskResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for GetTaskPayloadResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::GetTaskPayloadResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a GetTaskPayloadResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for CancelTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::CancelTaskResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CancelTaskResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromServer> for ListTasksResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerResult = value.try_into()?;
+        if let ServerResult::ListTasksResult(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ListTasksResult".to_string()))
+        }
+    }
+}
 impl TryFrom<ResultFromServer> for CompleteResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
@@ -4231,6 +4974,17 @@ impl TryFrom<NotificationFromServer> for ToolListChangedNotification {
         }
     }
 }
+impl TryFrom<NotificationFromServer> for TaskStatusNotification {
+    type Error = RpcError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::TaskStatusNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a TaskStatusNotification".to_string()))
+        }
+    }
+}
 impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
     type Error = RpcError;
     fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
@@ -4239,6 +4993,17 @@ impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a LoggingMessageNotification".to_string()))
+        }
+    }
+}
+impl TryFrom<NotificationFromServer> for ElicitationCompleteNotification {
+    type Error = RpcError;
+    fn try_from(value: NotificationFromServer) -> std::result::Result<Self, Self::Error> {
+        let matched_type: ServerNotification = value.try_into()?;
+        if let ServerNotification::ElicitationCompleteNotification(result) = matched_type {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a ElicitationCompleteNotification".to_string()))
         }
     }
 }
@@ -4450,7 +5215,7 @@ mod tests {
     //      assert!(matches!(result, MessageTypes::Response));
 
     //      // error message
-    //      let message = JsonrpcError::create(
+    //      let message = JsonrpcErrorResponse::create(
     //          RequestId::Integer(0),
     //          RpcErrorCodes::INVALID_PARAMS,
     //          "Invalid params!".to_string(),

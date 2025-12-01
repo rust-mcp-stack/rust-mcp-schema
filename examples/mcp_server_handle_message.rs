@@ -4,6 +4,12 @@ mod schema {
     pub use rust_mcp_schema::*;
 }
 
+#[cfg(feature = "2025_06_18")]
+mod schema {
+    pub use rust_mcp_schema::mcp_2025_06_18::schema_utils::*;
+    pub use rust_mcp_schema::mcp_2025_06_18::*;
+}
+
 #[cfg(feature = "2024_11_05")]
 mod schema {
     pub use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
@@ -68,52 +74,57 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 ClientRequest::InitializeRequest(initialize_request) => {
                     dbg!(initialize_request);
                 }
-
                 ClientRequest::PingRequest(ping_request) => {
                     dbg!(ping_request);
                 }
                 ClientRequest::ListResourcesRequest(list_resources_request) => {
                     dbg!(list_resources_request);
                 }
-
                 ClientRequest::ListResourceTemplatesRequest(list_resource_templates_request) => {
                     dbg!(list_resource_templates_request);
                 }
-
                 ClientRequest::ReadResourceRequest(read_resource_request) => {
                     dbg!(read_resource_request);
                 }
-
                 ClientRequest::SubscribeRequest(subscribe_request) => {
                     dbg!(subscribe_request);
                 }
-
                 ClientRequest::UnsubscribeRequest(unsubscribe_request) => {
                     dbg!(unsubscribe_request);
                 }
-
                 ClientRequest::ListPromptsRequest(list_prompts_request) => {
                     dbg!(list_prompts_request);
                 }
-
                 ClientRequest::GetPromptRequest(get_prompt_request) => {
                     dbg!(get_prompt_request);
                 }
-
                 ClientRequest::ListToolsRequest(list_tools_request) => {
                     dbg!(list_tools_request);
                 }
-
                 ClientRequest::CallToolRequest(call_tool_request) => {
                     dbg!(call_tool_request);
                 }
-
                 ClientRequest::SetLevelRequest(set_level_request) => {
                     dbg!(set_level_request);
                 }
-
                 ClientRequest::CompleteRequest(complete_request) => {
                     dbg!(complete_request);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientRequest::GetTaskRequest(get_task_request) => {
+                    dbg!(get_task_request);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientRequest::GetTaskPayloadRequest(get_task_payload_request) => {
+                    dbg!(get_task_payload_request);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientRequest::CancelTaskRequest(cancel_task_request) => {
+                    dbg!(cancel_task_request);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientRequest::ListTasksRequest(list_tasks_request) => {
+                    dbg!(list_tasks_request);
                 }
             },
 
@@ -132,17 +143,18 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                     ClientNotification::CancelledNotification(cancelled_notification) => {
                         dbg!(cancelled_notification);
                     }
-
                     ClientNotification::InitializedNotification(initialized_notification) => {
                         dbg!(initialized_notification);
                     }
-
                     ClientNotification::ProgressNotification(progress_notification) => {
                         dbg!(progress_notification);
                     }
-
                     ClientNotification::RootsListChangedNotification(progress_notification) => {
                         dbg!(progress_notification);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ClientNotification::TaskStatusNotification(task_status_notification) => {
+                        dbg!(task_status_notification);
                     }
                 }
             }
@@ -166,9 +178,25 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 ClientResult::ListRootsResult(list_roots_result) => {
                     dbg!(list_roots_result);
                 }
-                #[cfg(any(feature = "2025_06_18", feature = "draft"))]
+                #[cfg(any(feature = "2025_06_18", feature = "2025_11_25", feature = "draft"))]
                 ClientResult::ElicitResult(elicit_result) => {
                     dbg!(elicit_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientResult::GetTaskResult(get_task_result) => {
+                    dbg!(get_task_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientResult::GetTaskPayloadResult(get_task_payload_result) => {
+                    dbg!(get_task_payload_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientResult::CancelTaskResult(cancel_task_result) => {
+                    dbg!(cancel_task_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ClientResult::ListTasksResult(list_tasks_result) => {
+                    dbg!(list_tasks_result);
                 }
             },
 

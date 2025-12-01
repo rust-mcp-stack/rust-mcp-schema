@@ -9,12 +9,12 @@
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
 /// Hash : UNKNOWN
-/// Generated at : 2025-12-01 14:17:35
+/// Generated at : 2025-12-01 14:17:34
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
 /// MCP Protocol Version
-pub const LATEST_PROTOCOL_VERSION: &str = "DRAFT-2025-v3";
+pub const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
 /// JSON-RPC Version
 pub const JSONRPC_VERSION: &str = "2.0";
 /// Parse error. Invalid JSON was received. An error occurred while parsing the JSON text.
@@ -89,7 +89,7 @@ pub struct Annotations {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -121,7 +121,7 @@ pub struct AudioContent {
     pub annotations: ::std::option::Option<Annotations>,
     ///The base64-encoded audio data.
     pub data: ::std::string::String,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of the audio. Different providers may support different audio types.
@@ -206,7 +206,7 @@ pub struct BaseMetadata {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -232,7 +232,7 @@ pub struct BaseMetadata {
 pub struct BlobResourceContents {
     ///A base64-encoded string representing the binary data of the item.
     pub blob: ::std::string::String,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -305,13 +305,13 @@ impl BooleanSchema {
         "boolean".to_string()
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -410,7 +410,7 @@ impl CallToolRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -467,7 +467,7 @@ pub struct CallToolRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -506,7 +506,7 @@ pub struct CallToolResult {
     should be reported as an MCP error response.*/
     #[serde(rename = "isError", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub is_error: ::std::option::Option<bool>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///An optional JSON object that represents the structured result of the tool call.
@@ -641,7 +641,7 @@ pub struct CancelTaskResult {
     pub created_at: ::std::string::String,
     #[serde(rename = "lastUpdatedAt")]
     pub last_updated_at: ::std::string::String,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(rename = "pollInterval", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -729,7 +729,7 @@ impl CancelledNotification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -747,7 +747,7 @@ impl CancelledNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct CancelledNotificationParams {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///An optional string describing the reason for the cancellation. This MAY be logged or presented to the user.
@@ -1558,13 +1558,13 @@ pub struct CompleteRequestContext {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub arguments: ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -1598,7 +1598,7 @@ pub struct CompleteRequestMeta {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -1709,7 +1709,7 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestRef {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -1743,7 +1743,7 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestRef {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CompleteResult {
     pub completion: CompleteResultCompletion,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -2000,7 +2000,7 @@ impl CreateMessageRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -2136,7 +2136,7 @@ to inspect the response (human in the loop) and decide whether to allow the serv
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2183,7 +2183,7 @@ to inspect the response (human in the loop) and decide whether to allow the serv
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateMessageResult {
     pub content: CreateMessageContent,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The name of the model that generated the message.
@@ -2212,7 +2212,7 @@ pub struct CreateMessageResult {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2225,7 +2225,7 @@ pub struct CreateMessageResult {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateTaskResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub task: Task,
@@ -2269,13 +2269,13 @@ pub struct ElicitCompleteParams {
     #[serde(rename = "elicitationId")]
     pub elicitation_id: ::std::string::String,
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -2447,7 +2447,7 @@ impl ElicitRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -2603,7 +2603,7 @@ impl ::std::convert::From<ElicitRequestFormParams> for ElicitRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -2704,7 +2704,7 @@ impl ElicitRequestUrlParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -2754,7 +2754,7 @@ pub struct ElicitResult {
     Omitted for out-of-band mode responses.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub content: ::std::option::Option<::std::collections::HashMap<::std::string::String, ElicitResultContent>>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -2866,13 +2866,13 @@ impl ::std::convert::From<i64> for ElicitResultContentPrimitive {
         Self::Integer(value)
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -2977,7 +2977,7 @@ of the LLM and/or the user.*/
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3008,7 +3008,7 @@ pub struct EmbeddedResource {
     ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub annotations: ::std::option::Option<Annotations>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub resource: EmbeddedResourceResource,
@@ -3146,13 +3146,13 @@ impl ::std::convert::From<LegacyTitledEnumSchema> for EnumSchema {
         Self::LegacyTitledEnumSchema(value)
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -3251,7 +3251,7 @@ impl GetPromptRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -3299,7 +3299,7 @@ pub struct GetPromptRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3323,7 +3323,7 @@ pub struct GetPromptResult {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     pub messages: ::std::vec::Vec<PromptMessage>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -3464,7 +3464,7 @@ For example, a tools/call task would return the CallToolResult structure.*/
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -3475,7 +3475,7 @@ For example, a tools/call task would return the CallToolResult structure.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct GetTaskPayloadResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3580,7 +3580,7 @@ pub struct GetTaskResult {
     pub created_at: ::std::string::String,
     #[serde(rename = "lastUpdatedAt")]
     pub last_updated_at: ::std::string::String,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(rename = "pollInterval", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -3739,7 +3739,7 @@ pub struct Icons {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -3771,7 +3771,7 @@ pub struct ImageContent {
     pub annotations: ::std::option::Option<Annotations>,
     ///The base64-encoded image data.
     pub data: ::std::string::String,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of the image. Different providers may support different image types.
@@ -3919,13 +3919,13 @@ impl ::std::fmt::Display for IncludeContext {
         }
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -4026,7 +4026,7 @@ impl InitializeRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -4076,7 +4076,7 @@ pub struct InitializeRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4105,7 +4105,7 @@ pub struct InitializeResult {
     This can be used by clients to improve the LLM's understanding of available tools, resources, etc. It can be thought of like a "hint" to the model. For example, this information MAY be added to the system prompt.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub instructions: ::std::option::Option<::std::string::String>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The version of the Model Context Protocol that the server wants to use. This may not match the version that the client requested. If the client cannot support this version, it MUST disconnect.
@@ -4632,7 +4632,7 @@ impl ListPromptsRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4652,7 +4652,7 @@ impl ListPromptsRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListPromptsResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -4740,7 +4740,7 @@ impl ListResourceTemplatesRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4760,7 +4760,7 @@ impl ListResourceTemplatesRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourceTemplatesResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -4849,7 +4849,7 @@ impl ListResourcesRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4869,7 +4869,7 @@ impl ListResourcesRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourcesResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -4964,7 +4964,7 @@ or file that the server can operate on.*/
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -4980,7 +4980,7 @@ or file that the server can operate on.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub roots: ::std::vec::Vec<Root>,
@@ -5064,7 +5064,7 @@ impl ListTasksRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5084,7 +5084,7 @@ impl ListTasksRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListTasksResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -5172,7 +5172,7 @@ impl ListToolsRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5192,7 +5192,7 @@ impl ListToolsRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListToolsResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -5331,7 +5331,7 @@ impl LoggingMessageNotification {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5359,17 +5359,17 @@ pub struct LoggingMessageNotificationParams {
     ///An optional name of the logger issuing this message.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub logger: ::std::option::Option<::std::string::String>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -5556,7 +5556,7 @@ pub struct Notification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -5566,7 +5566,7 @@ pub struct Notification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct NotificationParams {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -5651,13 +5651,13 @@ impl ::std::fmt::Display for NumberSchemaType {
         }
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -5739,7 +5739,7 @@ impl PaginatedRequest {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -5775,7 +5775,7 @@ pub struct PaginatedRequestParams {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -5789,7 +5789,7 @@ pub struct PaginatedRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct PaginatedResult {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An opaque token representing the pagination position after the last returned result.
@@ -6026,7 +6026,7 @@ impl ProgressNotification {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6055,7 +6055,7 @@ pub struct ProgressNotificationParams {
     ///An optional message describing the current progress.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub message: ::std::option::Option<::std::string::String>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub progress: f64,
@@ -6103,7 +6103,7 @@ impl ::std::convert::From<i64> for ProgressToken {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6154,7 +6154,7 @@ pub struct Prompt {
     - image/webp - WebP images (modern, efficient format)*/
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub icons: ::std::vec::Vec<Icon>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
@@ -6403,13 +6403,13 @@ impl ::std::convert::From<BlobResourceContents> for ReadResourceContent {
         Self::BlobResourceContents(value)
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -6508,7 +6508,7 @@ impl ReadResourceRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -6547,7 +6547,7 @@ pub struct ReadResourceRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6571,7 +6571,7 @@ pub struct ReadResourceRequestParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ReadResourceResult {
     pub contents: ::std::vec::Vec<ReadResourceContent>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
@@ -6665,7 +6665,7 @@ impl ::std::convert::From<i64> for RequestId {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -6684,13 +6684,13 @@ pub struct RequestParams {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<RequestParamsMeta>,
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -6724,7 +6724,7 @@ pub struct RequestParamsMeta {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6786,7 +6786,7 @@ pub struct Resource {
     - image/webp - WebP images (modern, efficient format)*/
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub icons: ::std::vec::Vec<Icon>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -6821,7 +6821,7 @@ pub struct Resource {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6840,7 +6840,7 @@ pub struct Resource {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceContents {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -6865,7 +6865,7 @@ Note: resource links returned by tools are not guaranteed to appear in the resul
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -6931,7 +6931,7 @@ pub struct ResourceLink {
     - image/webp - WebP images (modern, efficient format)*/
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub icons: ::std::vec::Vec<Icon>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -7053,13 +7053,13 @@ impl ResourceListChangedNotification {
         "notifications/resources/list_changed".to_string()
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -7092,7 +7092,7 @@ pub struct ResourceMeta {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -7132,7 +7132,7 @@ pub struct ResourceRequestParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -7190,7 +7190,7 @@ pub struct ResourceTemplate {
     - image/webp - WebP images (modern, efficient format)*/
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub icons: ::std::vec::Vec<Icon>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type for all resources that match this template. This should only be included if all resources matching this template have the same type.
@@ -7334,7 +7334,7 @@ impl ResourceUpdatedNotification {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -7349,7 +7349,7 @@ impl ResourceUpdatedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceUpdatedNotificationParams {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The URI of the resource that has been updated. This might be a sub-resource of the one that the client actually subscribed to.
@@ -7364,7 +7364,7 @@ pub struct ResourceUpdatedNotificationParams {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    }
@@ -7375,7 +7375,7 @@ pub struct ResourceUpdatedNotificationParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct Result {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -7424,7 +7424,7 @@ impl ::std::fmt::Display for Role {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -7443,7 +7443,7 @@ impl ::std::fmt::Display for Role {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct Root {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An optional name for the root. This can be used to provide a human-readable
@@ -7569,7 +7569,7 @@ pub struct RpcError {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -7608,7 +7608,7 @@ pub struct RpcError {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct SamplingMessage {
     pub content: SamplingMessageContent,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     pub role: Role,
@@ -8373,13 +8373,13 @@ pub struct ServerTasks {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub requests: ::std::option::Option<ServerTaskRequest>,
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -8478,7 +8478,7 @@ impl SetLevelRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -8664,13 +8664,13 @@ impl ::std::fmt::Display for StringSchemaFormat {
         }
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -8769,7 +8769,7 @@ impl SubscribeRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -8867,13 +8867,13 @@ pub struct Task {
     ///Actual retention duration from creation in milliseconds, null for unlimited.
     pub ttl: i64,
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -8903,7 +8903,7 @@ pub struct TaskAugmentedMeta {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {
@@ -9085,7 +9085,7 @@ pub struct TaskStatusNotificationParams {
     ///ISO 8601 timestamp when the task was last updated.
     #[serde(rename = "lastUpdatedAt")]
     pub last_updated_at: ::std::string::String,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Suggested polling interval in milliseconds.
@@ -9119,7 +9119,7 @@ pub struct TaskStatusNotificationParams {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -9144,7 +9144,7 @@ pub struct TextContent {
     ///Optional annotations for the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub annotations: ::std::option::Option<Annotations>,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The text content of the message.
@@ -9190,7 +9190,7 @@ impl TextContent {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -9213,7 +9213,7 @@ impl TextContent {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct TextResourceContents {
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The MIME type of this resource, if known.
@@ -9569,7 +9569,7 @@ pub struct TitledSingleSelectEnumSchemaOneOfItem {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -9686,7 +9686,7 @@ pub struct Tool {
     pub icons: ::std::vec::Vec<Icon>,
     #[serde(rename = "inputSchema")]
     pub input_schema: ToolInputSchema,
-    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+    ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
@@ -10146,7 +10146,7 @@ impl ToolOutputSchema {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "Optional metadata about the tool result. Clients SHOULD preserve this field when\nincluding tool results in subsequent sampling requests to enable caching optimizations.\n\nSee [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "Optional metadata about the tool result. Clients SHOULD preserve this field when\nincluding tool results in subsequent sampling requests to enable caching optimizations.\n\nSee [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -10191,7 +10191,7 @@ pub struct ToolResultContent {
     pub is_error: ::std::option::Option<bool>,
     /**Optional metadata about the tool result. Clients SHOULD preserve this field when
     including tool results in subsequent sampling requests to enable caching optimizations.
-    See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.*/
+    See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.*/
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     /**An optional structured result object.
@@ -10254,7 +10254,7 @@ impl ToolResultContent {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "Optional metadata about the tool use. Clients SHOULD preserve this field when\nincluding tool uses in subsequent sampling requests to enable caching optimizations.\n\nSee [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "Optional metadata about the tool use. Clients SHOULD preserve this field when\nincluding tool uses in subsequent sampling requests to enable caching optimizations.\n\nSee [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
@@ -10288,7 +10288,7 @@ pub struct ToolUseContent {
     pub input: ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     /**Optional metadata about the tool use. Clients SHOULD preserve this field when
     including tool uses in subsequent sampling requests to enable caching optimizations.
-    See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.*/
+    See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.*/
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ///The name of the tool to call.
@@ -10323,13 +10323,13 @@ impl ToolUseContent {
         "tool_use".to_string()
     }
 }
-///See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.
+///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///  "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///  "type": "object",
 ///  "properties": {
 ///    "progressToken": {
@@ -10428,7 +10428,7 @@ impl UnsubscribeRequest {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/draft/basic/index#meta) for notes on _meta usage.",
+///      "description": "See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.",
 ///      "type": "object",
 ///      "properties": {
 ///        "progressToken": {

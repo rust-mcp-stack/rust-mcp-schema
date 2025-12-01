@@ -1,5 +1,8 @@
 mod test_deserialize {
 
+    #[cfg(feature = "2025_06_18")]
+    use rust_mcp_schema::mcp_2025_06_18::*;
+
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::*;
 
@@ -9,7 +12,7 @@ mod test_deserialize {
     #[cfg(feature = "draft")]
     use rust_mcp_schema::mcp_draft::*;
 
-    #[cfg(any(feature = "latest", feature = "2025_06_18"))]
+    #[cfg(feature = "latest")]
     use rust_mcp_schema::*;
 
     use serde::{Deserialize, Serialize};
@@ -183,7 +186,12 @@ mod test_deserialize {
     fn test_cancelled_notification() {
         let params = CancelledNotificationParams {
             reason: Some("test reason".to_string()),
+            #[cfg(not(any(feature = "2025_11_25", feature = "draft")))]
             request_id: RequestId::Integer(1),
+            #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+            request_id: Some(RequestId::Integer(1)),
+            #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+            meta: None,
         };
         let notif = CancelledNotification::new(params);
         test_serde(&notif);
@@ -236,7 +244,12 @@ mod test_deserialize {
     fn test_client_notification() {
         let notif = ClientNotification::CancelledNotification(CancelledNotification::new(CancelledNotificationParams {
             reason: None,
+            #[cfg(not(any(feature = "2025_11_25", feature = "draft")))]
             request_id: RequestId::Integer(0),
+            #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+            request_id: Some(RequestId::Integer(0)),
+            #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+            meta: None,
         }));
         test_serde(&notif);
     }
@@ -271,7 +284,7 @@ mod test_deserialize {
     #[cfg(not(feature = "draft"))]
     #[test]
     fn test_complete_request() {
-        let argument = CompleteRequestParamsArgument {
+        let argument = CompleteRequestArgument {
             name: "test".to_string(),
             value: "test".to_string(),
         };
@@ -280,7 +293,7 @@ mod test_deserialize {
             argument,
             #[cfg(any(feature = "draft", feature = "2025_06_18"))]
             context: None,
-            ref_: CompleteRequestParamsRef::PromptReference(PromptReference::new(
+            ref_: CompleteRequestRef::PromptReference(PromptReference::new(
                 "test".to_string(),
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 None,
@@ -729,6 +742,7 @@ mod test_deserialize {
         test_serde(&ref_);
     }
 
+    #[cfg(not(any(feature = "2025_11_25", feature = "draft")))]
     #[test]
     fn test_read_resource_request() {
         let params = ReadResourceRequestParams { uri: "test".to_string() };
@@ -868,7 +882,12 @@ mod test_deserialize {
     fn test_server_notification() {
         let notif = ServerNotification::CancelledNotification(CancelledNotification::new(CancelledNotificationParams {
             reason: Some("because".to_string()),
+            #[cfg(not(any(feature = "2025_11_25", feature = "draft")))]
             request_id: RequestId::Integer(15),
+            #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+            request_id: Some(RequestId::Integer(15)),
+            #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+            meta: None,
         }));
         test_serde(&notif);
     }
@@ -1009,9 +1028,12 @@ mod test_deserialize {
         test_serde(&notif);
     }
 
-    #[cfg(any(feature = "draft", feature = "2025_06_18"))]
+    #[cfg(any(feature = "draft", feature = "2025_06_18", feature = "2025_11_25"))]
     #[test]
     fn test_tool_output_schema() {
+        #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+        let schema = ToolOutputSchema::new(vec!["hey".to_string()], None, None);
+        #[cfg(not(any(feature = "2025_11_25", feature = "draft")))]
         let schema = ToolOutputSchema::new(vec!["hey".to_string()], None);
         test_serde(&schema);
     }

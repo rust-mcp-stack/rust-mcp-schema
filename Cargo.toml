@@ -24,11 +24,11 @@ json5 = { version = "0.4" }
 
 
 [package.metadata.docs.rs]
-features = ["2025_06_18", "schema_utils"]
+features = ["2025_11_25", "schema_utils"]
 rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
-features = ["2025_06_18", "schema_utils"]
+features = ["2025_11_25", "schema_utils"]
 
 ### FEATURES #################################################################
 
@@ -36,12 +36,14 @@ features = ["2025_06_18", "schema_utils"]
 [features]
 
 # default features
-default = ["2025_06_18", "schema_utils"] # Default features
+default = ["2025_11_25", "schema_utils"] # Default features
 
 # activates the latest MCP schema version, this will be updated once a new version of schema is published
-latest = ["2025_06_18"]
+latest = ["2025_11_25"]
+# enabled mcp schema version 2025_11_25
+2025_11_25 = ["latest"]
 # enabled mcp schema version 2025_06_18
-2025_06_18 = ["latest"]
+2025_06_18 = []
 # enabled mcp schema version 2025_03_26
 2025_03_26 = []
 # enabled mcp schema version 2024_11_05

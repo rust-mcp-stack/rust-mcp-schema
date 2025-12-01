@@ -31,9 +31,9 @@ macro_rules! define_schema_version {
     };
 }
 
-/// Latest MCP Protocol 2025_06_18
-#[cfg(feature = "2025_06_18")]
-pub use mcp_2025_06_18::*;
+/// Latest MCP Protocol 2025_11_25
+#[cfg(feature = "2025_11_25")]
+pub use mcp_2025_11_25::*;
 
 #[cfg(feature = "2025_06_18")]
 define_schema_version!(
@@ -66,6 +66,17 @@ define_schema_version!(
     "generated_schema/2024_11_05/validators.rs",
     __int_2024_11_05,
     __int_utils_2024_11_05
+);
+
+#[cfg(feature = "2025_11_25")]
+define_schema_version!(
+    "2025_11_25",
+    mcp_2025_11_25,
+    "generated_schema/2025_11_25/mcp_schema.rs",
+    "generated_schema/2025_11_25/schema_utils.rs",
+    "generated_schema/2025_11_25/validators.rs",
+    __int_2025_11_25,
+    __int_utils_2025_11_25
 );
 
 #[cfg(feature = "draft")]

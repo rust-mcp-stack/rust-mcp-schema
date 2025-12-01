@@ -4,6 +4,12 @@ mod schema {
     pub use rust_mcp_schema::*;
 }
 
+#[cfg(feature = "2025_06_18")]
+mod schema {
+    pub use rust_mcp_schema::mcp_2025_06_18::schema_utils::*;
+    pub use rust_mcp_schema::mcp_2025_06_18::*;
+}
+
 #[cfg(feature = "2024_11_05")]
 mod schema {
     pub use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
@@ -77,9 +83,25 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                     ServerRequest::ListRootsRequest(list_roots_request) => {
                         dbg!(list_roots_request);
                     }
-                    #[cfg(any(feature = "2025_06_18", feature = "draft"))]
+                    #[cfg(any(feature = "2025_06_18", feature = "2025_11_25", feature = "draft"))]
                     ServerRequest::ElicitRequest(elicit_request) => {
                         dbg!(elicit_request);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ServerRequest::GetTaskRequest(get_task_request) => {
+                        dbg!(get_task_request);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ServerRequest::GetTaskPayloadRequest(get_task_payload_request) => {
+                        dbg!(get_task_payload_request);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ServerRequest::CancelTaskRequest(cancel_task_request) => {
+                        dbg!(cancel_task_request);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ServerRequest::ListTasksRequest(list_tasks_request) => {
+                        dbg!(list_tasks_request);
                     }
                 }
             }
@@ -114,6 +136,14 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                     }
                     ServerNotification::LoggingMessageNotification(logging_message_notification) => {
                         dbg!(logging_message_notification);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ServerNotification::TaskStatusNotification(task_status_notification) => {
+                        dbg!(task_status_notification);
+                    }
+                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                    ServerNotification::ElicitationCompleteNotification(elicitation_complete_notification) => {
+                        dbg!(elicitation_complete_notification);
                     }
                 }
             }
@@ -155,6 +185,22 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
                 }
                 ServerResult::CompleteResult(complete_result) => {
                     dbg!(complete_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ServerResult::GetTaskResult(get_task_result) => {
+                    dbg!(get_task_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ServerResult::GetTaskPayloadResult(get_task_payload_result) => {
+                    dbg!(get_task_payload_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ServerResult::CancelTaskResult(cancel_task_result) => {
+                    dbg!(cancel_task_result);
+                }
+                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
+                ServerResult::ListTasksResult(list_tasks_result) => {
+                    dbg!(list_tasks_result);
                 }
             },
             // Check if it's a CustomResult; the value can be deserialized into your custom types.

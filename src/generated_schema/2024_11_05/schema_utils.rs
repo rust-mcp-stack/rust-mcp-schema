@@ -1492,7 +1492,7 @@ impl CallToolError {
     /// # Examples
     ///
     /// ```
-    /// let err = CallToolError::from_message("Something went wrong");
+    /// let err = rust_mcp_schema::schema_utils::CallToolError::from_message("Something went wrong");
     /// println!("{:?}", err);
     /// ```
     ///
@@ -2608,7 +2608,7 @@ impl SdkError {
         self
     }
 }
-/// Enum representing standard JSON-RPC error codes.
+/// Enum representing standard and mcp specific JSON-RPC error codes.
 #[allow(non_camel_case_types)]
 pub enum RpcErrorCodes {
     PARSE_ERROR = -32700isize,
@@ -2780,7 +2780,7 @@ impl FromStr for RpcError {
             .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
-/// Constructs a new JsonrpcError using the provided arguments.
+///Constructs a new `JsonrpcError` using the provided arguments.
 impl JsonrpcError {
     pub fn create(
         id: RequestId,
