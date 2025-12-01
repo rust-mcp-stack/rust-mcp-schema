@@ -1,4 +1,4 @@
-use crate::generated_schema::*;
+use crate::generated_schema::mcp_2025_06_18::*;
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
@@ -2740,7 +2740,7 @@ impl SdkError {
         self
     }
 }
-/// Enum representing standard JSON-RPC error codes.
+/// Enum representing standard and mcp specific JSON-RPC error codes.
 #[allow(non_camel_case_types)]
 pub enum RpcErrorCodes {
     PARSE_ERROR = -32700isize,
@@ -2912,7 +2912,7 @@ impl FromStr for RpcError {
             .map_err(|error| RpcError::parse_error().with_data(Some(json!({ "details" : error.to_string() }))))
     }
 }
-/// Constructs a new JsonrpcError using the provided arguments.
+///Constructs a new `JsonrpcError` using the provided arguments.
 impl JsonrpcError {
     pub fn create(
         id: RequestId,

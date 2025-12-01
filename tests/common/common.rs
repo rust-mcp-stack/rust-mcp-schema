@@ -1,12 +1,13 @@
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::str::FromStr;
 use std::sync::OnceLock;
 use std::{collections::HashMap, env::current_dir, fs};
 
 const JSON_FILENAME: &str = "sample_mcp_messages.json";
-
+#[allow(unused)]
 static TEST_DATA: OnceLock<TestData> = OnceLock::new();
-
+#[allow(unused)]
 pub fn get_test_payload(key: &str) -> &String {
     let test_data = TEST_DATA.get_or_init(TestData::new);
     test_data.test_payload(key)
@@ -42,6 +43,7 @@ impl TestData {
     }
 }
 
+#[allow(unused)]
 /// Converts a message to a JSON string and then deserializes it back.
 /// Tests help to ensures consistent serialization and deserialization across all enum variants.
 pub fn re_serialize<T>(message: T) -> T
@@ -56,6 +58,7 @@ where
     T::from_str(&message_str).unwrap()
 }
 
+#[allow(unused)]
 /// get a test message payload from the sample_mcp_messages.json by key
 pub fn get_message<T>(test_payload_key: &str, version: &str) -> T
 where
@@ -65,4 +68,22 @@ where
     let message_str = get_test_payload(test_payload_key).replace("PROTOCOL_VERSION", version);
     //{"id":13,"jsonrpc":"2.0","method":"tools/list","params":{}}
     T::from_str(&message_str).unwrap()
+}
+
+#[allow(unused)]
+pub fn round_trip_test<T>(original: &T)
+where
+    T: Serialize + for<'de> Deserialize<'de> + std::fmt::Debug,
+{
+    // Serialize the original object to JSON
+    let json = serde_json::to_string(original).expect("Failed to serialize original object");
+
+    // Deserialize back to the same type
+    let deserialized: T = serde_json::from_str(&json).expect("Failed to deserialize JSON");
+
+    // Serialize the deserialized object to JSON
+    let json_deserialized = serde_json::to_string(&deserialized).expect("Failed to serialize deserialized object");
+
+    // Compare the JSON strings to ensure consistency
+    assert_eq!(json, json_deserialized, "JSON serialization mismatch for {original:?}");
 }
