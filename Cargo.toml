@@ -9,6 +9,8 @@ documentation = "https://docs.rs/rust-mcp-schema"
 keywords = ["rust-mcp-stack", "model", "context", "protocol", "schema"]
 license = "MIT"
 edition = "2021"
+rust-version = "1.80.0"
+
 
 [lib]
 path = "src/rust-mcp-schema.rs"
