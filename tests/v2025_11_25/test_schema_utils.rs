@@ -271,54 +271,20 @@ mod tests_schema_utils {
 
 #[test]
 fn adhoc() {
+    use rust_mcp_schema::mcp_2025_11_25::schema_utils::*;
+    use rust_mcp_schema::mcp_2025_11_25::*;
 
-    // let str = r#"{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{"sampling":{},"elicitation":{},"roots":{"listChanged":true}},"clientInfo":{"name":"inspector-client","version":"0.17.2"}}}"#;
-    // let xtr = r#"{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{"sampling":{},"elicitation":{},"roots":{"listChanged":true}},"clientInfo":{"name":"inspector-client","version":"0.17.2"}}}"#;
-    // // let msg: ClientRequest = serde_json::from_str(str).unwrap();
-    // // let msg: RequestFromClient = serde_json::from_str(str).unwrap();
-    // // let msg: MessageFromClient = serde_json::from_str(str).unwrap();
-    // // let msg: MessageFromClient = serde_json::from_str(str).unwrap();
-    // // let msg: rust_mcp_schema::mcp_2025_11_25::schema_utils::MessagesFromClient = serde_json::from_str(str).unwrap();
-    // let msg: ClientJsonrpcRequest = serde_json::from_str(str).unwrap();
-    // // let msg: ClientMessage = serde_json::from_str(str).unwrap();
+    let str = r#"{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{"sampling":{},"elicitation":{},"roots":{"listChanged":true}},"clientInfo":{"name":"inspector-client","version":"0.17.2"}}}"#;
 
-    // // let g = InitializeRequest::new(
-    // //     RequestId::Integer(0),
-    // //     InitializeRequestParams {
-    // //         capabilities: ClientCapabilities {
-    // //             elicitation: Some(ClientElicitation { form: None, url: None }),
-    // //             experimental: None,
-    // //             roots: Some(ClientRoots {
-    // //                 list_changed: Some(true),
-    // //             }),
-    // //             sampling: Some(ClientSampling {
-    // //                 context: None,
-    // //                 tools: None,
-    // //             }),
-    // //             tasks: None,
-    // //         },
+    let msg: ClientMessage = serde_json::from_str(str).unwrap();
+    assert!(matches!(
+        msg,
+        ClientMessage::Request(ClientJsonrpcRequest::InitializeRequest(_))
+    ));
 
-    // //         client_info: Implementation {
-    // //             description: None,
-    // //             icons: vec![],
-    // //             name: "inspector-client".to_string(),
-    // //             title: None,
-    // //             version: "0.17.2".to_string(),
-    // //             website_url: None,
-    // //         },
-    // //         meta: None,
-    // //         protocol_version: "2025-06-18".to_string(),
-    // //     },
-    // // );
+    let msg: ClientJsonrpcRequest = serde_json::from_str(str).unwrap();
+    assert!(matches!(msg, ClientJsonrpcRequest::InitializeRequest(_)));
 
-    // // let c: ClientMessage = ClientMessage::Request(ClientJsonrpcRequest::new(
-    // //     RequestId::Integer(0),
-    // //     RequestFromClient::ClientRequest(g.into()),
-    // // ));
-
-    // println!(">>> msg {:?},{} ", msg, LATEST_PROTOCOL_VERSION);
-
-    // // let again: ClientMessage = serde_json::from_str(&serde_json::to_string(&c).unwrap()).unwrap();
-
-    // // println!(">>> again {:?} ", again);
+    let msg: ClientRequest = serde_json::from_str(str).unwrap();
+    assert!(matches!(msg, ClientRequest::InitializeRequest(_)));
 }
