@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.8.0...v0.9.0) (2025-12-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* improve shema_utils, generqted new schema sets ([#95](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/95))
+
+### Features
+
+* improve shema_utils, generqted new schema sets ([#95](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/95)) ([afa6a7b](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/afa6a7b72453819b651594b34dfad5d4f4890f00))
+
 ## [0.8.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.7.5...v0.8.0) (2025-12-01)
 
 
