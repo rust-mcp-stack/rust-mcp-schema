@@ -1,3 +1,4 @@
+#![cfg_attr(rustfmt, rustfmt_skip)]
 use rust_mcp_schema::{schema_utils::*, *};
 use std::str::FromStr;
 
