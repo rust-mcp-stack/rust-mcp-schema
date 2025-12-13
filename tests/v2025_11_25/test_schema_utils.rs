@@ -268,3 +268,23 @@ mod tests_schema_utils {
         assert!(matches!(result, PrimitiveSchemaDefinition::UntitledSingleSelectEnumSchema(_)));
     }
 }
+
+#[test]
+fn adhoc() {
+    use rust_mcp_schema::mcp_2025_11_25::schema_utils::*;
+    use rust_mcp_schema::mcp_2025_11_25::*;
+
+    let str = r#"{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{"sampling":{},"elicitation":{},"roots":{"listChanged":true}},"clientInfo":{"name":"inspector-client","version":"0.17.2"}}}"#;
+
+    let msg: ClientMessage = serde_json::from_str(str).unwrap();
+    assert!(matches!(
+        msg,
+        ClientMessage::Request(ClientJsonrpcRequest::InitializeRequest(_))
+    ));
+
+    let msg: ClientJsonrpcRequest = serde_json::from_str(str).unwrap();
+    assert!(matches!(msg, ClientJsonrpcRequest::InitializeRequest(_)));
+
+    let msg: ClientRequest = serde_json::from_str(str).unwrap();
+    assert!(matches!(msg, ClientRequest::InitializeRequest(_)));
+}
