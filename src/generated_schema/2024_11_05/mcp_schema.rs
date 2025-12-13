@@ -7,8 +7,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 391c69f42f21bab3a5df0923b45b9ad3174414b9
-/// Generated at : 2025-12-01 18:52:52
+/// Hash : 77572f31dae0644acd1c537133bc49846c0abdb8
+/// Generated at : 2025-12-13 16:34:16
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
@@ -189,12 +189,12 @@ impl CallToolRequest {
         &self.method
     }
     /// returns "tools/call"
-    pub fn method_value() -> ::std::string::String {
-        "tools/call".to_string()
+    pub fn method_value() -> &'static str {
+        "tools/call"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "tools/call".to_string()
+    pub fn method_name() -> &'static str {
+        "tools/call"
     }
 }
 ///CallToolRequestParams
@@ -383,12 +383,12 @@ impl CancelledNotification {
         &self.method
     }
     /// returns "notifications/cancelled"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/cancelled".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/cancelled"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/cancelled".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/cancelled"
     }
 }
 ///CancelledNotificationParams
@@ -796,12 +796,12 @@ impl CompleteRequest {
         &self.method
     }
     /// returns "completion/complete"
-    pub fn method_value() -> ::std::string::String {
-        "completion/complete".to_string()
+    pub fn method_value() -> &'static str {
+        "completion/complete"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "completion/complete".to_string()
+    pub fn method_name() -> &'static str {
+        "completion/complete"
     }
 }
 ///The argument's information
@@ -1099,12 +1099,12 @@ impl CreateMessageRequest {
         &self.method
     }
     /// returns "sampling/createMessage"
-    pub fn method_value() -> ::std::string::String {
-        "sampling/createMessage".to_string()
+    pub fn method_value() -> &'static str {
+        "sampling/createMessage"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "sampling/createMessage".to_string()
+    pub fn method_name() -> &'static str {
+        "sampling/createMessage"
     }
 }
 ///CreateMessageRequestParams
@@ -1366,12 +1366,12 @@ impl EmbeddedResource {
         &self.type_
     }
     /// returns "resource"
-    pub fn type_value() -> ::std::string::String {
-        "resource".to_string()
+    pub fn type_value() -> &'static str {
+        "resource"
     }
     #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
-    pub fn type_name() -> ::std::string::String {
-        "resource".to_string()
+    pub fn type_name() -> &'static str {
+        "resource"
     }
 }
 ///EmbeddedResourceAnnotations
@@ -1511,12 +1511,12 @@ impl GetPromptRequest {
         &self.method
     }
     /// returns "prompts/get"
-    pub fn method_value() -> ::std::string::String {
-        "prompts/get".to_string()
+    pub fn method_value() -> &'static str {
+        "prompts/get"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "prompts/get".to_string()
+    pub fn method_name() -> &'static str {
+        "prompts/get"
     }
 }
 ///GetPromptRequestParams
@@ -1672,12 +1672,12 @@ impl ImageContent {
         &self.type_
     }
     /// returns "image"
-    pub fn type_value() -> ::std::string::String {
-        "image".to_string()
+    pub fn type_value() -> &'static str {
+        "image"
     }
     #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
-    pub fn type_name() -> ::std::string::String {
-        "image".to_string()
+    pub fn type_name() -> &'static str {
+        "image"
     }
 }
 ///ImageContentAnnotations
@@ -1834,12 +1834,12 @@ impl InitializeRequest {
         &self.method
     }
     /// returns "initialize"
-    pub fn method_value() -> ::std::string::String {
-        "initialize".to_string()
+    pub fn method_value() -> &'static str {
+        "initialize"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "initialize".to_string()
+    pub fn method_name() -> &'static str {
+        "initialize"
     }
 }
 ///InitializeRequestParams
@@ -1980,12 +1980,12 @@ impl InitializedNotification {
         &self.method
     }
     /// returns "notifications/initialized"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/initialized".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/initialized"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/initialized".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/initialized"
     }
 }
 ///InitializedNotificationParams
@@ -2420,12 +2420,12 @@ impl ListPromptsRequest {
         &self.method
     }
     /// returns "prompts/list"
-    pub fn method_value() -> ::std::string::String {
-        "prompts/list".to_string()
+    pub fn method_value() -> &'static str {
+        "prompts/list"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "prompts/list".to_string()
+    pub fn method_name() -> &'static str {
+        "prompts/list"
     }
 }
 ///ListPromptsRequestParams
@@ -2540,12 +2540,12 @@ impl ListResourceTemplatesRequest {
         &self.method
     }
     /// returns "resources/templates/list"
-    pub fn method_value() -> ::std::string::String {
-        "resources/templates/list".to_string()
+    pub fn method_value() -> &'static str {
+        "resources/templates/list"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "resources/templates/list".to_string()
+    pub fn method_name() -> &'static str {
+        "resources/templates/list"
     }
 }
 ///ListResourceTemplatesRequestParams
@@ -2661,12 +2661,12 @@ impl ListResourcesRequest {
         &self.method
     }
     /// returns "resources/list"
-    pub fn method_value() -> ::std::string::String {
-        "resources/list".to_string()
+    pub fn method_value() -> &'static str {
+        "resources/list"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "resources/list".to_string()
+    pub fn method_name() -> &'static str {
+        "resources/list"
     }
 }
 ///ListResourcesRequestParams
@@ -2792,12 +2792,12 @@ impl ListRootsRequest {
         &self.method
     }
     /// returns "roots/list"
-    pub fn method_value() -> ::std::string::String {
-        "roots/list".to_string()
+    pub fn method_value() -> &'static str {
+        "roots/list"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "roots/list".to_string()
+    pub fn method_name() -> &'static str {
+        "roots/list"
     }
 }
 ///ListRootsRequestParams
@@ -2934,12 +2934,12 @@ impl ListToolsRequest {
         &self.method
     }
     /// returns "tools/list"
-    pub fn method_value() -> ::std::string::String {
-        "tools/list".to_string()
+    pub fn method_value() -> &'static str {
+        "tools/list"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "tools/list".to_string()
+    pub fn method_name() -> &'static str {
+        "tools/list"
     }
 }
 ///ListToolsRequestParams
@@ -3121,12 +3121,12 @@ impl LoggingMessageNotification {
         &self.method
     }
     /// returns "notifications/message"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/message".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/message"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/message".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/message"
     }
 }
 ///LoggingMessageNotificationParams
@@ -3464,12 +3464,12 @@ impl PingRequest {
         &self.method
     }
     /// returns "ping"
-    pub fn method_value() -> ::std::string::String {
-        "ping".to_string()
+    pub fn method_value() -> &'static str {
+        "ping"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "ping".to_string()
+    pub fn method_name() -> &'static str {
+        "ping"
     }
 }
 ///PingRequestParams
@@ -3582,12 +3582,12 @@ impl ProgressNotification {
         &self.method
     }
     /// returns "notifications/progress"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/progress".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/progress"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/progress".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/progress"
     }
 }
 ///ProgressNotificationParams
@@ -3782,12 +3782,12 @@ impl PromptListChangedNotification {
         &self.method
     }
     /// returns "notifications/prompts/list_changed"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/prompts/list_changed".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/prompts/list_changed"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/prompts/list_changed".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/prompts/list_changed"
     }
 }
 ///PromptListChangedNotificationParams
@@ -3941,12 +3941,12 @@ impl PromptReference {
         &self.type_
     }
     /// returns "ref/prompt"
-    pub fn type_value() -> ::std::string::String {
-        "ref/prompt".to_string()
+    pub fn type_value() -> &'static str {
+        "ref/prompt"
     }
     #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
-    pub fn type_name() -> ::std::string::String {
-        "ref/prompt".to_string()
+    pub fn type_name() -> &'static str {
+        "ref/prompt"
     }
 }
 ///ReadResourceContent
@@ -4033,12 +4033,12 @@ impl ReadResourceRequest {
         &self.method
     }
     /// returns "resources/read"
-    pub fn method_value() -> ::std::string::String {
-        "resources/read".to_string()
+    pub fn method_value() -> &'static str {
+        "resources/read"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "resources/read".to_string()
+    pub fn method_name() -> &'static str {
+        "resources/read"
     }
 }
 ///ReadResourceRequestParams
@@ -4415,12 +4415,12 @@ impl ResourceListChangedNotification {
         &self.method
     }
     /// returns "notifications/resources/list_changed"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/resources/list_changed".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/resources/list_changed"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/resources/list_changed".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/resources/list_changed"
     }
 }
 ///ResourceListChangedNotificationParams
@@ -4493,12 +4493,12 @@ impl ResourceReference {
         &self.type_
     }
     /// returns "ref/resource"
-    pub fn type_value() -> ::std::string::String {
-        "ref/resource".to_string()
+    pub fn type_value() -> &'static str {
+        "ref/resource"
     }
     #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
-    pub fn type_name() -> ::std::string::String {
-        "ref/resource".to_string()
+    pub fn type_name() -> &'static str {
+        "ref/resource"
     }
 }
 ///A template description for resources available on the server.
@@ -4656,12 +4656,12 @@ impl ResourceUpdatedNotification {
         &self.method
     }
     /// returns "notifications/resources/updated"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/resources/updated".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/resources/updated"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/resources/updated".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/resources/updated"
     }
 }
 ///ResourceUpdatedNotificationParams
@@ -4833,12 +4833,12 @@ impl RootsListChangedNotification {
         &self.method
     }
     /// returns "notifications/roots/list_changed"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/roots/list_changed".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/roots/list_changed"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/roots/list_changed".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/roots/list_changed"
     }
 }
 ///RootsListChangedNotificationParams
@@ -5402,12 +5402,12 @@ impl SetLevelRequest {
         &self.method
     }
     /// returns "logging/setLevel"
-    pub fn method_value() -> ::std::string::String {
-        "logging/setLevel".to_string()
+    pub fn method_value() -> &'static str {
+        "logging/setLevel"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "logging/setLevel".to_string()
+    pub fn method_name() -> &'static str {
+        "logging/setLevel"
     }
 }
 ///SetLevelRequestParams
@@ -5485,12 +5485,12 @@ impl SubscribeRequest {
         &self.method
     }
     /// returns "resources/subscribe"
-    pub fn method_value() -> ::std::string::String {
-        "resources/subscribe".to_string()
+    pub fn method_value() -> &'static str {
+        "resources/subscribe"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "resources/subscribe".to_string()
+    pub fn method_name() -> &'static str {
+        "resources/subscribe"
     }
 }
 ///SubscribeRequestParams
@@ -5582,12 +5582,12 @@ impl TextContent {
         &self.type_
     }
     /// returns "text"
-    pub fn type_value() -> ::std::string::String {
-        "text".to_string()
+    pub fn type_value() -> &'static str {
+        "text"
     }
     #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
-    pub fn type_name() -> ::std::string::String {
-        "text".to_string()
+    pub fn type_name() -> &'static str {
+        "text"
     }
 }
 ///TextContentAnnotations
@@ -5788,12 +5788,12 @@ impl ToolInputSchema {
         &self.type_
     }
     /// returns "object"
-    pub fn type_value() -> ::std::string::String {
-        "object".to_string()
+    pub fn type_value() -> &'static str {
+        "object"
     }
     #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
-    pub fn type_name() -> ::std::string::String {
-        "object".to_string()
+    pub fn type_name() -> &'static str {
+        "object"
     }
 }
 ///An optional notification from the server to the client, informing it that the list of tools it offers has changed. This may be issued by servers without any previous subscription from the client.
@@ -5845,12 +5845,12 @@ impl ToolListChangedNotification {
         &self.method
     }
     /// returns "notifications/tools/list_changed"
-    pub fn method_value() -> ::std::string::String {
-        "notifications/tools/list_changed".to_string()
+    pub fn method_value() -> &'static str {
+        "notifications/tools/list_changed"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "notifications/tools/list_changed".to_string()
+    pub fn method_name() -> &'static str {
+        "notifications/tools/list_changed"
     }
 }
 ///ToolListChangedNotificationParams
@@ -5930,12 +5930,12 @@ impl UnsubscribeRequest {
         &self.method
     }
     /// returns "resources/unsubscribe"
-    pub fn method_value() -> ::std::string::String {
-        "resources/unsubscribe".to_string()
+    pub fn method_value() -> &'static str {
+        "resources/unsubscribe"
     }
     #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
-    pub fn method_name() -> ::std::string::String {
-        "resources/unsubscribe".to_string()
+    pub fn method_name() -> &'static str {
+        "resources/unsubscribe"
     }
 }
 ///UnsubscribeRequestParams
@@ -6201,6 +6201,72 @@ impl ServerNotification {
         }
     }
 }
+/// Converts any serializable struct into a `GenericResult`.
+/// This is used internally to convert ServerResult and ClientResult variants
+/// into GenericResult (Result)
+fn into_result<T>(value: T) -> GenericResult
+where
+    T: serde::Serialize,
+{
+    let json_value = serde_json::to_value(value).unwrap_or(serde_json::Value::Null);
+    if let serde_json::Value::Object(mut map) = json_value {
+        let meta = map.remove("_meta").and_then(|v| match v {
+            serde_json::Value::Object(obj) => Some(obj),
+            _ => None,
+        });
+        let extra = if map.is_empty() { None } else { Some(map) };
+        GenericResult { meta, extra }
+    } else {
+        GenericResult { meta: None, extra: None }
+    }
+}
+impl From<InitializeResult> for GenericResult {
+    fn from(value: InitializeResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<ListResourcesResult> for GenericResult {
+    fn from(value: ListResourcesResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<ListResourceTemplatesResult> for GenericResult {
+    fn from(value: ListResourceTemplatesResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<ReadResourceResult> for GenericResult {
+    fn from(value: ReadResourceResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<ListPromptsResult> for GenericResult {
+    fn from(value: ListPromptsResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<GetPromptResult> for GenericResult {
+    fn from(value: GetPromptResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<ListToolsResult> for GenericResult {
+    fn from(value: ListToolsResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<CallToolResult> for GenericResult {
+    fn from(value: CallToolResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<CompleteResult> for GenericResult {
+    fn from(value: CompleteResult) -> Self {
+        into_result(value)
+    }
+}
+/// Alias to avoid conflicts with Rust's standard `Result` type.
+pub type GenericResult = Result;
 /// Deprecating the old auto-generated verbose names.
 /// These were renamed to clearer, shorter names in v0.8.0.
 /// The old names are deprecated but kept for backward-compatibility for a smooth migration period.

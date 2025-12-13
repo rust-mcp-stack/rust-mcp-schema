@@ -1,37 +1,8 @@
 #[cfg(feature = "latest")]
-mod schema {
-    pub use rust_mcp_schema::schema_utils::*;
-    pub use rust_mcp_schema::*;
-}
-
-#[cfg(feature = "2025_06_18")]
-mod schema {
-    pub use rust_mcp_schema::mcp_2025_06_18::schema_utils::*;
-    pub use rust_mcp_schema::mcp_2025_06_18::*;
-}
-
-#[cfg(feature = "2024_11_05")]
-mod schema {
-    pub use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
-    pub use rust_mcp_schema::mcp_2024_11_05::*;
-}
-
-#[cfg(feature = "2025_03_26")]
-mod schema {
-    pub use rust_mcp_schema::mcp_2025_03_26::schema_utils::*;
-    pub use rust_mcp_schema::mcp_2025_03_26::*;
-}
-
-#[cfg(feature = "draft")]
-mod schema {
-    pub use rust_mcp_schema::mcp_draft::schema_utils::*;
-    pub use rust_mcp_schema::mcp_draft::*;
-}
-
-use schema::*;
-
+use rust_mcp_schema::{schema_utils::*, *};
 use std::str::FromStr;
 
+#[cfg(feature = "latest")]
 type AppError = RpcError;
 
 const SAMPLE_PAYLOAD: &str = r#"
@@ -55,11 +26,14 @@ const SAMPLE_PAYLOAD: &str = r#"
 }
 "#;
 
-fn main() -> std::result::Result<(), AppError> {
-    handle_message(SAMPLE_PAYLOAD)?;
-    Ok(())
+fn main() {
+    #[cfg(feature = "latest")]
+    if let Err(error) = handle_message(SAMPLE_PAYLOAD) {
+        eprintln!("Error occured: {:?}", error);
+    }
 }
 
+#[cfg(feature = "latest")]
 /// Deserialize the JSON-RPC message into the appropriate MCP type and print it with dbg!() macro .
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
     // Deserialize message into ClientMessage.
@@ -67,149 +41,111 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
     let mcp_message = ClientMessage::from_str(message_payload)?;
 
     match mcp_message {
-        // Check if the message is a Request
-        ClientMessage::Request(client_message) => match client_message.request {
-            // Check if it's a standard ClientRequest (not a CustomRequest)
-            RequestFromClient::ClientRequest(client_request) => match client_request {
-                ClientRequest::InitializeRequest(initialize_request) => {
-                    dbg!(initialize_request);
-                }
-                ClientRequest::PingRequest(ping_request) => {
-                    dbg!(ping_request);
-                }
-                ClientRequest::ListResourcesRequest(list_resources_request) => {
-                    dbg!(list_resources_request);
-                }
-                ClientRequest::ListResourceTemplatesRequest(list_resource_templates_request) => {
-                    dbg!(list_resource_templates_request);
-                }
-                ClientRequest::ReadResourceRequest(read_resource_request) => {
-                    dbg!(read_resource_request);
-                }
-                ClientRequest::SubscribeRequest(subscribe_request) => {
-                    dbg!(subscribe_request);
-                }
-                ClientRequest::UnsubscribeRequest(unsubscribe_request) => {
-                    dbg!(unsubscribe_request);
-                }
-                ClientRequest::ListPromptsRequest(list_prompts_request) => {
-                    dbg!(list_prompts_request);
-                }
-                ClientRequest::GetPromptRequest(get_prompt_request) => {
-                    dbg!(get_prompt_request);
-                }
-                ClientRequest::ListToolsRequest(list_tools_request) => {
-                    dbg!(list_tools_request);
-                }
-                ClientRequest::CallToolRequest(call_tool_request) => {
-                    dbg!(call_tool_request);
-                }
-                ClientRequest::SetLevelRequest(set_level_request) => {
-                    dbg!(set_level_request);
-                }
-                ClientRequest::CompleteRequest(complete_request) => {
-                    dbg!(complete_request);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientRequest::GetTaskRequest(get_task_request) => {
-                    dbg!(get_task_request);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientRequest::GetTaskPayloadRequest(get_task_payload_request) => {
-                    dbg!(get_task_payload_request);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientRequest::CancelTaskRequest(cancel_task_request) => {
-                    dbg!(cancel_task_request);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientRequest::ListTasksRequest(list_tasks_request) => {
-                    dbg!(list_tasks_request);
-                }
-            },
-
-            // Check if it's a CustomRequest; the value can be deserialized into your own custom types.
-            RequestFromClient::CustomRequest(value) => {
-                dbg!(value);
+        // Determine if the message is a Request
+        ClientMessage::Request(request) => match request {
+            ClientJsonrpcRequest::InitializeRequest(initialize_request) => {
+                println!("InitializeRequest request received: {:?}", initialize_request)
+            }
+            ClientJsonrpcRequest::PingRequest(ping_request) => println!("PingRequest request received: {:?}", ping_request),
+            ClientJsonrpcRequest::ListResourcesRequest(list_resources_request) => {
+                println!("ListResourcesRequest request received: {:?}", list_resources_request)
+            }
+            ClientJsonrpcRequest::ListResourceTemplatesRequest(list_resource_templates_request) => println!(
+                "ListResourceTemplatesRequest request received: {:?}",
+                list_resource_templates_request
+            ),
+            ClientJsonrpcRequest::ReadResourceRequest(read_resource_request) => {
+                println!("ReadResourceRequest request received: {:?}", read_resource_request)
+            }
+            ClientJsonrpcRequest::SubscribeRequest(subscribe_request) => {
+                println!("SubscribeRequest request received: {:?}", subscribe_request)
+            }
+            ClientJsonrpcRequest::UnsubscribeRequest(unsubscribe_request) => {
+                println!("UnsubscribeRequest request received: {:?}", unsubscribe_request)
+            }
+            ClientJsonrpcRequest::ListPromptsRequest(list_prompts_request) => {
+                println!("ListPromptsRequest request received: {:?}", list_prompts_request)
+            }
+            ClientJsonrpcRequest::GetPromptRequest(get_prompt_request) => {
+                println!("GetPromptRequest request received: {:?}", get_prompt_request)
+            }
+            ClientJsonrpcRequest::ListToolsRequest(list_tools_request) => {
+                println!("ListToolsRequest request received: {:?}", list_tools_request)
+            }
+            ClientJsonrpcRequest::CallToolRequest(call_tool_request) => {
+                println!("CallToolRequest request received: {:?}", call_tool_request)
+            }
+            ClientJsonrpcRequest::GetTaskRequest(get_task_request) => {
+                println!("GetTaskRequest request received: {:?}", get_task_request)
+            }
+            ClientJsonrpcRequest::GetTaskPayloadRequest(get_task_payload_request) => {
+                println!("GetTaskPayloadRequest request received: {:?}", get_task_payload_request)
+            }
+            ClientJsonrpcRequest::CancelTaskRequest(cancel_task_request) => {
+                println!("CancelTaskRequest request received: {:?}", cancel_task_request)
+            }
+            ClientJsonrpcRequest::ListTasksRequest(list_tasks_request) => {
+                println!("ListTasksRequest request received: {:?}", list_tasks_request)
+            }
+            ClientJsonrpcRequest::SetLevelRequest(set_level_request) => {
+                println!("SetLevelRequest request received: {:?}", set_level_request)
+            }
+            ClientJsonrpcRequest::CompleteRequest(complete_request) => {
+                println!("CompleteRequest request received: {:?}", complete_request)
+            }
+            ClientJsonrpcRequest::CustomRequest(jsonrpc_request) => {
+                println!("CustomRequest request received: {:?}", jsonrpc_request)
             }
         },
-
-        // Check if the message is a Notification
-        ClientMessage::Notification(client_message) => match client_message.notification {
-            // Check if it's a standard ClientNotification (not a CustomNotification)
-            NotificationFromClient::ClientNotification(client_notification) => {
-                // Handle different ClientNotifications
-                match client_notification {
-                    ClientNotification::CancelledNotification(cancelled_notification) => {
-                        dbg!(cancelled_notification);
-                    }
-                    ClientNotification::InitializedNotification(initialized_notification) => {
-                        dbg!(initialized_notification);
-                    }
-                    ClientNotification::ProgressNotification(progress_notification) => {
-                        dbg!(progress_notification);
-                    }
-                    ClientNotification::RootsListChangedNotification(progress_notification) => {
-                        dbg!(progress_notification);
-                    }
-                    #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                    ClientNotification::TaskStatusNotification(task_status_notification) => {
-                        dbg!(task_status_notification);
-                    }
-                }
+        // Determine if the message is a Notification
+        ClientMessage::Notification(notification) => match notification {
+            ClientJsonrpcNotification::CancelledNotification(cancelled_notification) => {
+                println!("CancelledNotification notification received: {:?}", cancelled_notification)
             }
-
-            // Check if it's a CustomNotification; the value can be deserialized into your custom types.
-            NotificationFromClient::CustomNotification(value) => {
-                dbg!(value);
+            ClientJsonrpcNotification::InitializedNotification(initialized_notification) => println!(
+                "InitializedNotification notification received: {:?}",
+                initialized_notification
+            ),
+            ClientJsonrpcNotification::ProgressNotification(progress_notification) => {
+                println!("ProgressNotification notification received: {:?}", progress_notification)
+            }
+            ClientJsonrpcNotification::TaskStatusNotification(task_status_notification) => {
+                println!("TaskStatusNotification notification received: {:?}", task_status_notification)
+            }
+            ClientJsonrpcNotification::RootsListChangedNotification(roots_list_changed_notification) => println!(
+                "RootsListChangedNotification notification received: {:?}",
+                roots_list_changed_notification
+            ),
+            ClientJsonrpcNotification::CustomNotification(jsonrpc_notification) => {
+                println!("CustomNotification notification received: {:?}", jsonrpc_notification)
             }
         },
-
-        // Check if the message is a Response
-        ClientMessage::Response(client_message) => match client_message.result {
-            // Check if it's a standard ClientResult (not a CustomResult)
-            ResultFromClient::ClientResult(client_result) => match client_result {
-                ClientResult::Result(_) => {
-                    dbg!(client_result);
-                }
-                ClientResult::CreateMessageResult(create_message_result) => {
-                    dbg!(create_message_result);
-                }
-                ClientResult::ListRootsResult(list_roots_result) => {
-                    dbg!(list_roots_result);
-                }
-                #[cfg(any(feature = "2025_06_18", feature = "2025_11_25", feature = "draft"))]
-                ClientResult::ElicitResult(elicit_result) => {
-                    dbg!(elicit_result);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientResult::GetTaskResult(get_task_result) => {
-                    dbg!(get_task_result);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientResult::GetTaskPayloadResult(get_task_payload_result) => {
-                    dbg!(get_task_payload_result);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientResult::CancelTaskResult(cancel_task_result) => {
-                    dbg!(cancel_task_result);
-                }
-                #[cfg(any(feature = "2025_11_25", feature = "draft"))]
-                ClientResult::ListTasksResult(list_tasks_result) => {
-                    dbg!(list_tasks_result);
-                }
-            },
-
-            // Check if it's a CustomResult; the value can be deserialized into your custom types.
-            ResultFromClient::CustomResult(value) => {
-                dbg!(value);
+        // Determine if the message is a Response
+        ClientMessage::Response(response) => match &response.result {
+            ClientResult::GetTaskResult(_get_task_result) => println!("GetTaskResult  response received: {:?}", response),
+            ClientResult::CancelTaskResult(_cancel_task_result) => {
+                println!("CancelTaskResult  response received: {:?}", response)
+            }
+            ClientResult::ListTasksResult(_list_tasks_result) => {
+                println!("ListTasksResult  response received: {:?}", response)
+            }
+            ClientResult::CreateMessageResult(_create_message_result) => {
+                println!("CreateMessageResult  response received: {:?}", response)
+            }
+            ClientResult::ListRootsResult(_list_roots_result) => {
+                println!("ListRootsResult  response received: {:?}", response)
+            }
+            ClientResult::ElicitResult(_elicit_result) => println!("ElicitResult  response received: {:?}", response),
+            ClientResult::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
+            ClientResult::GetTaskPayloadResult(_generic_result) => {
+                println!("Generic Result response received: {:?}", response)
             }
         },
-
-        // Check if it's a Error message
-        ClientMessage::Error(client_error) => {
-            dbg!(client_error);
+        // Determine if the message is an Error
+        ClientMessage::Error(error_response) => {
+            println!("Error response received: {:?}", error_response)
         }
     }
+
     Ok(())
 }

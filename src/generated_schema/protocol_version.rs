@@ -4,6 +4,7 @@ pub enum ProtocolVersion {
     V2024_11_05,
     V2025_03_26,
     V2025_06_18,
+    V2025_11_25,
     Draft,
 }
 impl ProtocolVersion {
@@ -12,6 +13,7 @@ impl ProtocolVersion {
             ProtocolVersion::V2024_11_05,
             ProtocolVersion::V2025_03_26,
             ProtocolVersion::V2025_06_18,
+            ProtocolVersion::V2025_11_25,
         ];
         if include_draft {
             versions.push(ProtocolVersion::Draft);
@@ -25,8 +27,15 @@ impl Display for ProtocolVersion {
             ProtocolVersion::V2024_11_05 => write!(f, "2024-11-05"),
             ProtocolVersion::V2025_03_26 => write!(f, "2025-03-26"),
             ProtocolVersion::V2025_06_18 => write!(f, "2025-06-18"),
-            ProtocolVersion::Draft => write!(f, "DRAFT-2025-v3"),
+            ProtocolVersion::V2025_11_25 => write!(f, "2025-11-25"),
+            ProtocolVersion::Draft => write!(f, "DRAFT-2026-v1"),
         }
+    }
+}
+#[allow(clippy::from_over_into)]
+impl Into<String> for ProtocolVersion {
+    fn into(self) -> String {
+        self.to_string()
     }
 }
 #[derive(Debug)]
@@ -55,7 +64,8 @@ impl TryFrom<&str> for ProtocolVersion {
             "2024-11-05" => Ok(ProtocolVersion::V2024_11_05),
             "2025-03-26" => Ok(ProtocolVersion::V2025_03_26),
             "2025-06-18" => Ok(ProtocolVersion::V2025_06_18),
-            "DRAFT-2025-v3" => Ok(ProtocolVersion::Draft),
+            "2025-11-25" => Ok(ProtocolVersion::V2025_11_25),
+            "DRAFT-2026-v1" => Ok(ProtocolVersion::Draft),
             "DRAFT" => Ok(ProtocolVersion::Draft),
             other => Err(ParseProtocolVersionError {
                 details: other.to_string(),

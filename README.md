@@ -159,29 +159,20 @@ The following code snippet demonstrates how an MCP message, represented as a JSO
 
 ```rs
 
-pub fn handle_message(message_payload: &str)->Result<Error> {
+pub fn handle_messagew(message_payload: &str) -> std::result::Result<(), RpcError> {
+    // Deserialize message into ClientMessage.
+    let message = ClientMessage::from_str(&message_payload)?;
 
-        // Deserialize message into ClientMessage.
-        // ClientMessage is an enum defined in schema_utils.
-        let message = ClientMessage::from_str(&message_payload)?;
-
-        // Check if the message is a Request
-        if let ClientMessage::Request(message_object) = message {
-
-            // Check if it's a standard ClientRequest (not a CustomRequest)
-            if let RequestFromClient::ClientRequest(client_request) = message_object.request {
-
-                // Check if it's an InitializeRequest
-                if let rust_mcp_schema::ClientRequest::InitializeRequest(initialize_request) = client_request {
-
-                    // Process the InitializeRequest (and eventually send back a InitializedNotification back to the server)
-                    handle_initialize_request(initialize_request);
-
-                }
-            }
+    // Check if the message is a Request
+    if let ClientMessage::Request(message_object) = message {
+        // Check if it's an InitializeRequest
+        if let ClientRequest::InitializeRequest(initialize_request) = client_request {
+            // Process the InitializeRequest (and eventually send back a InitializedNotification back to the server)
+            handle_initialize_request(initialize_request);
         }
-
     }
+    Ok(())
+}
 
 ```
 
@@ -194,70 +185,74 @@ In response to an InitializeRequest, the MCP Server is expected to return an Ini
 This code snippet demonstrates how to create an InitializeRequest, serialize it into a string, and send it back to the client via the transport layer.
 
 ```rs
- // create InitializeResult object
-   let initial_result = InitializeResult {
-       capabilities: ServerCapabilities {
-           experimental: None,
-           logging: None,
-           prompts: Some(ServerCapabilitiesPrompts {
-               list_changed: Some(true),
-           }),
-           resources: Some(ServerCapabilitiesResources {
-               list_changed: Some(true),
-               subscribe: Some(true),
-           }),
-           tools: Some(ServerCapabilitiesTools {
-               list_changed: Some(true),
-           }),
-       },
-       instructions: Some(String::from("mcp server instructions....")),
-       meta: Some(
-           vec![
-               ("meta 1".to_string(), Value::String("meta-value".to_string())),
-               ("meta 2".to_string(), Value::Number(serde_json::Number::from(225))),
-               ("feature-xyz".to_string(), Value::Bool(true)),
-           ]
-           .into_iter()
-           .collect(),
-       ),
-       protocol_version: LATEST_PROTOCOL_VERSION.to_string(),
-       server_info: Implementation {
-           name: String::from("example-servers/everything"),
-           version: String::from("1.0.0"),
-       },
-   };
+    // create InitializeResult object
+    let initial_result = InitializeResult {
+        capabilities: ServerCapabilities {
+            logging: None,
+            prompts: Some(ServerCapabilitiesPrompts {list_changed: Some(true)}),
+            resources: Some(ServerCapabilitiesResources {list_changed: Some(true),subscribe: Some(true)}),
+            tools: Some(ServerCapabilitiesTools { list_changed: Some(true)}),
+            completions: None,
+            tasks: Some(ServerTasks { cancel: Some(Map::new()), list: Some(Map::new()), requests: None }),
+            experimental: None,
+        },
+        instructions: Some(String::from("mcp server instructions....")),
+        meta: Some(
+            json!({
+                "meta 1": serde_json::Value::String("meta-value".into()),
+                "meta 2": serde_json::Value::Number(serde_json::Number::from(225)),
+                "feature-xyz": serde_json::Value::Bool(true)
+            }).as_object().unwrap().to_owned(),
+        ),
+        protocol_version: ProtocolVersion::V2025_11_25.into(),
+        server_info: Implementation {
+            name: String::from("rust mcp server"),
+            title: Some("Cool mcp server!".into()),
+            version: String::from("1.0.0"),
+            description: Some("your rust mcp server description....".into()),
+            icons: vec![],
+            website_url: Some("https://github.com/rust-mcp-stack/rust-mcp-schema".into()),
+        },
+    };
 
-
+    // JsonrpcResultResponse  vs  JsonrpcResponse
     // Create a ServerMessage (a message intended to be sent from the server)
-    let message: ServerMessage = initial_result.to_message(request_id).unwrap();
+    let message = ServerJsonrpcResponse::new(RequestId::Integer(0), initial_result.into());
 
-   // Serialize the MCP message into a valid JSON string for sending to the client
-   let json_payload = message.to_string();
+    // Serialize the MCP message into a valid JSON string for sending to the client
+    let json_payload = serde_json::to_string(&message).unwrap();
 
-   println!("{}", json_payload);
+    println!("{}", json_payload);
 ```
 
 output:
 
 ```json
 {
-  "id": 15,
+  "id": 0,
   "jsonrpc": "2.0",
   "result": {
     "capabilities": {
       "prompts": { "listChanged": true },
       "resources": { "listChanged": true, "subscribe": true },
+      "tasks": { "cancel": {}, "list": {} },
       "tools": { "listChanged": true }
     },
     "instructions": "mcp server instructions....",
-    "_meta": { "feature-xyz": true, "meta 1": "meta-value", "meta 2": 225 },
-    "protocolVersion": "2024-11-05",
-    "serverInfo": { "name": "example-servers/everything", "version": "1.0.0" }
+    "protocolVersion": "2025-11-25",
+    "serverInfo": {
+      "description": "your rust mcp server description....",
+      "name": "rust mcp server",
+      "title": "Cool mcp server!",
+      "version": "1.0.0",
+      "websiteUrl": "https://github.com/rust-mcp-stack/rust-mcp-schema"
+    },
+    "_meta": { "feature-xyz": true, "meta 1": "meta-value", "meta 2": 225 }
   }
 }
 ```
 
-### Detecting an `InitializeResult` Response Message in an MCP Client.
+### Detecting an `InitializeResult` Response Message in an MCP Client:
 
 ```rs
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
@@ -265,20 +260,15 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
     // ServerMessage represents a message sent by an MCP Server and received by an MCP Client.
     let mcp_message = ServerMessage::from_str(message_payload)?;
 
-     // Check if the message is a Response type of message
-     if let ServerMessage::Response(message_object) = mcp_message {
-
-        // Check if it's a standard ServerResult (not a CustomResult)
-        if let ResultFromServer::ServerResult(server_response) = message_object.result  {
-
-            // Check if it's a InitializeResult type of response
-            if let ServerResult::InitializeResult(server_response){
-                 //Process the InitializeResult and send an InitializedNotification back to the server for acknowledgment.
-                 handle_initialize_result(initialize_request);
-
-            }
+    // Check if the message is a Response type of message
+    if let ServerMessage::Response(server_response) = mcp_message {
+        // Check if it's a InitializeResult response
+        if let ServerResult::InitializeResult(initialize_result) = server_response.result {
+            //Process the InitializeResult and send an InitializedNotification back to the server for acknowledgment.
+            handle_initialize_result(initialize_request);
         }
-     }
+    }
+    Ok(())
 }
 ```
 
@@ -295,31 +285,21 @@ The following code example illustrates how to detect an InitializeRequest messag
 ```rs
 
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
-
-// Deserialize json string into JsonrpcMessage
-    let message: JsonrpcMessage = serde_json::from_str(message_payload)?;
+    // Deserialize json string into JsonrpcMessage
+    let message: JsonrpcMessage = serde_json::from_str(message_payload).unwrap();
 
     // Check it's a Request type of message
     if let JsonrpcMessage::Request(client_message) = message {
+        let client_request: ClientRequest = serde_json::from_value(client_message.params.into()).unwrap();
 
         // Check method to detect is a "initialize" request
-        if client_message.method == "initialize" {
-
+        if let ClientRequest::InitializeRequest(initialize_request) = client_request {
             // Now that we can handle the message, we simply print out the details.
-            println!("{} request received!", "initialize");
+            println!("Initialize request received!");
 
-            if let Some(params) = client_message.params {
-                // print out params meta
-                println!("params.meta : {:?} ", params.meta);
-
-                let params: InitializeRequestParams = serde_json::from_value(Value::Object(params.extra.unwrap())).unwrap();
-
-                // print out InitializeRequestParams param values
-                println!(
-                    "client_info : {:?} \ncapabilities: {:?} \nprotocol_version: {:?}",
-                    params.client_info, params.capabilities, params.protocol_version
-                );
-            }
+            println!("Client name : {:?} ", initialize_request.params.client_info.name);
+            println!("Client version : {:?} ", initialize_request.params.client_info.version);
+            
         }
     }
 

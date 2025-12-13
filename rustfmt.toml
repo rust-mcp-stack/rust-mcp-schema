@@ -1,1 +1,2 @@
 max_width = 125
+ignore = ["examples/mcp_client_handle_message.rs","examples/mcp_server_handle_message.rs"]
