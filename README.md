@@ -5,7 +5,7 @@
 # Model Context Protocol (MCP) Schema for Rust
 
 [<img alt="crates.io" src="https://img.shields.io/crates/v/rust-mcp-schema?style=for-the-badge&logo=rust&color=FE965D" height="22">](https://crates.io/crates/rust-mcp-schema)
-[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-rust_mcp_schema-0ECDAB?style=for-the-badge&logo=docs.rs" height="22">](https://docs.rs/rust-mcp-schema/0.1.0)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-rust_mcp_schema-0ECDAB?style=for-the-badge&logo=docs.rs" height="22">](https://docs.rs/rust-mcp-schema/latest/rust_mcp_schema)
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/rust-mcp-stack/rust-mcp-schema/ci.yml?style=for-the-badge" height="22">
 ](https://github.com/rust-mcp-stack/rust-mcp-schema/actions/workflows/ci.yml)
 
