@@ -3089,6 +3089,73 @@ impl ClientRequest {
         }
     }
 }
+impl From<&str> for IconTheme {
+    fn from(s: &str) -> Self {
+        match s {
+            "dark" => Self::Dark,
+            "light" => Self::Light,
+            _ => Self::Light,
+        }
+    }
+}
+impl From<&str> for ElicitResultContent {
+    fn from(value: &str) -> Self {
+        Self::Primitive(ElicitResultContentPrimitive::String(value.to_string()))
+    }
+}
+impl From<&str> for ElicitResultContentPrimitive {
+    fn from(value: &str) -> Self {
+        ElicitResultContentPrimitive::String(value.to_string())
+    }
+}
+impl From<String> for ElicitResultContentPrimitive {
+    fn from(value: String) -> Self {
+        ElicitResultContentPrimitive::String(value)
+    }
+}
+impl From<String> for ElicitResultContent {
+    fn from(value: String) -> Self {
+        Self::Primitive(ElicitResultContentPrimitive::String(value))
+    }
+}
+impl From<Vec<&str>> for ElicitResultContent {
+    fn from(value: Vec<&str>) -> Self {
+        Self::StringArray(value.iter().map(|v| v.to_string()).collect())
+    }
+}
+impl From<i64> for ElicitResultContent {
+    fn from(value: i64) -> Self {
+        Self::Primitive(value.into())
+    }
+}
+impl CallToolRequestParams {
+    pub fn new<T>(tool_name: T) -> Self
+    where
+        T: ToString,
+    {
+        Self {
+            name: tool_name.to_string(),
+            arguments: None,
+            meta: None,
+            task: None,
+        }
+    }
+    /// Sets the arguments for the tool call.
+    pub fn with_arguments(mut self, arguments: serde_json::Map<String, Value>) -> Self {
+        self.arguments = Some(arguments);
+        self
+    }
+    /// Assigns metadata to the CallToolRequestParams, enabling the inclusion of extra context or details.
+    pub fn with_meta(mut self, meta: CallToolMeta) -> Self {
+        self.meta = Some(meta);
+        self
+    }
+    /// Set task metadata , requesting task-augmented execution for this request
+    pub fn with_task(mut self, task: TaskMetadata) -> Self {
+        self.task = Some(task);
+        self
+    }
+}
 /// END AUTO GENERATED
 #[cfg(test)]
 mod tests {
