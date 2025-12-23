@@ -447,6 +447,37 @@ impl ClientJsonrpcRequest {
             ClientJsonrpcRequest::CustomRequest(request) => &request.id,
         }
     }
+
+    pub fn is_task_augmented(&self) -> bool {
+        if let ClientJsonrpcRequest::CallToolRequest(call_tool_request) = self {
+            call_tool_request.is_task_augmented()
+        } else {
+            false
+        }
+    }
+
+    pub fn method(&self) -> &str {
+        match self {
+            ClientJsonrpcRequest::InitializeRequest(request) => request.method(),
+            ClientJsonrpcRequest::PingRequest(request) => request.method(),
+            ClientJsonrpcRequest::ListResourcesRequest(request) => request.method(),
+            ClientJsonrpcRequest::ListResourceTemplatesRequest(request) => request.method(),
+            ClientJsonrpcRequest::ReadResourceRequest(request) => request.method(),
+            ClientJsonrpcRequest::SubscribeRequest(request) => request.method(),
+            ClientJsonrpcRequest::UnsubscribeRequest(request) => request.method(),
+            ClientJsonrpcRequest::ListPromptsRequest(request) => request.method(),
+            ClientJsonrpcRequest::GetPromptRequest(request) => request.method(),
+            ClientJsonrpcRequest::ListToolsRequest(request) => request.method(),
+            ClientJsonrpcRequest::CallToolRequest(request) => request.method(),
+            ClientJsonrpcRequest::GetTaskRequest(request) => request.method(),
+            ClientJsonrpcRequest::GetTaskPayloadRequest(request) => request.method(),
+            ClientJsonrpcRequest::CancelTaskRequest(request) => request.method(),
+            ClientJsonrpcRequest::ListTasksRequest(request) => request.method(),
+            ClientJsonrpcRequest::SetLevelRequest(request) => request.method(),
+            ClientJsonrpcRequest::CompleteRequest(request) => request.method(),
+            ClientJsonrpcRequest::CustomRequest(request) => request.method.as_str(),
+        }
+    }
 }
 
 impl From<ClientJsonrpcRequest> for RequestFromClient {
@@ -656,6 +687,11 @@ impl ClientJsonrpcNotification {
             ClientJsonrpcNotification::CustomNotification(notification) => notification.jsonrpc(),
         }
     }
+
+    /// Returns `true` if the message is an `InitializedNotification`
+    pub fn is_initialized_notification(&self) -> bool {
+        matches!(self, Self::InitializedNotification(_))
+    }
 }
 
 impl From<ClientJsonrpcNotification> for NotificationFromClient {
@@ -799,7 +835,19 @@ impl FromStr for ClientJsonrpcResponse {
 //**      ResultFromClient     **//
 //*******************************//
 
-pub type ResultFromClient = ClientResult;
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum ResultFromClient {
+    GetTaskResult(GetTaskResult),
+    CancelTaskResult(CancelTaskResult),
+    ListTasksResult(ListTasksResult),
+    CreateMessageResult(CreateMessageResult),
+    ListRootsResult(ListRootsResult),
+    ElicitResult(ElicitResult),
+    CreateTaskResult(CreateTaskResult),
+    Result(Result),
+    GetTaskPayloadResult(GetTaskPayloadResult),
+}
 
 //*******************************//
 //**       ClientMessage       **//
@@ -1066,15 +1114,27 @@ pub enum ServerJsonrpcRequest {
 }
 
 impl ServerJsonrpcRequest {
-    // pub fn new(id: RequestId, request: RequestFromServer) -> Self {
-    //     let method = request.method().to_string();
-    //     Self {
-    //         id,
-    //         jsonrpc: JSONRPC_VERSION.to_string(),
-    //         method,
-    //         request,
-    //     }
-    // }
+    pub fn new(request_id: RequestId, request: RequestFromServer) -> Self {
+        match request {
+            RequestFromServer::PingRequest(params) => Self::PingRequest(PingRequest::new(request_id, params)),
+            RequestFromServer::GetTaskRequest(params) => Self::GetTaskRequest(GetTaskRequest::new(request_id, params)),
+            RequestFromServer::GetTaskPayloadRequest(params) => {
+                Self::GetTaskPayloadRequest(GetTaskPayloadRequest::new(request_id, params))
+            }
+            RequestFromServer::CancelTaskRequest(params) => {
+                Self::CancelTaskRequest(CancelTaskRequest::new(request_id, params))
+            }
+            RequestFromServer::ListTasksRequest(params) => Self::ListTasksRequest(ListTasksRequest::new(request_id, params)),
+            RequestFromServer::CreateMessageRequest(params) => {
+                Self::CreateMessageRequest(CreateMessageRequest::new(request_id, params))
+            }
+            RequestFromServer::ListRootsRequest(params) => Self::ListRootsRequest(ListRootsRequest::new(request_id, params)),
+            RequestFromServer::ElicitRequest(params) => Self::ElicitRequest(ElicitRequest::new(request_id, params)),
+            RequestFromServer::CustomRequest(request) => {
+                Self::CustomRequest(JsonrpcRequest::new(request_id, request.method, request.params))
+            }
+        }
+    }
 
     pub fn request_id(&self) -> &RequestId {
         match self {
@@ -1101,6 +1161,28 @@ impl ServerJsonrpcRequest {
             ServerJsonrpcRequest::ListRootsRequest(request) => request.jsonrpc(),
             ServerJsonrpcRequest::ElicitRequest(request) => request.jsonrpc(),
             ServerJsonrpcRequest::CustomRequest(request) => request.jsonrpc(),
+        }
+    }
+
+    pub fn is_task_augmented(&self) -> bool {
+        match self {
+            ServerJsonrpcRequest::ElicitRequest(request) => request.params.is_task_augmented(),
+            ServerJsonrpcRequest::CreateMessageRequest(request) => request.params.is_task_augmented(),
+            _ => false,
+        }
+    }
+
+    pub fn method(&self) -> &str {
+        match self {
+            ServerJsonrpcRequest::PingRequest(request) => request.method(),
+            ServerJsonrpcRequest::GetTaskRequest(request) => request.method(),
+            ServerJsonrpcRequest::GetTaskPayloadRequest(request) => request.method(),
+            ServerJsonrpcRequest::CancelTaskRequest(request) => request.method(),
+            ServerJsonrpcRequest::ListTasksRequest(request) => request.method(),
+            ServerJsonrpcRequest::CreateMessageRequest(request) => request.method(),
+            ServerJsonrpcRequest::ListRootsRequest(request) => request.method(),
+            ServerJsonrpcRequest::ElicitRequest(request) => request.method(),
+            ServerJsonrpcRequest::CustomRequest(request) => request.method.as_str(),
         }
     }
 }
@@ -1399,7 +1481,25 @@ impl FromStr for ServerJsonrpcResponse {
 //*******************************//
 //**      ResultFromServer     **//
 //*******************************//
-pub type ResultFromServer = ServerResult;
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum ResultFromServer {
+    InitializeResult(InitializeResult),
+    ListResourcesResult(ListResourcesResult),
+    ListResourceTemplatesResult(ListResourceTemplatesResult),
+    ReadResourceResult(ReadResourceResult),
+    ListPromptsResult(ListPromptsResult),
+    GetPromptResult(GetPromptResult),
+    ListToolsResult(ListToolsResult),
+    CallToolResult(CallToolResult),
+    GetTaskResult(GetTaskResult),
+    CancelTaskResult(CancelTaskResult),
+    ListTasksResult(ListTasksResult),
+    CompleteResult(CompleteResult),
+    CreateTaskResult(CreateTaskResult),
+    Result(Result),
+    GetTaskPayloadResult(GetTaskPayloadResult),
+}
 
 //***************************//
 //** impl for JsonrpcErrorResponse **//
@@ -1717,6 +1817,13 @@ impl CallToolError {
     pub fn unknown_tool(tool_name: impl Into<String>) -> Self {
         // Create a `CallToolError` from an `UnknownTool` error (wrapped in a `Box`).
         CallToolError(Box::new(UnknownTool(tool_name.into())))
+    }
+
+    /// Creates a `CallToolError` indicating that task-augmented tool calls are not supported.
+    /// This constructor is used when a task-augmented tool call is requested
+    /// but the capability is not advertised by the peer.
+    pub fn unsupported_task_augmented_tool_call() -> Self {
+        Self::from_message("Task-augmented tool calls are not supported.".to_string())
     }
 
     /// Creates a `CallToolError` for invalid arguments with optional details.
@@ -2202,9 +2309,401 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
     }
 }
 
+impl CallToolRequest {
+    pub fn is_task_augmented(&self) -> bool {
+        self.params.is_task_augmented()
+    }
+}
+
+impl CallToolRequestParams {
+    pub fn is_task_augmented(&self) -> bool {
+        self.task.is_some()
+    }
+}
+
+impl CreateMessageRequestParams {
+    pub fn is_task_augmented(&self) -> bool {
+        self.task.is_some()
+    }
+}
+
+impl ElicitRequestParams {
+    pub fn is_task_augmented(&self) -> bool {
+        match self {
+            ElicitRequestParams::UrlParams(elicit_request_url_params) => elicit_request_url_params.task.is_some(),
+            ElicitRequestParams::FormParams(elicit_request_form_params) => elicit_request_form_params.task.is_some(),
+        }
+    }
+}
+
+impl ServerCapabilities {
+    /// Returns `true` if the server supports listing tasks.
+    ///
+    /// This is determined by whether the `list` capability is present.
+    pub fn can_list_tasks(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|tasks| tasks.can_list_tasks())
+    }
+
+    /// Returns `true` if the server supports canceling tasks.
+    ///
+    /// This is determined by whether the `cancel` capability is present.
+    pub fn can_cancel_tasks(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|tasks| tasks.can_cancel_tasks())
+    }
+
+    /// Returns `true` if the server supports task-augmented tools/call requests
+    pub fn can_run_task_augmented_tools(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|tasks| tasks.can_run_task_augmented_tools())
+    }
+
+    pub fn can_handle_request(&self, client_request: &ClientJsonrpcRequest) -> std::result::Result<(), RpcError> {
+        let entity = "Server";
+        let request_method = client_request.method();
+        match client_request {
+            ClientJsonrpcRequest::SetLevelRequest(_) if self.logging.is_none() => {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "logging",
+                    request_method,
+                )))
+            }
+            ClientJsonrpcRequest::GetPromptRequest(_) | ClientJsonrpcRequest::ListPromptsRequest(_) => {
+                if self.prompts.is_none() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "prompts",
+                        request_method,
+                    )));
+                }
+            }
+
+            ClientJsonrpcRequest::ListResourcesRequest(_)
+            | ClientJsonrpcRequest::ListResourceTemplatesRequest(_)
+            | ClientJsonrpcRequest::ReadResourceRequest(_)
+            | ClientJsonrpcRequest::SubscribeRequest(_)
+            | ClientJsonrpcRequest::UnsubscribeRequest(_) => {
+                if self.resources.is_none() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "resources",
+                        request_method,
+                    )));
+                }
+            }
+
+            ClientJsonrpcRequest::CallToolRequest(call_tool_request) if call_tool_request.is_task_augmented() => {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "Task-augmented tool call",
+                    request_method,
+                )));
+            }
+
+            ClientJsonrpcRequest::CallToolRequest(_) | ClientJsonrpcRequest::ListToolsRequest(_) if self.tools.is_none() => {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "tools",
+                    request_method,
+                )))
+            }
+            ClientJsonrpcRequest::CompleteRequest(_) if self.completions.is_none() => {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "completions",
+                    request_method,
+                )));
+            }
+
+            ClientJsonrpcRequest::GetTaskRequest(_)
+            | ClientJsonrpcRequest::GetTaskPayloadRequest(_)
+            | ClientJsonrpcRequest::CancelTaskRequest(_)
+            | ClientJsonrpcRequest::ListTasksRequest(_)
+                if self.tasks.is_none() =>
+            {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "task",
+                    request_method,
+                )));
+            }
+            ClientJsonrpcRequest::ListTasksRequest(_) if !self.can_list_tasks() => {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "listing tasks",
+                    request_method,
+                )));
+            }
+            ClientJsonrpcRequest::CancelTaskRequest(_) if !self.can_cancel_tasks() => {
+                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    entity,
+                    "task cancellation",
+                    request_method,
+                )));
+            }
+            _ => {}
+        };
+        Ok(())
+    }
+}
+
+impl ServerTasks {
+    /// Returns `true` if the server supports listing tasks.
+    ///
+    /// This is determined by whether the `list` capability is present.
+    pub fn can_list_tasks(&self) -> bool {
+        self.list.is_some()
+    }
+
+    /// Returns `true` if the server supports canceling tasks.
+    ///
+    /// This is determined by whether the `cancel` capability is present.
+    pub fn can_cancel_tasks(&self) -> bool {
+        self.cancel.is_some()
+    }
+
+    /// Returns `true` if the server supports task-augmented tools/call requests
+    pub fn can_run_task_augmented_tools(&self) -> bool {
+        if let Some(requests) = self.requests.as_ref() {
+            if let Some(tools) = requests.tools.as_ref() {
+                return tools.call.is_some();
+            }
+        }
+        false
+    }
+}
+
+/// Formats an assertion error message for unsupported capabilities.
+///
+/// Constructs a string describing that a specific entity (e.g., server or client) lacks
+/// support for a required capability, needed for a particular method.
+///
+/// # Arguments
+/// - `entity`: The name of the entity (e.g., "Server" or "Client") that lacks support.
+/// - `capability`: The name of the unsupported capability or tool.
+/// - `method_name`: The name of the method requiring the capability.
+///
+/// # Returns
+/// A formatted string detailing the unsupported capability error.
+///
+/// # Examples
+/// ```ignore
+/// let msg = format_assertion_message("Server", "tools", rust_mcp_schema::ListResourcesRequest::method_value());
+/// assert_eq!(msg, "Server does not support resources (required for resources/list)");
+/// ```
+fn format_assertion_message(entity: &str, capability: &str, method_name: &str) -> String {
+    format!("{entity} does not support {capability} (required for {method_name})")
+}
+
+impl ClientCapabilities {
+    /// Returns `true` if the server supports listing tasks.
+    ///
+    /// This is determined by whether the `list` capability is present.
+    pub fn can_list_tasks(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|task| task.can_list_tasks())
+    }
+
+    /// Returns `true` if the server supports canceling tasks.
+    ///
+    /// This is determined by whether the `cancel` capability is present.
+    pub fn can_cancel_tasks(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|task| task.can_cancel_tasks())
+    }
+
+    /// Returns `true` if the client can request elicitation.
+    pub fn can_accept_elicitation_task(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|task| task.can_accept_elicitation_task())
+    }
+
+    /// Returns `true` if the client can request message sampling.
+    pub fn can_accept_sampling_task(&self) -> bool {
+        self.tasks.as_ref().is_some_and(|task| task.can_accept_sampling_task())
+    }
+
+    pub fn can_handle_request(&self, server_jsonrpc_request: &ServerJsonrpcRequest) -> std::result::Result<(), RpcError> {
+        let entity = "Client";
+        let request_method = server_jsonrpc_request.method();
+        match server_jsonrpc_request {
+            ServerJsonrpcRequest::CreateMessageRequest(create_message_request) => {
+                match self.sampling.as_ref() {
+                    Some(samplig_capabilities) => {
+                        //  include_context requested but not supported
+                        if create_message_request.params.include_context.is_some() && samplig_capabilities.context.is_none()
+                        {
+                            return Err(RpcError::internal_error().with_message(format_assertion_message(
+                                entity,
+                                "context inclusion",
+                                request_method,
+                            )));
+                        }
+
+                        if create_message_request.params.tool_choice.is_some() && samplig_capabilities.tools.is_none() {
+                            return Err(RpcError::internal_error().with_message(format_assertion_message(
+                                entity,
+                                "tool_choice",
+                                request_method,
+                            )));
+                        }
+                    }
+                    None => {
+                        return Err(RpcError::internal_error().with_message(format_assertion_message(
+                            entity,
+                            "sampling capability",
+                            request_method,
+                        )))
+                    }
+                }
+
+                if create_message_request.params.is_task_augmented() && !self.can_accept_sampling_task() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "sampling task",
+                        request_method,
+                    )));
+                }
+            }
+            ServerJsonrpcRequest::ListRootsRequest(_) => {
+                if self.roots.is_none() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "roots capability",
+                        request_method,
+                    )));
+                }
+            }
+            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_) => {
+                if self.tasks.is_none() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "Task",
+                        request_method,
+                    )));
+                }
+            }
+            ServerJsonrpcRequest::CancelTaskRequest(_) => {
+                if self.tasks.as_ref().is_none_or(|v| !v.can_cancel_tasks()) {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "task cancellation",
+                        request_method,
+                    )));
+                }
+            }
+            ServerJsonrpcRequest::ListTasksRequest(_) => {
+                if self.tasks.as_ref().is_none_or(|v| !v.can_cancel_tasks()) {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "listing tasks",
+                        request_method,
+                    )));
+                }
+            }
+
+            ServerJsonrpcRequest::ElicitRequest(elicit_request) => {
+                if self.elicitation.is_none() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "input elicitation",
+                        request_method,
+                    )));
+                }
+
+                if elicit_request.params.is_task_augmented() && !self.can_accept_elicitation_task() {
+                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        entity,
+                        "elicitation task",
+                        request_method,
+                    )));
+                }
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+}
+
+impl ClientTasks {
+    /// Returns `true` if the server supports listing tasks.
+    ///
+    /// This is determined by whether the `list` capability is present.
+    pub fn can_list_tasks(&self) -> bool {
+        self.list.is_some()
+    }
+
+    /// Returns `true` if the server supports canceling tasks.
+    ///
+    /// This is determined by whether the `cancel` capability is present.
+    pub fn can_cancel_tasks(&self) -> bool {
+        self.cancel.is_some()
+    }
+
+    /// Returns `true` if the client can request elicitation.
+    pub fn can_accept_elicitation_task(&self) -> bool {
+        if let Some(requests) = self.requests.as_ref() {
+            if let Some(elicitation) = requests.elicitation.as_ref() {
+                return elicitation.create.is_some();
+            }
+        }
+        false
+    }
+
+    /// Returns `true` if the client can request message sampling.
+    pub fn can_accept_sampling_task(&self) -> bool {
+        if let Some(requests) = self.requests.as_ref() {
+            if let Some(sampling) = requests.sampling.as_ref() {
+                return sampling.create_message.is_some();
+            }
+        }
+        false
+    }
+}
+
+impl From<JsonrpcRequest> for CustomRequest {
+    fn from(request: JsonrpcRequest) -> Self {
+        Self {
+            method: request.method,
+            params: request.params,
+        }
+    }
+}
+
+impl From<JsonrpcNotification> for CustomNotification {
+    fn from(notification: JsonrpcNotification) -> Self {
+        Self {
+            method: notification.method,
+            params: notification.params,
+        }
+    }
+}
+
+/// Returns `true` if the task is in a terminal state.
+/// Terminal states are states where the task has finished and will not change anymore.
+impl TaskStatus {
+    pub fn is_terminal(&self) -> bool {
+        match self {
+            TaskStatus::Cancelled | TaskStatus::Completed | TaskStatus::Failed => true,
+            TaskStatus::InputRequired | TaskStatus::Working => false,
+        }
+    }
+}
+
+/// Returns `true` if the task is in a terminal state.
+/// Terminal states are states where the task has finished and will not change anymore.
+impl Task {
+    pub fn is_terminal(&self) -> bool {
+        self.status.is_terminal()
+    }
+}
+
+impl From<ElicitRequest> for ServerJsonrpcRequest {
+    fn from(value: ElicitRequest) -> Self {
+        Self::ElicitRequest(value)
+    }
+}
+
 pub type CustomNotification = CustomRequest;
 
 /// BEGIN AUTO GENERATED
+///STEP: 5
 impl ::serde::Serialize for ServerJsonrpcResponse {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2257,6 +2756,7 @@ impl<'de> ::serde::Deserialize<'de> for ServerJsonrpcResponse {
         deserializer.deserialize_struct("JsonrpcResponse", &["id", "jsonrpc", "result"], ServerJsonrpcResultVisitor)
     }
 }
+///STEP: 6
 impl ::serde::Serialize for ClientJsonrpcResponse {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2309,6 +2809,102 @@ impl<'de> ::serde::Deserialize<'de> for ClientJsonrpcResponse {
         deserializer.deserialize_struct("JsonrpcResponse", &["id", "jsonrpc", "result"], ClientJsonrpcResultVisitor)
     }
 }
+///STEP: 99
+///
+
+
+
+impl From<Result> for ResultFromClient {
+    fn from(value: Result) -> Self {
+        Self::Result(value)
+    }
+}
+impl From<GetTaskResult> for ResultFromClient {
+    fn from(value: GetTaskResult) -> Self {
+        Self::GetTaskResult(value)
+    }
+}
+impl From<GetTaskPayloadResult> for ResultFromClient {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        Self::GetTaskPayloadResult(value)
+    }
+}
+impl From<CancelTaskResult> for ResultFromClient {
+    fn from(value: CancelTaskResult) -> Self {
+        Self::CancelTaskResult(value)
+    }
+}
+impl From<ListTasksResult> for ResultFromClient {
+    fn from(value: ListTasksResult) -> Self {
+        Self::ListTasksResult(value)
+    }
+}
+impl From<CreateMessageResult> for ResultFromClient {
+    fn from(value: CreateMessageResult) -> Self {
+        Self::CreateMessageResult(value)
+    }
+}
+impl From<ListRootsResult> for ResultFromClient {
+    fn from(value: ListRootsResult) -> Self {
+        Self::ListRootsResult(value)
+    }
+}
+impl From<ElicitResult> for ResultFromClient {
+    fn from(value: ElicitResult) -> Self {
+        Self::ElicitResult(value)
+    }
+}
+impl From<CreateTaskResult> for ResultFromClient {
+    fn from(value: CreateTaskResult) -> Self {
+        Self::CreateTaskResult(value)
+    }
+}
+impl From<Result> for MessageFromClient {
+    fn from(value: Result) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<GetTaskResult> for MessageFromClient {
+    fn from(value: GetTaskResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<GetTaskPayloadResult> for MessageFromClient {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<CancelTaskResult> for MessageFromClient {
+    fn from(value: CancelTaskResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<ListTasksResult> for MessageFromClient {
+    fn from(value: ListTasksResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<CreateMessageResult> for MessageFromClient {
+    fn from(value: CreateMessageResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<ListRootsResult> for MessageFromClient {
+    fn from(value: ListRootsResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<ElicitResult> for MessageFromClient {
+    fn from(value: ElicitResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+impl From<CreateTaskResult> for MessageFromClient {
+    fn from(value: CreateTaskResult) -> Self {
+        MessageFromClient::ResultFromClient(value.into())
+    }
+}
+///STEP: 10
 /// Enum representing SDK error codes.
 #[allow(non_camel_case_types)]
 pub enum SdkErrorCodes {
@@ -2681,12 +3277,164 @@ impl JsonrpcErrorResponse {
         Self::new(RpcError::new(error_code, error_message, error_data), id)
     }
 }
+///STEP: 133
+impl From<Result> for ResultFromServer {
+    fn from(value: Result) -> Self {
+        Self::Result(value)
+    }
+}
+impl From<InitializeResult> for ResultFromServer {
+    fn from(value: InitializeResult) -> Self {
+        Self::InitializeResult(value)
+    }
+}
+impl From<ListResourcesResult> for ResultFromServer {
+    fn from(value: ListResourcesResult) -> Self {
+        Self::ListResourcesResult(value)
+    }
+}
+impl From<ListResourceTemplatesResult> for ResultFromServer {
+    fn from(value: ListResourceTemplatesResult) -> Self {
+        Self::ListResourceTemplatesResult(value)
+    }
+}
+impl From<ReadResourceResult> for ResultFromServer {
+    fn from(value: ReadResourceResult) -> Self {
+        Self::ReadResourceResult(value)
+    }
+}
+impl From<ListPromptsResult> for ResultFromServer {
+    fn from(value: ListPromptsResult) -> Self {
+        Self::ListPromptsResult(value)
+    }
+}
+impl From<GetPromptResult> for ResultFromServer {
+    fn from(value: GetPromptResult) -> Self {
+        Self::GetPromptResult(value)
+    }
+}
+impl From<ListToolsResult> for ResultFromServer {
+    fn from(value: ListToolsResult) -> Self {
+        Self::ListToolsResult(value)
+    }
+}
+impl From<CallToolResult> for ResultFromServer {
+    fn from(value: CallToolResult) -> Self {
+        Self::CallToolResult(value)
+    }
+}
+impl From<GetTaskResult> for ResultFromServer {
+    fn from(value: GetTaskResult) -> Self {
+        Self::GetTaskResult(value)
+    }
+}
+impl From<GetTaskPayloadResult> for ResultFromServer {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        Self::GetTaskPayloadResult(value)
+    }
+}
+impl From<CancelTaskResult> for ResultFromServer {
+    fn from(value: CancelTaskResult) -> Self {
+        Self::CancelTaskResult(value)
+    }
+}
+impl From<ListTasksResult> for ResultFromServer {
+    fn from(value: ListTasksResult) -> Self {
+        Self::ListTasksResult(value)
+    }
+}
+impl From<CompleteResult> for ResultFromServer {
+    fn from(value: CompleteResult) -> Self {
+        Self::CompleteResult(value)
+    }
+}
+impl From<CreateTaskResult> for ResultFromServer {
+    fn from(value: CreateTaskResult) -> Self {
+        Self::CreateTaskResult(value)
+    }
+}
+impl From<Result> for MessageFromServer {
+    fn from(value: Result) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<InitializeResult> for MessageFromServer {
+    fn from(value: InitializeResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ListResourcesResult> for MessageFromServer {
+    fn from(value: ListResourcesResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ListResourceTemplatesResult> for MessageFromServer {
+    fn from(value: ListResourceTemplatesResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ReadResourceResult> for MessageFromServer {
+    fn from(value: ReadResourceResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ListPromptsResult> for MessageFromServer {
+    fn from(value: ListPromptsResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<GetPromptResult> for MessageFromServer {
+    fn from(value: GetPromptResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ListToolsResult> for MessageFromServer {
+    fn from(value: ListToolsResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<CallToolResult> for MessageFromServer {
+    fn from(value: CallToolResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<GetTaskResult> for MessageFromServer {
+    fn from(value: GetTaskResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<GetTaskPayloadResult> for MessageFromServer {
+    fn from(value: GetTaskPayloadResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<CancelTaskResult> for MessageFromServer {
+    fn from(value: CancelTaskResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<ListTasksResult> for MessageFromServer {
+    fn from(value: ListTasksResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<CompleteResult> for MessageFromServer {
+    fn from(value: CompleteResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+impl From<CreateTaskResult> for MessageFromServer {
+    fn from(value: CreateTaskResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
+///STEP: 155
 impl TryFrom<ResultFromClient> for GenericResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
         match value {
-            ClientResult::GetTaskPayloadResult(result) => Ok(result.into()),
-            ClientResult::Result(result) => Ok(result),
+            ResultFromClient::GetTaskPayloadResult(result) => Ok(result.into()),
+            ResultFromClient::Result(result) => Ok(result),
             _ => Err(RpcError::internal_error().with_message("Not a Result".to_string())),
         }
     }
@@ -2694,7 +3442,7 @@ impl TryFrom<ResultFromClient> for GenericResult {
 impl TryFrom<ResultFromClient> for GetTaskResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::GetTaskResult(result) = value {
+        if let ResultFromClient::GetTaskResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a GetTaskResult".to_string()))
@@ -2704,7 +3452,7 @@ impl TryFrom<ResultFromClient> for GetTaskResult {
 impl TryFrom<ResultFromClient> for GetTaskPayloadResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::GetTaskPayloadResult(result) = value {
+        if let ResultFromClient::GetTaskPayloadResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a GetTaskPayloadResult".to_string()))
@@ -2714,7 +3462,7 @@ impl TryFrom<ResultFromClient> for GetTaskPayloadResult {
 impl TryFrom<ResultFromClient> for CancelTaskResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::CancelTaskResult(result) = value {
+        if let ResultFromClient::CancelTaskResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a CancelTaskResult".to_string()))
@@ -2724,7 +3472,7 @@ impl TryFrom<ResultFromClient> for CancelTaskResult {
 impl TryFrom<ResultFromClient> for ListTasksResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::ListTasksResult(result) = value {
+        if let ResultFromClient::ListTasksResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListTasksResult".to_string()))
@@ -2734,7 +3482,7 @@ impl TryFrom<ResultFromClient> for ListTasksResult {
 impl TryFrom<ResultFromClient> for CreateMessageResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::CreateMessageResult(result) = value {
+        if let ResultFromClient::CreateMessageResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a CreateMessageResult".to_string()))
@@ -2744,7 +3492,7 @@ impl TryFrom<ResultFromClient> for CreateMessageResult {
 impl TryFrom<ResultFromClient> for ListRootsResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::ListRootsResult(result) = value {
+        if let ResultFromClient::ListRootsResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListRootsResult".to_string()))
@@ -2754,7 +3502,7 @@ impl TryFrom<ResultFromClient> for ListRootsResult {
 impl TryFrom<ResultFromClient> for ElicitResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ClientResult::ElicitResult(result) = value {
+        if let ResultFromClient::ElicitResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ElicitResult".to_string()))
@@ -2765,8 +3513,8 @@ impl TryFrom<ResultFromServer> for GenericResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
         match value {
-            ServerResult::GetTaskPayloadResult(result) => Ok(result.into()),
-            ServerResult::Result(result) => Ok(result),
+            ResultFromServer::GetTaskPayloadResult(result) => Ok(result.into()),
+            ResultFromServer::Result(result) => Ok(result),
             _ => Err(RpcError::internal_error().with_message("Not a Result".to_string())),
         }
     }
@@ -2774,7 +3522,7 @@ impl TryFrom<ResultFromServer> for GenericResult {
 impl TryFrom<ResultFromServer> for InitializeResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::InitializeResult(result) = value {
+        if let ResultFromServer::InitializeResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a InitializeResult".to_string()))
@@ -2784,7 +3532,7 @@ impl TryFrom<ResultFromServer> for InitializeResult {
 impl TryFrom<ResultFromServer> for ListResourcesResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::ListResourcesResult(result) = value {
+        if let ResultFromServer::ListResourcesResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListResourcesResult".to_string()))
@@ -2794,7 +3542,7 @@ impl TryFrom<ResultFromServer> for ListResourcesResult {
 impl TryFrom<ResultFromServer> for ListResourceTemplatesResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::ListResourceTemplatesResult(result) = value {
+        if let ResultFromServer::ListResourceTemplatesResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListResourceTemplatesResult".to_string()))
@@ -2804,7 +3552,7 @@ impl TryFrom<ResultFromServer> for ListResourceTemplatesResult {
 impl TryFrom<ResultFromServer> for ReadResourceResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::ReadResourceResult(result) = value {
+        if let ResultFromServer::ReadResourceResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ReadResourceResult".to_string()))
@@ -2814,7 +3562,7 @@ impl TryFrom<ResultFromServer> for ReadResourceResult {
 impl TryFrom<ResultFromServer> for ListPromptsResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::ListPromptsResult(result) = value {
+        if let ResultFromServer::ListPromptsResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListPromptsResult".to_string()))
@@ -2824,7 +3572,7 @@ impl TryFrom<ResultFromServer> for ListPromptsResult {
 impl TryFrom<ResultFromServer> for GetPromptResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::GetPromptResult(result) = value {
+        if let ResultFromServer::GetPromptResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a GetPromptResult".to_string()))
@@ -2834,7 +3582,7 @@ impl TryFrom<ResultFromServer> for GetPromptResult {
 impl TryFrom<ResultFromServer> for ListToolsResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::ListToolsResult(result) = value {
+        if let ResultFromServer::ListToolsResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListToolsResult".to_string()))
@@ -2844,7 +3592,7 @@ impl TryFrom<ResultFromServer> for ListToolsResult {
 impl TryFrom<ResultFromServer> for CallToolResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::CallToolResult(result) = value {
+        if let ResultFromServer::CallToolResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a CallToolResult".to_string()))
@@ -2854,7 +3602,7 @@ impl TryFrom<ResultFromServer> for CallToolResult {
 impl TryFrom<ResultFromServer> for GetTaskResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::GetTaskResult(result) = value {
+        if let ResultFromServer::GetTaskResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a GetTaskResult".to_string()))
@@ -2864,7 +3612,7 @@ impl TryFrom<ResultFromServer> for GetTaskResult {
 impl TryFrom<ResultFromServer> for GetTaskPayloadResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::GetTaskPayloadResult(result) = value {
+        if let ResultFromServer::GetTaskPayloadResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a GetTaskPayloadResult".to_string()))
@@ -2874,7 +3622,7 @@ impl TryFrom<ResultFromServer> for GetTaskPayloadResult {
 impl TryFrom<ResultFromServer> for CancelTaskResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::CancelTaskResult(result) = value {
+        if let ResultFromServer::CancelTaskResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a CancelTaskResult".to_string()))
@@ -2884,7 +3632,7 @@ impl TryFrom<ResultFromServer> for CancelTaskResult {
 impl TryFrom<ResultFromServer> for ListTasksResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::ListTasksResult(result) = value {
+        if let ResultFromServer::ListTasksResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ListTasksResult".to_string()))
@@ -2894,13 +3642,14 @@ impl TryFrom<ResultFromServer> for ListTasksResult {
 impl TryFrom<ResultFromServer> for CompleteResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ServerResult::CompleteResult(result) = value {
+        if let ResultFromServer::CompleteResult(result) = value {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a CompleteResult".to_string()))
         }
     }
 }
+///STEP: 20
 impl ContentBlock {
     ///Create a ContentBlock::TextContent
     pub fn text_content(text: ::std::string::String) -> Self {
@@ -2988,6 +3737,7 @@ impl ContentBlock {
         }
     }
 }
+///STEP: 21
 impl CallToolResult {
     pub fn text_content(content: Vec<TextContent>) -> Self {
         Self {
@@ -3052,6 +3802,7 @@ impl CallToolResult {
         self
     }
 }
+///STEP: 22
 impl ServerRequest {
     pub fn request_id(&self) -> &RequestId {
         match self {
