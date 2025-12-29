@@ -74,14 +74,15 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
         },
         // Determine if the message is a Response
         ClientMessage::Response(response) => match &response.result {
-            ClientResult::GetTaskResult(_get_task_result) => println!("GetTaskResult  response received: {:?}", response),
-            ClientResult::CancelTaskResult(_cancel_task_result) => println!("CancelTaskResult  response received: {:?}", response),
-            ClientResult::ListTasksResult(_list_tasks_result) => println!("ListTasksResult  response received: {:?}", response),
-            ClientResult::CreateMessageResult(_create_message_result) => println!("CreateMessageResult  response received: {:?}", response),
-            ClientResult::ListRootsResult(_list_roots_result) => println!("ListRootsResult  response received: {:?}", response),
-            ClientResult::ElicitResult(_elicit_result) => println!("ElicitResult  response received: {:?}", response),
-            ClientResult::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
-            ClientResult::GetTaskPayloadResult(_generic_result) => println!("Generic Result response received: {:?}", response),
+            ResultFromClient::GetTaskResult(_get_task_result) => println!("GetTaskResult  response received: {:?}", response),
+            ResultFromClient::CancelTaskResult(_cancel_task_result) => println!("CancelTaskResult  response received: {:?}", response),
+            ResultFromClient::ListTasksResult(_list_tasks_result) => println!("ListTasksResult  response received: {:?}", response),
+            ResultFromClient::CreateMessageResult(_create_message_result) => println!("CreateMessageResult  response received: {:?}", response),
+            ResultFromClient::ListRootsResult(_list_roots_result) => println!("ListRootsResult  response received: {:?}", response),
+            ResultFromClient::ElicitResult(_elicit_result) => println!("ElicitResult  response received: {:?}", response),
+            ResultFromClient::CreateTaskResult(_create_task_result) => println!("CreateTaskResult response received: {:?}", response),
+            ResultFromClient::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
+            ResultFromClient::GetTaskPayloadResult(_generic_result) => println!("Generic Result response received: {:?}", response),
         },
         // Determine if the message is an Error
         ClientMessage::Error(error_response) => {

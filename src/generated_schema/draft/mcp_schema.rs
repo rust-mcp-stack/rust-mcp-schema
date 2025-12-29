@@ -8,7 +8,7 @@
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
 /// Hash : efd9cf108f595ba48f5e11bde567601e069eba41
-/// Generated at : 2025-12-29 11:08:18
+/// Generated at : 2025-12-29 11:47:34
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;

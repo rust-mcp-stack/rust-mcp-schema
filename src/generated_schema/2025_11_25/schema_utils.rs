@@ -2,7 +2,6 @@ use crate::generated_schema::*;
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
-use std::iter::Map;
 use std::result;
 use std::{fmt::Display, str::FromStr};
 
@@ -2669,21 +2668,25 @@ impl ClientCapabilities {
                 }
             }
             ServerJsonrpcRequest::CancelTaskRequest(_) => {
-                if self.tasks.as_ref().is_none_or(|v| !v.can_cancel_tasks()) {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
-                        entity,
-                        "task cancellation",
-                        request_method,
-                    )));
+                if let Some(tasks) = self.tasks.as_ref() {
+                    if !tasks.can_cancel_tasks() {
+                        return Err(RpcError::internal_error().with_message(format_assertion_message(
+                            entity,
+                            "task cancellation",
+                            request_method,
+                        )));
+                    }
                 }
             }
             ServerJsonrpcRequest::ListTasksRequest(_) => {
-                if self.tasks.as_ref().is_none_or(|v| !v.can_cancel_tasks()) {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
-                        entity,
-                        "listing tasks",
-                        request_method,
-                    )));
+                if let Some(tasks) = self.tasks.as_ref() {
+                    if !tasks.can_list_tasks() {
+                        return Err(RpcError::internal_error().with_message(format_assertion_message(
+                            entity,
+                            "listing tasks",
+                            request_method,
+                        )));
+                    }
                 }
             }
 
@@ -2803,7 +2806,7 @@ impl GetTaskPayloadResult {
         self.meta
             .as_ref()
             .and_then(|v| v.get(RELATED_TASK_META_KEY))
-            .and_then(|v| v.as_str().clone())
+            .and_then(|v| v.as_str())
     }
 
     /// Sets the related task ID in the metadata.
@@ -2814,11 +2817,11 @@ impl GetTaskPayloadResult {
     ///
     /// # Type Parameters
     /// - `T`: The type of the `task_id`. It must implement `Into<String>` to allow flexible
-    /// conversion of various types (e.g., `&str`, `String`).
+    ///   conversion of various types (e.g., `&str`, `String`).
     ///
     /// # Arguments
     /// - `task_id`: The ID of the related task to set. This can be any type that can be converted
-    /// into a `String`.
+    ///   into a `String`.
     pub fn set_related_task_id<T>(&mut self, task_id: T)
     where
         T: Into<String>,
@@ -2854,11 +2857,11 @@ pub trait McpMetaEx {
     ///
     /// # Type Parameters
     /// - `T`: The type of the `task_id`. It must implement `Into<String>` to allow flexible
-    /// conversion of various types (e.g., `&str`, `String`).
+    ///   conversion of various types (e.g., `&str`, `String`).
     ///
     /// # Arguments
     /// - `task_id`: The ID of the related task to set. This can be any type that can be converted
-    /// into a `String`.
+    ///   into a `String`.
     fn set_related_task_id<T>(&mut self, task_id: T)
     where
         T: Into<String>;
@@ -2888,7 +2891,7 @@ pub trait McpMetaEx {
 
 impl McpMetaEx for serde_json::Map<String, Value> {
     fn related_task_id(&self) -> Option<&str> {
-        self.get(RELATED_TASK_META_KEY).and_then(|v| v.as_str().clone())
+        self.get(RELATED_TASK_META_KEY).and_then(|v| v.as_str())
     }
 
     fn set_related_task_id<T>(&mut self, task_id: T)
