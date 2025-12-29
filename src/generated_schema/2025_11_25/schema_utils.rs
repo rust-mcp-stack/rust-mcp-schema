@@ -2445,61 +2445,44 @@ impl ServerCapabilities {
     }
 
     pub fn can_handle_request(&self, client_request: &ClientJsonrpcRequest) -> std::result::Result<(), RpcError> {
-        let entity = "Server";
         let request_method = client_request.method();
+
+        // Helper function for creating error messages
+        fn create_error(capability: &str, method: &str) -> RpcError {
+            RpcError::internal_error().with_message(create_unsupported_capability_message("Server", capability, method))
+        }
+
         match client_request {
             ClientJsonrpcRequest::SetLevelRequest(_) if self.logging.is_none() => {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "logging",
-                    request_method,
-                )))
+                return Err(create_error("logging", request_method));
             }
-            ClientJsonrpcRequest::GetPromptRequest(_) | ClientJsonrpcRequest::ListPromptsRequest(_) => {
-                if self.prompts.is_none() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "prompts",
-                        request_method,
-                    )));
-                }
+            ClientJsonrpcRequest::GetPromptRequest(_) | ClientJsonrpcRequest::ListPromptsRequest(_)
+                if self.prompts.is_none() =>
+            {
+                return Err(create_error("prompts", request_method));
             }
 
             ClientJsonrpcRequest::ListResourcesRequest(_)
             | ClientJsonrpcRequest::ListResourceTemplatesRequest(_)
             | ClientJsonrpcRequest::ReadResourceRequest(_)
             | ClientJsonrpcRequest::SubscribeRequest(_)
-            | ClientJsonrpcRequest::UnsubscribeRequest(_) => {
-                if self.resources.is_none() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "resources",
-                        request_method,
-                    )));
-                }
+            | ClientJsonrpcRequest::UnsubscribeRequest(_)
+                if self.resources.is_none() =>
+            {
+                return Err(create_error("resources", request_method));
             }
 
-            ClientJsonrpcRequest::CallToolRequest(call_tool_request) if call_tool_request.is_task_augmented() => {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "Task-augmented tool call",
-                    request_method,
-                )));
+            ClientJsonrpcRequest::CallToolRequest(call_tool_request)
+                if call_tool_request.is_task_augmented() && !self.can_run_task_augmented_tools() =>
+            {
+                return Err(create_error("Task-augmented tool call", request_method));
             }
 
             ClientJsonrpcRequest::CallToolRequest(_) | ClientJsonrpcRequest::ListToolsRequest(_) if self.tools.is_none() => {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "tools",
-                    request_method,
-                )))
+                return Err(create_error("tools", request_method));
             }
             ClientJsonrpcRequest::CompleteRequest(_) if self.completions.is_none() => {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "completions",
-                    request_method,
-                )));
+                return Err(create_error("completions", request_method));
             }
 
             ClientJsonrpcRequest::GetTaskRequest(_)
@@ -2508,25 +2491,13 @@ impl ServerCapabilities {
             | ClientJsonrpcRequest::ListTasksRequest(_)
                 if self.tasks.is_none() =>
             {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "task",
-                    request_method,
-                )));
+                return Err(create_error("task", request_method));
             }
             ClientJsonrpcRequest::ListTasksRequest(_) if !self.can_list_tasks() => {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "listing tasks",
-                    request_method,
-                )));
+                return Err(create_error("listing tasks", request_method));
             }
             ClientJsonrpcRequest::CancelTaskRequest(_) if !self.can_cancel_tasks() => {
-                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                    entity,
-                    "task cancellation",
-                    request_method,
-                )));
+                return Err(create_error("task cancellation", request_method));
             }
             _ => {}
         };
@@ -2658,8 +2629,13 @@ impl ClientCapabilities {
     }
 
     pub fn can_handle_request(&self, server_jsonrpc_request: &ServerJsonrpcRequest) -> std::result::Result<(), RpcError> {
-        let entity = "Client";
         let request_method = server_jsonrpc_request.method();
+
+        // Helper function for creating error messages
+        fn create_error(capability: &str, method: &str) -> RpcError {
+            RpcError::internal_error().with_message(create_unsupported_capability_message("Client", capability, method))
+        }
+
         match server_jsonrpc_request {
             ServerJsonrpcRequest::CreateMessageRequest(create_message_request) => {
                 match self.sampling.as_ref() {
@@ -2667,94 +2643,54 @@ impl ClientCapabilities {
                         //  include_context requested but not supported
                         if create_message_request.params.include_context.is_some() && samplig_capabilities.context.is_none()
                         {
-                            return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                                entity,
-                                "context inclusion",
-                                request_method,
-                            )));
+                            return Err(create_error("context inclusion", request_method));
                         }
 
                         if create_message_request.params.tool_choice.is_some() && samplig_capabilities.tools.is_none() {
-                            return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                                entity,
-                                "tool_choice",
-                                request_method,
-                            )));
+                            return Err(create_error("tool choice", request_method));
                         }
                     }
                     None => {
-                        return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                            entity,
-                            "sampling capability",
-                            request_method,
-                        )))
+                        return Err(create_error("sampling capability", request_method));
                     }
                 }
 
                 if create_message_request.params.is_task_augmented() && !self.can_accept_sampling_task() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "sampling task",
-                        request_method,
-                    )));
+                    return Err(create_error("sampling task", request_method));
                 }
             }
             ServerJsonrpcRequest::ListRootsRequest(_) => {
                 if self.roots.is_none() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "roots capability",
-                        request_method,
-                    )));
+                    return Err(create_error("roots capability", request_method));
                 }
             }
             ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_) => {
                 if self.tasks.is_none() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "Task",
-                        request_method,
-                    )));
+                    return Err(create_error("Task", request_method));
                 }
             }
             ServerJsonrpcRequest::CancelTaskRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
                     if !tasks.can_cancel_tasks() {
-                        return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                            entity,
-                            "task cancellation",
-                            request_method,
-                        )));
+                        return Err(create_error("task cancellation", request_method));
                     }
                 }
             }
             ServerJsonrpcRequest::ListTasksRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
                     if !tasks.can_list_tasks() {
-                        return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                            entity,
-                            "listing tasks",
-                            request_method,
-                        )));
+                        return Err(create_error("listing tasks", request_method));
                     }
                 }
             }
 
             ServerJsonrpcRequest::ElicitRequest(elicit_request) => {
                 if self.elicitation.is_none() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "input elicitation",
-                        request_method,
-                    )));
+                    return Err(create_error("input elicitation", request_method));
                 }
 
                 if elicit_request.params.is_task_augmented() && !self.can_accept_elicitation_task() {
-                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
-                        entity,
-                        "elicitation task",
-                        request_method,
-                    )));
+                    return Err(create_error("elicitation task", request_method));
                 }
             }
             _ => {}
