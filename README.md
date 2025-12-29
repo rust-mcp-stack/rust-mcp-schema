@@ -99,14 +99,14 @@ Example: enable `2025-06-18` version of the schema:
 
 ```toml
 # Cargo.toml
-rust-mcp-schema = { version: 0.9.2 , default-features = false, features=["2025_06_18"] }
+rust-mcp-schema = { version: 0.9.3 , default-features = false, features=["2025_06_18"] }
 ```
 
 Example: enable `draft`` version of the schema :
 
 ```toml
 #Cargo.toml
-rust-mcp-schema = { version: 0.9.2 , default-features = false, features=["draft"] }
+rust-mcp-schema = { version: 0.9.3 , default-features = false, features=["draft"] }
 ```
 
 <!-- x-release-please-end -->
