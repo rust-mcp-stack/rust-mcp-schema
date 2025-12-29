@@ -2835,30 +2835,6 @@ impl GetTaskPayloadResult {
     }
 }
 
-/// A fluent builder for optional arbitrary JSON metadata.
-///
-/// Provides chainable methods, full support for nested structures,
-/// and automatically becomes `None` if empty.
-///
-/// Example:
-///
-/// ```
-/// let meta = MetaBuilder::new()
-///     .add("version", "1.0")
-///     .add("tags", vec!["alpha", "beta"])
-///     .add_nested("config", |b| {
-///         b.add("timeout", 30)
-///          .add("retries", 3)
-///          .add_related_task("ABCD")
-///          .add("features", json!({ "experimental": true }))
-///     })
-///     .add_if(true, "debug", true) // conditional add
-///     .into_option();
-/// ```
-///
-#[derive(Default, Clone)]
-pub struct MetaBuilder(serde_json::Map<String, Value>);
-
 pub trait McpMetaEx {
     /// Retrieves the related task ID from the metadata, if it exists.
     ///
