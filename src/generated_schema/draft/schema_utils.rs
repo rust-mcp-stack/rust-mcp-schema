@@ -2450,7 +2450,7 @@ impl ServerCapabilities {
         let request_method = client_request.method();
         match client_request {
             ClientJsonrpcRequest::SetLevelRequest(_) if self.logging.is_none() => {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "logging",
                     request_method,
@@ -2458,7 +2458,7 @@ impl ServerCapabilities {
             }
             ClientJsonrpcRequest::GetPromptRequest(_) | ClientJsonrpcRequest::ListPromptsRequest(_) => {
                 if self.prompts.is_none() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "prompts",
                         request_method,
@@ -2472,7 +2472,7 @@ impl ServerCapabilities {
             | ClientJsonrpcRequest::SubscribeRequest(_)
             | ClientJsonrpcRequest::UnsubscribeRequest(_) => {
                 if self.resources.is_none() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "resources",
                         request_method,
@@ -2481,7 +2481,7 @@ impl ServerCapabilities {
             }
 
             ClientJsonrpcRequest::CallToolRequest(call_tool_request) if call_tool_request.is_task_augmented() => {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "Task-augmented tool call",
                     request_method,
@@ -2489,14 +2489,14 @@ impl ServerCapabilities {
             }
 
             ClientJsonrpcRequest::CallToolRequest(_) | ClientJsonrpcRequest::ListToolsRequest(_) if self.tools.is_none() => {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "tools",
                     request_method,
                 )))
             }
             ClientJsonrpcRequest::CompleteRequest(_) if self.completions.is_none() => {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "completions",
                     request_method,
@@ -2509,21 +2509,21 @@ impl ServerCapabilities {
             | ClientJsonrpcRequest::ListTasksRequest(_)
                 if self.tasks.is_none() =>
             {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "task",
                     request_method,
                 )));
             }
             ClientJsonrpcRequest::ListTasksRequest(_) if !self.can_list_tasks() => {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "listing tasks",
                     request_method,
                 )));
             }
             ClientJsonrpcRequest::CancelTaskRequest(_) if !self.can_cancel_tasks() => {
-                return Err(RpcError::internal_error().with_message(format_assertion_message(
+                return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                     entity,
                     "task cancellation",
                     request_method,
@@ -2576,10 +2576,10 @@ impl ServerTasks {
 ///
 /// # Examples
 /// ```ignore
-/// let msg = format_assertion_message("Server", "tools", rust_mcp_schema::ListResourcesRequest::method_value());
+/// let msg = create_unsupported_capability_message("Server", "tools", rust_mcp_schema::ListResourcesRequest::method_value());
 /// assert_eq!(msg, "Server does not support resources (required for resources/list)");
 /// ```
-fn format_assertion_message(entity: &str, capability: &str, method_name: &str) -> String {
+fn create_unsupported_capability_message(entity: &str, capability: &str, method_name: &str) -> String {
     format!("{entity} does not support {capability} (required for {method_name})")
 }
 
@@ -2618,7 +2618,7 @@ impl ClientCapabilities {
                         //  include_context requested but not supported
                         if create_message_request.params.include_context.is_some() && samplig_capabilities.context.is_none()
                         {
-                            return Err(RpcError::internal_error().with_message(format_assertion_message(
+                            return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                                 entity,
                                 "context inclusion",
                                 request_method,
@@ -2626,7 +2626,7 @@ impl ClientCapabilities {
                         }
 
                         if create_message_request.params.tool_choice.is_some() && samplig_capabilities.tools.is_none() {
-                            return Err(RpcError::internal_error().with_message(format_assertion_message(
+                            return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                                 entity,
                                 "tool_choice",
                                 request_method,
@@ -2634,7 +2634,7 @@ impl ClientCapabilities {
                         }
                     }
                     None => {
-                        return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                             entity,
                             "sampling capability",
                             request_method,
@@ -2643,7 +2643,7 @@ impl ClientCapabilities {
                 }
 
                 if create_message_request.params.is_task_augmented() && !self.can_accept_sampling_task() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "sampling task",
                         request_method,
@@ -2652,7 +2652,7 @@ impl ClientCapabilities {
             }
             ServerJsonrpcRequest::ListRootsRequest(_) => {
                 if self.roots.is_none() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "roots capability",
                         request_method,
@@ -2661,7 +2661,7 @@ impl ClientCapabilities {
             }
             ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_) => {
                 if self.tasks.is_none() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "Task",
                         request_method,
@@ -2671,7 +2671,7 @@ impl ClientCapabilities {
             ServerJsonrpcRequest::CancelTaskRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
                     if !tasks.can_cancel_tasks() {
-                        return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                             entity,
                             "task cancellation",
                             request_method,
@@ -2682,7 +2682,7 @@ impl ClientCapabilities {
             ServerJsonrpcRequest::ListTasksRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
                     if !tasks.can_list_tasks() {
-                        return Err(RpcError::internal_error().with_message(format_assertion_message(
+                        return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                             entity,
                             "listing tasks",
                             request_method,
@@ -2693,7 +2693,7 @@ impl ClientCapabilities {
 
             ServerJsonrpcRequest::ElicitRequest(elicit_request) => {
                 if self.elicitation.is_none() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "input elicitation",
                         request_method,
@@ -2701,7 +2701,7 @@ impl ClientCapabilities {
                 }
 
                 if elicit_request.params.is_task_augmented() && !self.can_accept_elicitation_task() {
-                    return Err(RpcError::internal_error().with_message(format_assertion_message(
+                    return Err(RpcError::internal_error().with_message(create_unsupported_capability_message(
                         entity,
                         "elicitation task",
                         request_method,
