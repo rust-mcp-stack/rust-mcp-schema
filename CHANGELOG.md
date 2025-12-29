@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.2...v0.9.3) (2025-12-29)
+
+
+### Bug Fixes
+
+* capability check for ServerCapabilities ([6785e92](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/6785e920e016f0def74f93cd79030d0ad011348a))
+
 ## [0.9.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.1...v0.9.2) (2025-12-29)
 
 
