@@ -67,21 +67,23 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
         },
     // Determine if the message is a Response
     ServerMessage::Response(response) => match &response.result {
-            ServerResult::InitializeResult(_initialize_result) =>  println!("InitializeResult response received: {:?}", response),
-            ServerResult::ListResourcesResult(_list_resources_result) =>  println!("ListResourcesResult response received: {:?}", response),
-            ServerResult::ListResourceTemplatesResult(_list_resource_templates_result) =>  println!("ListResourceTemplatesResult response received: {:?}", response),
-            ServerResult::ReadResourceResult(_read_resource_result) =>  println!("ReadResourceResult response received: {:?}", response),
-            ServerResult::ListPromptsResult(_list_prompts_result) =>  println!("ListPromptsResult response received: {:?}", response),
-            ServerResult::GetPromptResult(_get_prompt_result) => println!("GetPromptResult response received: {:?}", response),
-            ServerResult::ListToolsResult(_list_tools_result) => println!("ListToolsResult response received: {:?}", response),
-            ServerResult::CallToolResult(_call_tool_result) => println!("CallToolResult response received: {:?}", response),
-            ServerResult::GetTaskResult(_get_task_result) => println!("GetTaskResult response received: {:?}", response),
-            ServerResult::CancelTaskResult(_cancel_task_result) => println!("CancelTaskResult response received: {:?}", response),
-            ServerResult::ListTasksResult(_list_tasks_result) => println!("ListTasksResult response received: {:?}", response),
-            ServerResult::CompleteResult(_complete_result) => println!("CompleteResult response received: {:?}", response),
-            ServerResult::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
-            ServerResult::GetTaskPayloadResult(_generic_result) => println!("Generic Result response received: {:?}", response),
-        },
+        ResultFromServer::InitializeResult(_initialize_result) =>  println!("InitializeResult response received: {:?}", response),
+        ResultFromServer::ListResourcesResult(_list_resources_result) =>  println!("ListResourcesResult response received: {:?}", response),
+        ResultFromServer::ListResourceTemplatesResult(_list_resource_templates_result) =>  println!("ListResourceTemplatesResult response received: {:?}", response),
+        ResultFromServer::ReadResourceResult(_read_resource_result) =>  println!("ReadResourceResult response received: {:?}", response),
+        ResultFromServer::ListPromptsResult(_list_prompts_result) =>  println!("ListPromptsResult response received: {:?}", response),
+        ResultFromServer::GetPromptResult(_get_prompt_result) => println!("GetPromptResult response received: {:?}", response),
+        ResultFromServer::ListToolsResult(_list_tools_result) => println!("ListToolsResult response received: {:?}", response),
+        ResultFromServer::CallToolResult(_call_tool_result) => println!("CallToolResult response received: {:?}", response),
+        ResultFromServer::GetTaskResult(_get_task_result) => println!("GetTaskResult response received: {:?}", response),
+        ResultFromServer::CancelTaskResult(_cancel_task_result) => println!("CancelTaskResult response received: {:?}", response),
+        ResultFromServer::ListTasksResult(_list_tasks_result) => println!("ListTasksResult response received: {:?}", response),
+        ResultFromServer::CompleteResult(_complete_result) => println!("CompleteResult response received: {:?}", response),
+        ResultFromServer::CreateTaskResult(_create_task_result) => println!("CreateTaskResult response received: {:?}", response),
+        ResultFromServer::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
+        ResultFromServer::GetTaskPayloadResult(_generic_result) => println!("Generic Result response received: {:?}", response),
+
+    },
         ServerMessage::Error(error_response) => {
             println!("Error response received: {:?}", error_response)
         }

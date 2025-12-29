@@ -2872,8 +2872,8 @@ impl RpcError {
     /// let error = RpcError::invalid_request().with_message("Request format is invalid".to_string());
     /// assert_eq!(error.message, "Request format is invalid".to_string());
     /// ```
-    pub fn with_message(mut self, message: String) -> Self {
-        self.message = message;
+    pub fn with_message<T: Into<String>>(mut self, message: T) -> Self {
+        self.message = message.into();
         self
     }
     /// Attaches optional data to the error.
