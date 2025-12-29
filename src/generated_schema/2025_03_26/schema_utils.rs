@@ -1792,7 +1792,6 @@ pub type RPCMessage = ();
 pub type MCPMessage = ();
 
 /// BEGIN AUTO GENERATED
-///STEP: 1
 impl ::serde::Serialize for ClientJsonrpcRequest {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -1893,7 +1892,6 @@ impl<'de> ::serde::Deserialize<'de> for ClientJsonrpcRequest {
         )
     }
 }
-///STEP: 2
 impl ::serde::Serialize for ServerJsonrpcRequest {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -1976,7 +1974,6 @@ impl<'de> ::serde::Deserialize<'de> for ServerJsonrpcRequest {
         )
     }
 }
-///STEP: 3
 impl ::serde::Serialize for ClientJsonrpcNotification {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2056,7 +2053,6 @@ impl<'de> ::serde::Deserialize<'de> for ClientJsonrpcNotification {
         )
     }
 }
-///STEP: 4
 impl ::serde::Serialize for ServerJsonrpcNotification {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2143,7 +2139,6 @@ impl<'de> ::serde::Deserialize<'de> for ServerJsonrpcNotification {
         )
     }
 }
-///STEP: 5
 impl ::serde::Serialize for ServerJsonrpcResponse {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2196,7 +2191,6 @@ impl<'de> ::serde::Deserialize<'de> for ServerJsonrpcResponse {
         deserializer.deserialize_struct("JsonrpcResponse", &["id", "jsonrpc", "result"], ServerJsonrpcResultVisitor)
     }
 }
-///STEP: 6
 impl ::serde::Serialize for ClientJsonrpcResponse {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2249,7 +2243,6 @@ impl<'de> ::serde::Deserialize<'de> for ClientJsonrpcResponse {
         deserializer.deserialize_struct("JsonrpcResponse", &["id", "jsonrpc", "result"], ClientJsonrpcResultVisitor)
     }
 }
-///STEP: 7
 impl From<InitializeRequest> for RequestFromClient {
     fn from(value: InitializeRequest) -> Self {
         Self::ClientRequest(value.into())
@@ -2380,7 +2373,6 @@ impl From<CompleteRequest> for MessageFromClient {
         MessageFromClient::RequestFromClient(value.into())
     }
 }
-///STEP: 8
 impl From<CancelledNotification> for NotificationFromClient {
     fn from(value: CancelledNotification) -> Self {
         Self::ClientNotification(value.into())
@@ -2441,7 +2433,6 @@ impl From<RootsListChangedNotification> for MessageFromClient {
         MessageFromClient::NotificationFromClient(value.into())
     }
 }
-///STEP: 9
 impl From<Result> for ResultFromClient {
     fn from(value: Result) -> Self {
         Self::ClientResult(value.into())
@@ -2472,7 +2463,6 @@ impl From<ListRootsResult> for MessageFromClient {
         MessageFromClient::ResultFromClient(value.into())
     }
 }
-///STEP: 10
 /// Enum representing SDK error codes.
 #[allow(non_camel_case_types)]
 pub enum SdkErrorCodes {
@@ -2750,8 +2740,8 @@ impl RpcError {
     /// let error = RpcError::invalid_request().with_message("Request format is invalid".to_string());
     /// assert_eq!(error.message, "Request format is invalid".to_string());
     /// ```
-    pub fn with_message(mut self, message: String) -> Self {
-        self.message = message;
+    pub fn with_message<T: Into<String>>(mut self, message: T) -> Self {
+        self.message = message.into();
         self
     }
     /// Attaches optional data to the error.
@@ -2801,7 +2791,6 @@ impl JsonrpcError {
         Self::new(RpcError::new(error_code, error_message, error_data), id)
     }
 }
-///STEP: 11
 impl From<CancelledNotification> for NotificationFromServer {
     fn from(value: CancelledNotification) -> Self {
         Self::ServerNotification(value.into())
@@ -2907,7 +2896,6 @@ impl From<LoggingMessageNotification> for MessageFromServer {
         MessageFromServer::NotificationFromServer(value.into())
     }
 }
-///STEP: 12
 impl From<PingRequest> for RequestFromServer {
     fn from(value: PingRequest) -> Self {
         Self::ServerRequest(value.into())
@@ -2938,7 +2926,6 @@ impl From<ListRootsRequest> for MessageFromServer {
         MessageFromServer::RequestFromServer(value.into())
     }
 }
-///STEP: 13
 impl From<Result> for ResultFromServer {
     fn from(value: Result) -> Self {
         Self::ServerResult(value.into())
@@ -3039,7 +3026,6 @@ impl From<CompleteResult> for MessageFromServer {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
-///STEP: 14
 impl FromMessage<InitializeRequest> for ClientMessage {
     fn from_message(message: InitializeRequest, request_id: Option<RequestId>) -> std::result::Result<Self, RpcError> {
         let request_id =
@@ -3616,7 +3602,6 @@ impl ToMessage<ServerMessage> for LoggingMessageNotification {
         ServerMessage::from_message(self, request_id)
     }
 }
-///STEP: 15
 impl TryFrom<RequestFromClient> for InitializeRequest {
     type Error = RpcError;
     fn try_from(value: RequestFromClient) -> std::result::Result<Self, Self::Error> {
@@ -4057,7 +4042,6 @@ impl TryFrom<NotificationFromServer> for LoggingMessageNotification {
         }
     }
 }
-///STEP: 16
 impl CallToolResultContentItem {
     ///Create a CallToolResultContentItem::TextContent
     pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<Annotations>) -> Self {
@@ -4137,7 +4121,6 @@ impl CallToolResultContentItem {
         }
     }
 }
-///STEP: 17
 impl CallToolResult {
     pub fn text_content(text: ::std::string::String, annotations: ::std::option::Option<Annotations>) -> Self {
         Self {

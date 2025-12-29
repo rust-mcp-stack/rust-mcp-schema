@@ -1,10 +1,12 @@
 use crate::generated_schema::*;
-
 use serde::ser::SerializeStruct;
 use serde_json::{json, Value};
 use std::hash::{Hash, Hasher};
+use std::iter::Map;
 use std::result;
 use std::{fmt::Display, str::FromStr};
+
+pub const RELATED_TASK_META_KEY: &str = "io.modelcontextprotocol/related-task";
 
 #[derive(Debug, PartialEq)]
 pub enum MessageTypes {
@@ -849,6 +851,36 @@ pub enum ResultFromClient {
     GetTaskPayloadResult(GetTaskPayloadResult),
 }
 
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum ClientTaskResult {
+    ElicitResult(ElicitResult),
+    CreateMessageResult(CreateMessageResult),
+}
+
+pub type ServerTaskResult = CallToolResult;
+
+impl TryFrom<ResultFromClient> for ClientTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        match value {
+            ResultFromClient::CreateMessageResult(create_message_result) => {
+                Ok(Self::CreateMessageResult(create_message_result))
+            }
+            ResultFromClient::ElicitResult(elicit_result) => Ok(Self::ElicitResult(elicit_result)),
+            _ => Err(RpcError::internal_error().with_message("Not a ClientTaskResult variant".to_string())),
+        }
+    }
+}
+
+impl From<ClientTaskResult> for ResultFromClient {
+    fn from(value: ClientTaskResult) -> Self {
+        match value {
+            ClientTaskResult::ElicitResult(elicit_result) => Self::ElicitResult(elicit_result),
+            ClientTaskResult::CreateMessageResult(create_message_result) => Self::CreateMessageResult(create_message_result),
+        }
+    }
+}
 //*******************************//
 //**       ClientMessage       **//
 //*******************************//
@@ -2309,6 +2341,27 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
     }
 }
 
+impl RequestFromServer {
+    pub fn is_task_augmented(&self) -> bool {
+        match self {
+            RequestFromServer::CreateMessageRequest(create_message_request_params) => {
+                create_message_request_params.is_task_augmented()
+            }
+            RequestFromServer::ElicitRequest(elicit_request_params) => elicit_request_params.is_task_augmented(),
+            _ => false,
+        }
+    }
+}
+
+impl MessageFromServer {
+    pub fn is_task_augmented(&self) -> bool {
+        match self {
+            MessageFromServer::RequestFromServer(request_from_server) => request_from_server.is_task_augmented(),
+            _ => false,
+        }
+    }
+}
+
 impl CallToolRequest {
     pub fn is_task_augmented(&self) -> bool {
         self.params.is_task_augmented()
@@ -2333,6 +2386,42 @@ impl ElicitRequestParams {
             ElicitRequestParams::UrlParams(elicit_request_url_params) => elicit_request_url_params.task.is_some(),
             ElicitRequestParams::FormParams(elicit_request_form_params) => elicit_request_form_params.task.is_some(),
         }
+    }
+
+    pub fn message(&self) -> &str {
+        match self {
+            ElicitRequestParams::UrlParams(elicit_request_url_params) => elicit_request_url_params.message.as_str(),
+            ElicitRequestParams::FormParams(elicit_request_form_params) => elicit_request_form_params.message.as_str(),
+        }
+    }
+
+    /// Set task metadata , requesting task-augmented execution for this request
+    pub fn with_task(mut self, task: TaskMetadata) -> Self {
+        match &mut self {
+            ElicitRequestParams::UrlParams(params) => {
+                params.task = Some(task);
+            }
+            ElicitRequestParams::FormParams(params) => {
+                params.task = Some(task);
+            }
+        }
+        self
+    }
+}
+
+impl ElicitRequestUrlParams {
+    /// Set task metadata , requesting task-augmented execution for this request
+    pub fn with_task(mut self, task: TaskMetadata) -> Self {
+        self.task = Some(task);
+        self
+    }
+}
+
+impl ElicitRequestFormParams {
+    /// Set task metadata , requesting task-augmented execution for this request
+    pub fn with_task(mut self, task: TaskMetadata) -> Self {
+        self.task = Some(task);
+        self
     }
 }
 
@@ -2694,16 +2783,194 @@ impl Task {
     }
 }
 
-impl From<ElicitRequest> for ServerJsonrpcRequest {
-    fn from(value: ElicitRequest) -> Self {
-        Self::ElicitRequest(value)
+impl GetTaskResult {
+    pub fn is_terminal(&self) -> bool {
+        self.status.is_terminal()
+    }
+}
+
+impl GetTaskPayloadResult {
+    /// Retrieves the related task ID from the metadata, if it exists.
+    ///
+    /// This function looks for a key corresponding to the `RELATED_TASK_META_KEY` in the
+    /// `meta` field of the struct. If the key exists and contains a string value, it returns
+    /// it as an `Option<&str>`. If the key is missing or not a string, it returns `None`.
+    ///
+    /// # Returns
+    /// - `Some(&str)` if a related task ID exists.
+    /// - `None` if no related task ID is found.
+    pub fn related_task_id(&self) -> Option<&str> {
+        self.meta
+            .as_ref()
+            .and_then(|v| v.get(RELATED_TASK_META_KEY))
+            .and_then(|v| v.as_str().clone())
+    }
+
+    /// Sets the related task ID in the metadata.
+    ///
+    /// This function inserts a `taskId` key with the provided `task_id` into the `meta` field.
+    /// If the `meta` field is `None`, it creates a new `serde_json::Map` and assigns it to `meta`.
+    /// The `task_id` is converted into a string before being inserted.
+    ///
+    /// # Type Parameters
+    /// - `T`: The type of the `task_id`. It must implement `Into<String>` to allow flexible
+    /// conversion of various types (e.g., `&str`, `String`).
+    ///
+    /// # Arguments
+    /// - `task_id`: The ID of the related task to set. This can be any type that can be converted
+    /// into a `String`.
+    pub fn set_related_task_id<T>(&mut self, task_id: T)
+    where
+        T: Into<String>,
+    {
+        let task_json = json!({ "taskId": task_id.into() });
+
+        if let Some(meta) = &mut self.meta {
+            meta.insert(RELATED_TASK_META_KEY.into(), task_json);
+        } else {
+            let mut new_meta = serde_json::Map::new();
+            new_meta.insert(RELATED_TASK_META_KEY.into(), task_json);
+            self.meta = Some(new_meta);
+        }
+    }
+}
+
+/// A fluent builder for optional arbitrary JSON metadata.
+///
+/// Provides chainable methods, full support for nested structures,
+/// and automatically becomes `None` if empty.
+///
+/// Example:
+///
+/// ```
+/// let meta = MetaBuilder::new()
+///     .add("version", "1.0")
+///     .add("tags", vec!["alpha", "beta"])
+///     .add_nested("config", |b| {
+///         b.add("timeout", 30)
+///          .add("retries", 3)
+///          .add_related_task("ABCD")
+///          .add("features", json!({ "experimental": true }))
+///     })
+///     .add_if(true, "debug", true) // conditional add
+///     .into_option();
+/// ```
+///
+#[derive(Default, Clone)]
+pub struct MetaBuilder(serde_json::Map<String, Value>);
+
+pub trait McpMetaEx {
+    /// Retrieves the related task ID from the metadata, if it exists.
+    ///
+    /// This function looks for a key corresponding to the `RELATED_TASK_META_KEY` in the
+    /// `meta` field of the struct. If the key exists and contains a string value, it returns
+    /// it as an `Option<&str>`. If the key is missing or not a string, it returns `None`.
+    ///
+    /// # Returns
+    /// - `Some(&str)` if a related task ID exists.
+    /// - `None` if no related task ID is found.
+    fn related_task_id(&self) -> Option<&str>;
+    /// Sets the related task ID in the metadata.
+    ///
+    /// This function inserts a `taskId` key with the provided `task_id` into the `meta` field.
+    /// If the `meta` field is `None`, it creates a new `serde_json::Map` and assigns it to `meta`.
+    /// The `task_id` is converted into a string before being inserted.
+    ///
+    /// # Type Parameters
+    /// - `T`: The type of the `task_id`. It must implement `Into<String>` to allow flexible
+    /// conversion of various types (e.g., `&str`, `String`).
+    ///
+    /// # Arguments
+    /// - `task_id`: The ID of the related task to set. This can be any type that can be converted
+    /// into a `String`.
+    fn set_related_task_id<T>(&mut self, task_id: T)
+    where
+        T: Into<String>;
+
+    fn with_related_task_id<T>(self, task_id: T) -> Self
+    where
+        T: Into<String>;
+
+    /// Add a key-value pair.
+    /// Value can be anything that serde can serialize (primitives, vecs, maps, structs, etc.).
+    fn add<K, V>(self, key: K, value: V) -> Self
+    where
+        K: Into<String>,
+        V: Into<Value>;
+
+    /// Conditionally add a field (useful for optional metadata).
+    fn add_if<K, V>(self, condition: bool, key: K, value: V) -> Self
+    where
+        K: Into<String>,
+        V: Into<Value>;
+
+    /// Add a raw pre-built Value (e.g. from json! macro or complex logic).
+    fn add_raw<K>(self, key: K, value: Value) -> Self
+    where
+        K: Into<String>;
+}
+
+impl McpMetaEx for serde_json::Map<String, Value> {
+    fn related_task_id(&self) -> Option<&str> {
+        self.get(RELATED_TASK_META_KEY).and_then(|v| v.as_str().clone())
+    }
+
+    fn set_related_task_id<T>(&mut self, task_id: T)
+    where
+        T: Into<String>,
+    {
+        let task_json = json!({ "taskId": task_id.into() });
+        self.entry(RELATED_TASK_META_KEY)
+            .and_modify(|e| *e = task_json.clone())
+            .or_insert_with(|| task_json);
+    }
+
+    fn with_related_task_id<T>(mut self, task_id: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.set_related_task_id(task_id);
+        self
+    }
+
+    /// Add a key-value pair.
+    /// Value can be anything that serde can serialize (primitives, vecs, maps, structs, etc.).
+    fn add<K, V>(mut self, key: K, value: V) -> Self
+    where
+        K: Into<String>,
+        V: Into<Value>,
+    {
+        self.insert(key.into(), value.into());
+        self
+    }
+
+    /// Conditionally add a field (useful for optional metadata).
+    fn add_if<K, V>(mut self, condition: bool, key: K, value: V) -> Self
+    where
+        K: Into<String>,
+        V: Into<Value>,
+    {
+        if condition {
+            self.insert(key.into(), value.into());
+            self
+        } else {
+            self
+        }
+    }
+
+    /// Add a raw pre-built Value (e.g. from json! macro or complex logic).
+    fn add_raw<K>(mut self, key: K, value: Value) -> Self
+    where
+        K: Into<String>,
+    {
+        self.insert(key.into(), value);
+        self
     }
 }
 
 pub type CustomNotification = CustomRequest;
 
 /// BEGIN AUTO GENERATED
-///STEP: 5
 impl ::serde::Serialize for ServerJsonrpcResponse {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2756,7 +3023,6 @@ impl<'de> ::serde::Deserialize<'de> for ServerJsonrpcResponse {
         deserializer.deserialize_struct("JsonrpcResponse", &["id", "jsonrpc", "result"], ServerJsonrpcResultVisitor)
     }
 }
-///STEP: 6
 impl ::serde::Serialize for ClientJsonrpcResponse {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -2809,11 +3075,6 @@ impl<'de> ::serde::Deserialize<'de> for ClientJsonrpcResponse {
         deserializer.deserialize_struct("JsonrpcResponse", &["id", "jsonrpc", "result"], ClientJsonrpcResultVisitor)
     }
 }
-///STEP: 99
-///
-
-
-
 impl From<Result> for ResultFromClient {
     fn from(value: Result) -> Self {
         Self::Result(value)
@@ -2904,7 +3165,131 @@ impl From<CreateTaskResult> for MessageFromClient {
         MessageFromClient::ResultFromClient(value.into())
     }
 }
-///STEP: 10
+impl From<PingRequest> for ServerJsonrpcRequest {
+    fn from(value: PingRequest) -> Self {
+        Self::PingRequest(value)
+    }
+}
+impl From<GetTaskRequest> for ServerJsonrpcRequest {
+    fn from(value: GetTaskRequest) -> Self {
+        Self::GetTaskRequest(value)
+    }
+}
+impl From<GetTaskPayloadRequest> for ServerJsonrpcRequest {
+    fn from(value: GetTaskPayloadRequest) -> Self {
+        Self::GetTaskPayloadRequest(value)
+    }
+}
+impl From<CancelTaskRequest> for ServerJsonrpcRequest {
+    fn from(value: CancelTaskRequest) -> Self {
+        Self::CancelTaskRequest(value)
+    }
+}
+impl From<ListTasksRequest> for ServerJsonrpcRequest {
+    fn from(value: ListTasksRequest) -> Self {
+        Self::ListTasksRequest(value)
+    }
+}
+impl From<CreateMessageRequest> for ServerJsonrpcRequest {
+    fn from(value: CreateMessageRequest) -> Self {
+        Self::CreateMessageRequest(value)
+    }
+}
+impl From<ListRootsRequest> for ServerJsonrpcRequest {
+    fn from(value: ListRootsRequest) -> Self {
+        Self::ListRootsRequest(value)
+    }
+}
+impl From<ElicitRequest> for ServerJsonrpcRequest {
+    fn from(value: ElicitRequest) -> Self {
+        Self::ElicitRequest(value)
+    }
+}
+impl From<InitializeRequest> for ClientJsonrpcRequest {
+    fn from(value: InitializeRequest) -> Self {
+        Self::InitializeRequest(value)
+    }
+}
+impl From<PingRequest> for ClientJsonrpcRequest {
+    fn from(value: PingRequest) -> Self {
+        Self::PingRequest(value)
+    }
+}
+impl From<ListResourcesRequest> for ClientJsonrpcRequest {
+    fn from(value: ListResourcesRequest) -> Self {
+        Self::ListResourcesRequest(value)
+    }
+}
+impl From<ListResourceTemplatesRequest> for ClientJsonrpcRequest {
+    fn from(value: ListResourceTemplatesRequest) -> Self {
+        Self::ListResourceTemplatesRequest(value)
+    }
+}
+impl From<ReadResourceRequest> for ClientJsonrpcRequest {
+    fn from(value: ReadResourceRequest) -> Self {
+        Self::ReadResourceRequest(value)
+    }
+}
+impl From<SubscribeRequest> for ClientJsonrpcRequest {
+    fn from(value: SubscribeRequest) -> Self {
+        Self::SubscribeRequest(value)
+    }
+}
+impl From<UnsubscribeRequest> for ClientJsonrpcRequest {
+    fn from(value: UnsubscribeRequest) -> Self {
+        Self::UnsubscribeRequest(value)
+    }
+}
+impl From<ListPromptsRequest> for ClientJsonrpcRequest {
+    fn from(value: ListPromptsRequest) -> Self {
+        Self::ListPromptsRequest(value)
+    }
+}
+impl From<GetPromptRequest> for ClientJsonrpcRequest {
+    fn from(value: GetPromptRequest) -> Self {
+        Self::GetPromptRequest(value)
+    }
+}
+impl From<ListToolsRequest> for ClientJsonrpcRequest {
+    fn from(value: ListToolsRequest) -> Self {
+        Self::ListToolsRequest(value)
+    }
+}
+impl From<CallToolRequest> for ClientJsonrpcRequest {
+    fn from(value: CallToolRequest) -> Self {
+        Self::CallToolRequest(value)
+    }
+}
+impl From<GetTaskRequest> for ClientJsonrpcRequest {
+    fn from(value: GetTaskRequest) -> Self {
+        Self::GetTaskRequest(value)
+    }
+}
+impl From<GetTaskPayloadRequest> for ClientJsonrpcRequest {
+    fn from(value: GetTaskPayloadRequest) -> Self {
+        Self::GetTaskPayloadRequest(value)
+    }
+}
+impl From<CancelTaskRequest> for ClientJsonrpcRequest {
+    fn from(value: CancelTaskRequest) -> Self {
+        Self::CancelTaskRequest(value)
+    }
+}
+impl From<ListTasksRequest> for ClientJsonrpcRequest {
+    fn from(value: ListTasksRequest) -> Self {
+        Self::ListTasksRequest(value)
+    }
+}
+impl From<SetLevelRequest> for ClientJsonrpcRequest {
+    fn from(value: SetLevelRequest) -> Self {
+        Self::SetLevelRequest(value)
+    }
+}
+impl From<CompleteRequest> for ClientJsonrpcRequest {
+    fn from(value: CompleteRequest) -> Self {
+        Self::CompleteRequest(value)
+    }
+}
 /// Enum representing SDK error codes.
 #[allow(non_camel_case_types)]
 pub enum SdkErrorCodes {
@@ -3226,8 +3611,8 @@ impl RpcError {
     /// let error = RpcError::invalid_request().with_message("Request format is invalid".to_string());
     /// assert_eq!(error.message, "Request format is invalid".to_string());
     /// ```
-    pub fn with_message(mut self, message: String) -> Self {
-        self.message = message;
+    pub fn with_message<T: Into<String>>(mut self, message: T) -> Self {
+        self.message = message.into();
         self
     }
     /// Attaches optional data to the error.
@@ -3277,7 +3662,6 @@ impl JsonrpcErrorResponse {
         Self::new(RpcError::new(error_code, error_message, error_data), id)
     }
 }
-///STEP: 133
 impl From<Result> for ResultFromServer {
     fn from(value: Result) -> Self {
         Self::Result(value)
@@ -3428,7 +3812,6 @@ impl From<CreateTaskResult> for MessageFromServer {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
-///STEP: 155
 impl TryFrom<ResultFromClient> for GenericResult {
     type Error = RpcError;
     fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
@@ -3506,6 +3889,16 @@ impl TryFrom<ResultFromClient> for ElicitResult {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ElicitResult".to_string()))
+        }
+    }
+}
+impl TryFrom<ResultFromClient> for CreateTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
+        if let ResultFromClient::CreateTaskResult(result) = value {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CreateTaskResult".to_string()))
         }
     }
 }
@@ -3649,7 +4042,16 @@ impl TryFrom<ResultFromServer> for CompleteResult {
         }
     }
 }
-///STEP: 20
+impl TryFrom<ResultFromServer> for CreateTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        if let ResultFromServer::CreateTaskResult(result) = value {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CreateTaskResult".to_string()))
+        }
+    }
+}
 impl ContentBlock {
     ///Create a ContentBlock::TextContent
     pub fn text_content(text: ::std::string::String) -> Self {
@@ -3737,7 +4139,6 @@ impl ContentBlock {
         }
     }
 }
-///STEP: 21
 impl CallToolResult {
     pub fn text_content(content: Vec<TextContent>) -> Self {
         Self {
@@ -3802,7 +4203,6 @@ impl CallToolResult {
         self
     }
 }
-///STEP: 22
 impl ServerRequest {
     pub fn request_id(&self) -> &RequestId {
         match self {
