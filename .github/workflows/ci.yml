@@ -32,10 +32,10 @@ jobs:
           key: ${{ runner.os }}-rust-${{ steps.toolchain.outputs.cachekey }}
           restore-keys: ${{ runner.os }}-rust-
 
-      - name: Clear rustup cache (avoid conflict errors)
-        run: |
-          rm -rf ~/.rustup/toolchains
-          rm -rf ~/.rustup/downloads
+      # - name: Clear rustup cache (avoid conflict errors)
+      #   run: |
+      #     rm -rf ~/.rustup/toolchains
+      #     rm -rf ~/.rustup/downloads
 
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@master
