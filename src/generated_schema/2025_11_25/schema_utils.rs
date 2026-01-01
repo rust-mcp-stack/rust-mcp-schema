@@ -1970,6 +1970,56 @@ impl<T: Into<String>> From<T> for TextContent {
     }
 }
 
+impl TextResourceContents {
+    pub fn new<T: Into<String>>(text: T, uri: T) -> Self {
+        TextResourceContents {
+            meta: None,
+            mime_type: None,
+            text: text.into(),
+            uri: uri.into(),
+        }
+    }
+    /// Assigns metadata to the TextResourceContents, enabling the inclusion of extra context or details.
+    pub fn with_meta(mut self, meta: serde_json::Map<String, Value>) -> Self {
+        self.meta = Some(meta);
+        self
+    }
+
+    pub fn with_mime_type<T: Into<String>>(mut self, mime_type: T) -> Self {
+        self.mime_type = Some(mime_type.into());
+        self
+    }
+
+    pub fn with_uri<T: Into<String>>(mut self, uri: T) -> Self {
+        self.uri = uri.into();
+        self
+    }
+}
+
+impl BlobResourceContents {
+    pub fn new<T: Into<String>>(base64_text: T, uri: T) -> Self {
+        BlobResourceContents {
+            meta: None,
+            mime_type: None,
+            blob: base64_text.into(),
+            uri: uri.into(),
+        }
+    }
+    /// Assigns metadata to the BlobResourceContents, enabling the inclusion of extra context or details.
+    pub fn with_meta(mut self, meta: serde_json::Map<String, Value>) -> Self {
+        self.meta = Some(meta);
+        self
+    }
+    pub fn with_mime_type<T: Into<String>>(mut self, mime_type: T) -> Self {
+        self.mime_type = Some(mime_type.into());
+        self
+    }
+    pub fn with_uri<T: Into<String>>(mut self, uri: T) -> Self {
+        self.uri = uri.into();
+        self
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -2944,6 +2994,21 @@ impl McpMetaEx for serde_json::Map<String, Value> {
     {
         self.insert(key.into(), value);
         self
+    }
+}
+
+impl FromStr for Role {
+    type Err = RpcError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "assistant" => Ok(Role::Assistant),
+            "user" => Ok(Role::User),
+            _ => {
+                Err(RpcError::parse_error()
+                    .with_message(format!("Invalid role '{s}'. Expected one of: 'assistant', 'user'")))
+            }
+        }
     }
 }
 
