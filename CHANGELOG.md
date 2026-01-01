@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.3...v0.9.4) (2026-01-01)
+
+
+### Features
+
+* introduce convenience methods for better resource support ([#102](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/102)) ([5a966b3](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/5a966b3dd96a8f32310bd1a26ebb5bd7173e4033))
+
 ## [0.9.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.2...v0.9.3) (2025-12-29)
 
 
