@@ -4246,6 +4246,35 @@ impl CallToolResult {
         self.structured_content = Some(structured_content);
         self
     }
+    /// Creates a new instance using the provided content blocks.
+    ///
+    /// This method initializes the structure with the given `content` and
+    /// resets all optional fields (`is_error`, `meta`, and `structured_content`)
+    /// to `None`.
+    ///
+    /// # Arguments
+    ///
+    /// * `content` - A vector of `ContentBlock` values to populate the instance.
+    ///
+    /// # Returns
+    ///
+    /// Returns a new instance containing the supplied content.
+    pub fn from_content(content: Vec<ContentBlock>) -> Self {
+        Self {
+            content,
+            is_error: None,
+            meta: None,
+            structured_content: None,
+        }
+    }
+    /// Adds a single content block to the instance.
+    ///
+    /// This method appends the provided `content` to the existing `content` vector
+    /// and returns the updated instance, enabling a builder-style pattern.
+    pub fn add_content(mut self, content: ContentBlock) -> Self {
+        self.content.push(content);
+        self
+    }
 }
 impl ServerRequest {
     pub fn request_id(&self) -> &RequestId {

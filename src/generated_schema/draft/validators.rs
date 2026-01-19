@@ -113,8 +113,15 @@ validate!(audio_content_type_, "AudioContent", "type_", "audio");
 validate!(boolean_schema_type_, "BooleanSchema", "type_", "boolean");
 validate!(call_tool_request_jsonrpc, "CallToolRequest", "jsonrpc", "2.0");
 validate!(call_tool_request_method, "CallToolRequest", "method", "tools/call");
+validate!(call_tool_result_response_jsonrpc, "CallToolResultResponse", "jsonrpc", "2.0");
 validate!(cancel_task_request_jsonrpc, "CancelTaskRequest", "jsonrpc", "2.0");
 validate!(cancel_task_request_method, "CancelTaskRequest", "method", "tasks/cancel");
+validate!(
+    cancel_task_result_response_jsonrpc,
+    "CancelTaskResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(cancelled_notification_jsonrpc, "CancelledNotification", "jsonrpc", "2.0");
 validate!(
     cancelled_notification_method,
@@ -124,12 +131,25 @@ validate!(
 );
 validate!(complete_request_jsonrpc, "CompleteRequest", "jsonrpc", "2.0");
 validate!(complete_request_method, "CompleteRequest", "method", "completion/complete");
+validate!(complete_result_response_jsonrpc, "CompleteResultResponse", "jsonrpc", "2.0");
 validate!(create_message_request_jsonrpc, "CreateMessageRequest", "jsonrpc", "2.0");
 validate!(
     create_message_request_method,
     "CreateMessageRequest",
     "method",
     "sampling/createMessage"
+);
+validate!(
+    create_message_result_response_jsonrpc,
+    "CreateMessageResultResponse",
+    "jsonrpc",
+    "2.0"
+);
+validate!(
+    create_task_result_response_jsonrpc,
+    "CreateTaskResultResponse",
+    "jsonrpc",
+    "2.0"
 );
 validate!(elicit_form_schema_type_, "ElicitFormSchema", "type_", "object");
 validate!(elicit_request_jsonrpc, "ElicitRequest", "jsonrpc", "2.0");
@@ -142,6 +162,7 @@ validate!(
     option
 );
 validate!(elicit_request_url_params_mode, "ElicitRequestUrlParams", "mode", "url");
+validate!(elicit_result_response_jsonrpc, "ElicitResultResponse", "jsonrpc", "2.0");
 validate!(
     elicitation_complete_notification_jsonrpc,
     "ElicitationCompleteNotification",
@@ -157,6 +178,12 @@ validate!(
 validate!(embedded_resource_type_, "EmbeddedResource", "type_", "resource");
 validate!(get_prompt_request_jsonrpc, "GetPromptRequest", "jsonrpc", "2.0");
 validate!(get_prompt_request_method, "GetPromptRequest", "method", "prompts/get");
+validate!(
+    get_prompt_result_response_jsonrpc,
+    "GetPromptResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(get_task_payload_request_jsonrpc, "GetTaskPayloadRequest", "jsonrpc", "2.0");
 validate!(
     get_task_payload_request_method,
@@ -164,11 +191,24 @@ validate!(
     "method",
     "tasks/result"
 );
+validate!(
+    get_task_payload_result_response_jsonrpc,
+    "GetTaskPayloadResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(get_task_request_jsonrpc, "GetTaskRequest", "jsonrpc", "2.0");
 validate!(get_task_request_method, "GetTaskRequest", "method", "tasks/get");
+validate!(get_task_result_response_jsonrpc, "GetTaskResultResponse", "jsonrpc", "2.0");
 validate!(image_content_type_, "ImageContent", "type_", "image");
 validate!(initialize_request_jsonrpc, "InitializeRequest", "jsonrpc", "2.0");
 validate!(initialize_request_method, "InitializeRequest", "method", "initialize");
+validate!(
+    initialize_result_response_jsonrpc,
+    "InitializeResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(initialized_notification_jsonrpc, "InitializedNotification", "jsonrpc", "2.0");
 validate!(
     initialized_notification_method,
@@ -184,6 +224,12 @@ validate!(legacy_titled_enum_schema_type_, "LegacyTitledEnumSchema", "type_", "s
 validate!(list_prompts_request_jsonrpc, "ListPromptsRequest", "jsonrpc", "2.0");
 validate!(list_prompts_request_method, "ListPromptsRequest", "method", "prompts/list");
 validate!(
+    list_prompts_result_response_jsonrpc,
+    "ListPromptsResultResponse",
+    "jsonrpc",
+    "2.0"
+);
+validate!(
     list_resource_templates_request_jsonrpc,
     "ListResourceTemplatesRequest",
     "jsonrpc",
@@ -195,6 +241,12 @@ validate!(
     "method",
     "resources/templates/list"
 );
+validate!(
+    list_resource_templates_result_response_jsonrpc,
+    "ListResourceTemplatesResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(list_resources_request_jsonrpc, "ListResourcesRequest", "jsonrpc", "2.0");
 validate!(
     list_resources_request_method,
@@ -202,12 +254,36 @@ validate!(
     "method",
     "resources/list"
 );
+validate!(
+    list_resources_result_response_jsonrpc,
+    "ListResourcesResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(list_roots_request_jsonrpc, "ListRootsRequest", "jsonrpc", "2.0");
 validate!(list_roots_request_method, "ListRootsRequest", "method", "roots/list");
+validate!(
+    list_roots_result_response_jsonrpc,
+    "ListRootsResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(list_tasks_request_jsonrpc, "ListTasksRequest", "jsonrpc", "2.0");
 validate!(list_tasks_request_method, "ListTasksRequest", "method", "tasks/list");
+validate!(
+    list_tasks_result_response_jsonrpc,
+    "ListTasksResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(list_tools_request_jsonrpc, "ListToolsRequest", "jsonrpc", "2.0");
 validate!(list_tools_request_method, "ListToolsRequest", "method", "tools/list");
+validate!(
+    list_tools_result_response_jsonrpc,
+    "ListToolsResultResponse",
+    "jsonrpc",
+    "2.0"
+);
 validate!(
     logging_message_notification_jsonrpc,
     "LoggingMessageNotification",
@@ -223,6 +299,7 @@ validate!(
 validate!(paginated_request_jsonrpc, "PaginatedRequest", "jsonrpc", "2.0");
 validate!(ping_request_jsonrpc, "PingRequest", "jsonrpc", "2.0");
 validate!(ping_request_method, "PingRequest", "method", "ping");
+validate!(ping_result_response_jsonrpc, "PingResultResponse", "jsonrpc", "2.0");
 validate!(progress_notification_jsonrpc, "ProgressNotification", "jsonrpc", "2.0");
 validate!(
     progress_notification_method,
@@ -249,6 +326,12 @@ validate!(
     "ReadResourceRequest",
     "method",
     "resources/read"
+);
+validate!(
+    read_resource_result_response_jsonrpc,
+    "ReadResourceResultResponse",
+    "jsonrpc",
+    "2.0"
 );
 validate!(resource_link_type_, "ResourceLink", "type_", "resource_link");
 validate!(
@@ -295,9 +378,11 @@ validate!(
 );
 validate!(set_level_request_jsonrpc, "SetLevelRequest", "jsonrpc", "2.0");
 validate!(set_level_request_method, "SetLevelRequest", "method", "logging/setLevel");
+validate!(set_level_result_response_jsonrpc, "SetLevelResultResponse", "jsonrpc", "2.0");
 validate!(string_schema_type_, "StringSchema", "type_", "string");
 validate!(subscribe_request_jsonrpc, "SubscribeRequest", "jsonrpc", "2.0");
 validate!(subscribe_request_method, "SubscribeRequest", "method", "resources/subscribe");
+validate!(subscribe_result_response_jsonrpc, "SubscribeResultResponse", "jsonrpc", "2.0");
 validate!(task_status_notification_jsonrpc, "TaskStatusNotification", "jsonrpc", "2.0");
 validate!(
     task_status_notification_method,
@@ -340,6 +425,12 @@ validate!(
     "UnsubscribeRequest",
     "method",
     "resources/unsubscribe"
+);
+validate!(
+    unsubscribe_result_response_jsonrpc,
+    "UnsubscribeResultResponse",
+    "jsonrpc",
+    "2.0"
 );
 validate!(
     untitled_multi_select_enum_schema_type_,
