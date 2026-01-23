@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.5](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.4...v0.9.5) (2026-01-23)
+
+
+### Features
+
+* add new helper functions for creating CallToolResult ([c002acb](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/c002acb6b532dee110e4e934799a08e59d74db9e))
+* improving the ProtocolVersion enum and adopting upcoming changes ([2dea3a6](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/2dea3a6f4f28f3206f12a5ce23a3f66dd7418c15))
+
 ## [0.9.4](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.3...v0.9.4) (2026-01-01)
 
 
