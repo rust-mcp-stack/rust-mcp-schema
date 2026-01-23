@@ -8,6 +8,10 @@ pub enum ProtocolVersion {
     Draft,
 }
 impl ProtocolVersion {
+    /// Returns a list of supported protocol versions.
+    ///
+    /// By default, this does not include the `Draft` version.
+    /// If `include_draft` is `true`, the `Draft` version will be included as well.
     pub fn supported_versions(include_draft: bool) -> Vec<ProtocolVersion> {
         let mut versions = vec![
             ProtocolVersion::V2024_11_05,
@@ -19,6 +23,10 @@ impl ProtocolVersion {
             versions.push(ProtocolVersion::Draft);
         }
         versions
+    }
+    /// Returns the latest stable protocol version.
+    pub const fn latest() -> Self {
+        ProtocolVersion::V2025_11_25
     }
 }
 impl Display for ProtocolVersion {

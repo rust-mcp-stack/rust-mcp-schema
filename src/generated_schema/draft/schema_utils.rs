@@ -1981,7 +1981,7 @@ impl TextResourceContents {
         }
     }
     /// Assigns metadata to the TextResourceContents, enabling the inclusion of extra context or details.
-    pub fn with_meta(mut self, meta: serde_json::Map<String, Value>) -> Self {
+    pub fn with_meta(mut self, meta: MetaObject) -> Self {
         self.meta = Some(meta);
         self
     }
@@ -2007,7 +2007,7 @@ impl BlobResourceContents {
         }
     }
     /// Assigns metadata to the BlobResourceContents, enabling the inclusion of extra context or details.
-    pub fn with_meta(mut self, meta: serde_json::Map<String, Value>) -> Self {
+    pub fn with_meta(mut self, meta: MetaObject) -> Self {
         self.meta = Some(meta);
         self
     }
@@ -2856,7 +2856,7 @@ impl GetTaskPayloadResult {
     pub fn related_task_id(&self) -> Option<&str> {
         self.meta
             .as_ref()
-            .and_then(|v| v.get(RELATED_TASK_META_KEY))
+            .and_then(|v| v.0.get(RELATED_TASK_META_KEY))
             .and_then(|v| v.as_str())
     }
 
@@ -2877,14 +2877,14 @@ impl GetTaskPayloadResult {
     where
         T: Into<String>,
     {
-        let task_json = json!({ "taskId": task_id.into() });
-
         if let Some(meta) = &mut self.meta {
-            meta.insert(RELATED_TASK_META_KEY.into(), task_json);
+            let MetaObject(meta_values) = meta;
+            let task_json = json!({ "taskId": task_id.into() });
+            meta_values.insert(RELATED_TASK_META_KEY.into(), task_json);
         } else {
-            let mut new_meta = serde_json::Map::new();
-            new_meta.insert(RELATED_TASK_META_KEY.into(), task_json);
-            self.meta = Some(new_meta);
+            let mut task_json = serde_json::Map::<String, Value>::new();
+            task_json.insert("taskId".to_string(), Value::from(task_id.into()));
+            self.meta = Some(MetaObject(task_json));
         }
     }
 }
@@ -4235,7 +4235,7 @@ impl CallToolResult {
         }
     }
     /// Assigns metadata to the CallToolResult, enabling the inclusion of extra context or details.
-    pub fn with_meta(mut self, meta: Option<serde_json::Map<String, Value>>) -> Self {
+    pub fn with_meta(mut self, meta: Option<MetaObject>) -> Self {
         self.meta = meta;
         self
     }
@@ -4371,7 +4371,7 @@ impl CallToolRequestParams {
         self
     }
     /// Assigns metadata to the CallToolRequestParams, enabling the inclusion of extra context or details.
-    pub fn with_meta(mut self, meta: CallToolMeta) -> Self {
+    pub fn with_meta(mut self, meta: RequestMetaObject) -> Self {
         self.meta = Some(meta);
         self
     }

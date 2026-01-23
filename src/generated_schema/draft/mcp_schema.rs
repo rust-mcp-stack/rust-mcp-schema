@@ -7,8 +7,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : e75bf11b53d25be466b059579c4370a02e94e115
-/// Generated at : 2026-01-19 18:21:19
+/// Hash : 0b3a76e5b39abca1c865af9ce1565a98e59dfab1
+/// Generated at : 2026-01-22 09:33:01
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
@@ -5973,6 +5973,7 @@ Valid keys have two segments:
 - Optional — if specified, MUST be a series of _labels_ separated by dots (.), followed by a slash (/).
 - Labels MUST start with a letter and end with a letter or digit. Interior characters may be letters, digits, or hyphens (-).
 - Any prefix consisting of zero or more labels, followed by modelcontextprotocol or mcp, followed by any label, is **reserved** for MCP use. For example: modelcontextprotocol.io/, mcp.dev/, api.modelcontextprotocol.org/, and tools.mcp.com/ are all reserved.
+
 **Name:**
 - Unless empty, MUST start and end with an alphanumeric character ([a-z0-9A-Z]).
 - Interior characters may be alphanumeric, hyphens (-), underscores (_), or dots (.).*/
@@ -7365,18 +7366,11 @@ impl ::std::convert::From<i64> for RequestId {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct RequestMetaObject {
     ///If specified, the caller is requesting out-of-band progress notifications for this request (as represented by {@link ProgressNotificationnotifications/progress}). The value of this parameter is an opaque token that will be attached to any subsequent notifications. The receiver is not obligated to provide these notifications.
     #[serde(rename = "progressToken", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub progress_token: ::std::option::Option<ProgressToken>,
-}
-impl ::std::default::Default for RequestMetaObject {
-    fn default() -> Self {
-        Self {
-            progress_token: Default::default(),
-        }
-    }
 }
 ///Common params for any request.
 ///
@@ -11822,7 +11816,7 @@ where
     let json_value = serde_json::to_value(value).unwrap_or(serde_json::Value::Null);
     if let serde_json::Value::Object(mut map) = json_value {
         let meta = map.remove("_meta").and_then(|v| match v {
-            serde_json::Value::Object(obj) => Some(obj),
+            serde_json::Value::Object(obj) => serde_json::from_value(serde_json::Value::Object(obj)).ok(),
             _ => None,
         });
         let extra = if map.is_empty() { None } else { Some(map) };
