@@ -65,6 +65,7 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
 pub trait RpcMessage: McpMessage {
     fn request_id(&self) -> Option<&RequestId>;
     fn jsonrpc(&self) -> &str;
+    fn method(&self) -> Option<&str>;
 }
 
 pub trait McpMessage {
@@ -134,6 +135,14 @@ impl Hash for RequestId {
     }
 }
 
+impl core::fmt::Display for RequestId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match *self {
+            RequestId::String(ref s) => write!(f, "{}", s),
+            RequestId::Integer(i) => write!(f, "{}", i),
+        }
+    }
+}
 //*******************//
 //** ClientMessage **//
 //*******************//
@@ -306,6 +315,15 @@ impl RpcMessage for ClientMessage {
             ClientMessage::Notification(notification) => notification.jsonrpc(),
             ClientMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
             ClientMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
+        }
+    }
+
+     fn method(&self) -> Option<&str> {
+        match self {
+            ClientMessage::Request(client_jsonrpc_request) => Some(client_jsonrpc_request.method()),
+            ClientMessage::Notification(client_jsonrpc_notification) => Some(client_jsonrpc_notification.method()),
+            ClientMessage::Response(_) => None,
+            ClientMessage::Error(_) => None,
         }
     }
 }
@@ -694,6 +712,17 @@ impl ClientJsonrpcNotification {
     pub fn is_initialized_notification(&self) -> bool {
         matches!(self, Self::InitializedNotification(_))
     }
+
+    pub fn method(&self) -> &str {
+        match self {
+            ClientJsonrpcNotification::CancelledNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::InitializedNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::ProgressNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::TaskStatusNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::RootsListChangedNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::CustomNotification(notification) => notification.method.as_str(),
+        }
+    }
 }
 
 impl From<ClientJsonrpcNotification> for NotificationFromClient {
@@ -1071,6 +1100,15 @@ impl RpcMessage for ServerMessage {
             ServerMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
         }
     }
+
+    fn method(&self) -> Option<&str> {
+        match self {
+            ServerMessage::Request(server_jsonrpc_request) => Some(server_jsonrpc_request.method()),
+            ServerMessage::Notification(server_jsonrpc_notification) => Some(server_jsonrpc_notification.method()),
+            ServerMessage::Response(_) => None,
+            ServerMessage::Error(_) => None,
+        }
+    }
 }
 
 // Implementing the `McpMessage` trait for `ServerMessage`
@@ -1405,6 +1443,21 @@ impl ServerJsonrpcNotification {
             ServerJsonrpcNotification::LoggingMessageNotification(notification) => notification.jsonrpc(),
             ServerJsonrpcNotification::ElicitationCompleteNotification(notification) => notification.jsonrpc(),
             ServerJsonrpcNotification::CustomNotification(notification) => notification.jsonrpc(),
+        }
+    }
+
+    fn method(&self) -> &str {
+        match self {
+            ServerJsonrpcNotification::CancelledNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ProgressNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ResourceListChangedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ResourceUpdatedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::PromptListChangedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ToolListChangedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::TaskStatusNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::LoggingMessageNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ElicitationCompleteNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::CustomNotification(notification) => &notification.method,
         }
     }
 }
@@ -3160,11 +3213,6 @@ impl From<ElicitResult> for ResultFromClient {
         Self::ElicitResult(value)
     }
 }
-impl From<CreateTaskResult> for ResultFromClient {
-    fn from(value: CreateTaskResult) -> Self {
-        Self::CreateTaskResult(value)
-    }
-}
 impl From<Result> for MessageFromClient {
     fn from(value: Result) -> Self {
         MessageFromClient::ResultFromClient(value.into())
@@ -3202,11 +3250,6 @@ impl From<ListRootsResult> for MessageFromClient {
 }
 impl From<ElicitResult> for MessageFromClient {
     fn from(value: ElicitResult) -> Self {
-        MessageFromClient::ResultFromClient(value.into())
-    }
-}
-impl From<CreateTaskResult> for MessageFromClient {
-    fn from(value: CreateTaskResult) -> Self {
         MessageFromClient::ResultFromClient(value.into())
     }
 }
@@ -3752,6 +3795,11 @@ impl From<CallToolResult> for ResultFromServer {
         Self::CallToolResult(value)
     }
 }
+impl From<CreateTaskResult> for ResultFromServer {
+    fn from(value: CreateTaskResult) -> Self {
+        Self::CreateTaskResult(value)
+    }
+}
 impl From<GetTaskResult> for ResultFromServer {
     fn from(value: GetTaskResult) -> Self {
         Self::GetTaskResult(value)
@@ -3775,11 +3823,6 @@ impl From<ListTasksResult> for ResultFromServer {
 impl From<CompleteResult> for ResultFromServer {
     fn from(value: CompleteResult) -> Self {
         Self::CompleteResult(value)
-    }
-}
-impl From<CreateTaskResult> for ResultFromServer {
-    fn from(value: CreateTaskResult) -> Self {
-        Self::CreateTaskResult(value)
     }
 }
 impl From<Result> for MessageFromServer {
@@ -3827,6 +3870,11 @@ impl From<CallToolResult> for MessageFromServer {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
+impl From<CreateTaskResult> for MessageFromServer {
+    fn from(value: CreateTaskResult) -> Self {
+        MessageFromServer::ResultFromServer(value.into())
+    }
+}
 impl From<GetTaskResult> for MessageFromServer {
     fn from(value: GetTaskResult) -> Self {
         MessageFromServer::ResultFromServer(value.into())
@@ -3849,11 +3897,6 @@ impl From<ListTasksResult> for MessageFromServer {
 }
 impl From<CompleteResult> for MessageFromServer {
     fn from(value: CompleteResult) -> Self {
-        MessageFromServer::ResultFromServer(value.into())
-    }
-}
-impl From<CreateTaskResult> for MessageFromServer {
-    fn from(value: CreateTaskResult) -> Self {
         MessageFromServer::ResultFromServer(value.into())
     }
 }
@@ -3934,16 +3977,6 @@ impl TryFrom<ResultFromClient> for ElicitResult {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a ElicitResult".to_string()))
-        }
-    }
-}
-impl TryFrom<ResultFromClient> for CreateTaskResult {
-    type Error = RpcError;
-    fn try_from(value: ResultFromClient) -> std::result::Result<Self, Self::Error> {
-        if let ResultFromClient::CreateTaskResult(result) = value {
-            Ok(result)
-        } else {
-            Err(RpcError::internal_error().with_message("Not a CreateTaskResult".to_string()))
         }
     }
 }
@@ -4037,6 +4070,16 @@ impl TryFrom<ResultFromServer> for CallToolResult {
         }
     }
 }
+impl TryFrom<ResultFromServer> for CreateTaskResult {
+    type Error = RpcError;
+    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
+        if let ResultFromServer::CreateTaskResult(result) = value {
+            Ok(result)
+        } else {
+            Err(RpcError::internal_error().with_message("Not a CreateTaskResult".to_string()))
+        }
+    }
+}
 impl TryFrom<ResultFromServer> for GetTaskResult {
     type Error = RpcError;
     fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
@@ -4084,16 +4127,6 @@ impl TryFrom<ResultFromServer> for CompleteResult {
             Ok(result)
         } else {
             Err(RpcError::internal_error().with_message("Not a CompleteResult".to_string()))
-        }
-    }
-}
-impl TryFrom<ResultFromServer> for CreateTaskResult {
-    type Error = RpcError;
-    fn try_from(value: ResultFromServer) -> std::result::Result<Self, Self::Error> {
-        if let ResultFromServer::CreateTaskResult(result) = value {
-            Ok(result)
-        } else {
-            Err(RpcError::internal_error().with_message("Not a CreateTaskResult".to_string()))
         }
     }
 }

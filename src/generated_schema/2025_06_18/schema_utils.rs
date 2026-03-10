@@ -131,6 +131,14 @@ impl Hash for RequestId {
     }
 }
 
+impl core::fmt::Display for RequestId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match *self {
+            RequestId::String(ref s) => write!(f, "{}", s),
+            RequestId::Integer(i) => write!(f, "{}", i),
+        }
+    }
+}
 //*******************//
 //** ClientMessage **//
 //*******************//
@@ -238,7 +246,7 @@ impl ClientMessage {
 
     /// Returns `true` if the message is an `InitializedNotification`
     pub fn is_initialized_notification(&self) -> bool {
-        matches!(self, Self::Notification(notofication) if notofication.notification.is_initialized_notification())
+        matches!(self, Self::Notification(notification) if notification.notification.is_initialized_notification())
     }
 }
 
@@ -1331,7 +1339,7 @@ impl MessageFromClient {
 
     /// Returns `true` if the message is an `InitializedNotification`
     pub fn is_initialized_notification(&self) -> bool {
-        matches!(self, Self::NotificationFromClient(notofication) if notofication.is_initialized_notification())
+        matches!(self, Self::NotificationFromClient(notification) if notification.is_initialized_notification())
     }
 }
 

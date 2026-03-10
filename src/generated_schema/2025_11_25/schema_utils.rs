@@ -64,6 +64,7 @@ fn detect_message_type(value: &serde_json::Value) -> MessageTypes {
 pub trait RpcMessage: McpMessage {
     fn request_id(&self) -> Option<&RequestId>;
     fn jsonrpc(&self) -> &str;
+    fn method(&self) -> Option<&str>;
 }
 
 pub trait McpMessage {
@@ -133,6 +134,14 @@ impl Hash for RequestId {
     }
 }
 
+impl core::fmt::Display for RequestId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match *self {
+            RequestId::String(ref s) => write!(f, "{}", s),
+            RequestId::Integer(i) => write!(f, "{}", i),
+        }
+    }
+}
 //*******************//
 //** ClientMessage **//
 //*******************//
@@ -305,6 +314,15 @@ impl RpcMessage for ClientMessage {
             ClientMessage::Notification(notification) => notification.jsonrpc(),
             ClientMessage::Response(client_jsonrpc_response) => client_jsonrpc_response.jsonrpc(),
             ClientMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
+        }
+    }
+
+     fn method(&self) -> Option<&str> {
+        match self {
+            ClientMessage::Request(client_jsonrpc_request) => Some(client_jsonrpc_request.method()),
+            ClientMessage::Notification(client_jsonrpc_notification) => Some(client_jsonrpc_notification.method()),
+            ClientMessage::Response(_) => None,
+            ClientMessage::Error(_) => None,
         }
     }
 }
@@ -693,6 +711,17 @@ impl ClientJsonrpcNotification {
     pub fn is_initialized_notification(&self) -> bool {
         matches!(self, Self::InitializedNotification(_))
     }
+
+    pub fn method(&self) -> &str {
+        match self {
+            ClientJsonrpcNotification::CancelledNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::InitializedNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::ProgressNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::TaskStatusNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::RootsListChangedNotification(notification) => notification.method(),
+            ClientJsonrpcNotification::CustomNotification(notification) => notification.method.as_str(),
+        }
+    }
 }
 
 impl From<ClientJsonrpcNotification> for NotificationFromClient {
@@ -1070,6 +1099,15 @@ impl RpcMessage for ServerMessage {
             ServerMessage::Error(jsonrpc_error) => jsonrpc_error.jsonrpc(),
         }
     }
+
+    fn method(&self) -> Option<&str> {
+        match self {
+            ServerMessage::Request(server_jsonrpc_request) => Some(server_jsonrpc_request.method()),
+            ServerMessage::Notification(server_jsonrpc_notification) => Some(server_jsonrpc_notification.method()),
+            ServerMessage::Response(_) => None,
+            ServerMessage::Error(_) => None,
+        }
+    }
 }
 
 // Implementing the `McpMessage` trait for `ServerMessage`
@@ -1404,6 +1442,21 @@ impl ServerJsonrpcNotification {
             ServerJsonrpcNotification::LoggingMessageNotification(notification) => notification.jsonrpc(),
             ServerJsonrpcNotification::ElicitationCompleteNotification(notification) => notification.jsonrpc(),
             ServerJsonrpcNotification::CustomNotification(notification) => notification.jsonrpc(),
+        }
+    }
+
+    fn method(&self) -> &str {
+        match self {
+            ServerJsonrpcNotification::CancelledNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ProgressNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ResourceListChangedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ResourceUpdatedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::PromptListChangedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ToolListChangedNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::TaskStatusNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::LoggingMessageNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::ElicitationCompleteNotification(notification) => notification.method(),
+            ServerJsonrpcNotification::CustomNotification(notification) => &notification.method,
         }
     }
 }
