@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.6](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.5...v0.9.6) (2026-03-10)
+
+
+### Features
+
+* update MCP schema to latest version and add method() to RpcMessage trait ([#106](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/106)) ([0e1f53a](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/0e1f53abaaf9e294958fb66d169651ac96694449))
+
 ## [0.9.5](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.4...v0.9.5) (2026-01-23)
 
 
