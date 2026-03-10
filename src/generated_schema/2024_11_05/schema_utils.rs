@@ -132,6 +132,15 @@ impl Hash for RequestId {
     }
 }
 
+impl core::fmt::Display for RequestId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match *self {
+            RequestId::String(ref s) => write!(f, "{}", s),
+            RequestId::Integer(i) => write!(f, "{}", i),
+        }
+    }
+}
+
 //*******************//
 //** ClientMessage **//
 //*******************//
@@ -1479,7 +1488,7 @@ impl CallToolError {
         let message = message.unwrap_or(default_message);
 
         // Format the full error message
-        let full_message = format!("Invalid arguments for tool '{tool_name}': {message}" );
+        let full_message = format!("Invalid arguments for tool '{tool_name}': {message}");
 
         Self::from_message(full_message)
     }
@@ -1520,7 +1529,6 @@ impl CallToolError {
         CallToolError::new(MsgError(message.into()))
     }
 }
-
 
 /// Converts a `CallToolError` into a `RpcError`.
 ///

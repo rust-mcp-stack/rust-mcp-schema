@@ -7,8 +7,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 0b3a76e5b39abca1c865af9ce1565a98e59dfab1
-/// Generated at : 2026-01-22 09:33:01
+/// Hash : e14831553a82c059d6e2fc866084b26e82ae791a
+/// Generated at : 2026-03-10 19:10:31
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
@@ -820,17 +820,22 @@ pub struct CancelledNotificationParams {
 ///      "type": "object",
 ///      "properties": {
 ///        "form": {
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        },
 ///        "url": {
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        }
 ///      }
 ///    },
 ///    "experimental": {
 ///      "description": "Experimental, non-standard capabilities that the client supports.",
+///      "type": "object",
+///      "additionalProperties": {
+///        "$ref": "#/$defs/JSONObject"
+///      }
+///    },
+///    "extensions": {
+///      "description": "Optional MCP extensions that the client supports. Keys are extension identifiers\n(e.g., \"io.modelcontextprotocol/oauth-client-credentials\"), and values are\nper-extension settings objects. An empty object indicates support with no settings.",
 ///      "type": "object",
 ///      "additionalProperties": {
 ///        "type": "object",
@@ -853,13 +858,11 @@ pub struct CancelledNotificationParams {
 ///      "properties": {
 ///        "context": {
 ///          "description": "Whether the client supports context inclusion via includeContext parameter.\nIf not declared, servers SHOULD only use includeContext: \"none\" (or omit it).",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        },
 ///        "tools": {
 ///          "description": "Whether the client supports tool use via tools and toolChoice parameters.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        }
 ///      }
 ///    },
@@ -869,13 +872,11 @@ pub struct CancelledNotificationParams {
 ///      "properties": {
 ///        "cancel": {
 ///          "description": "Whether this client supports {@link CancelTaskRequesttasks/cancel}.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        },
 ///        "list": {
 ///          "description": "Whether this client supports {@link ListTasksRequesttasks/list}.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        },
 ///        "requests": {
 ///          "description": "Specifies which request types can be augmented with tasks.",
@@ -887,8 +888,7 @@ pub struct CancelledNotificationParams {
 ///              "properties": {
 ///                "create": {
 ///                  "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///                  "type": "object",
-///                  "additionalProperties": true
+///                  "$ref": "#/$defs/JSONObject"
 ///                }
 ///              }
 ///            },
@@ -898,8 +898,7 @@ pub struct CancelledNotificationParams {
 ///              "properties": {
 ///                "createMessage": {
 ///                  "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///                  "type": "object",
-///                  "additionalProperties": true
+///                  "$ref": "#/$defs/JSONObject"
 ///                }
 ///              }
 ///            }
@@ -917,7 +916,12 @@ pub struct ClientCapabilities {
     pub elicitation: ::std::option::Option<ClientElicitation>,
     ///Experimental, non-standard capabilities that the client supports.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub experimental: ::std::option::Option<
+    pub experimental: ::std::option::Option<::std::collections::HashMap<::std::string::String, JsonObject>>,
+    /**Optional MCP extensions that the client supports. Keys are extension identifiers
+    (e.g., "io.modelcontextprotocol/oauth-client-credentials"), and values are
+    per-extension settings objects. An empty object indicates support with no settings.*/
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extensions: ::std::option::Option<
         ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -937,12 +941,10 @@ pub struct ClientCapabilities {
 ///  "type": "object",
 ///  "properties": {
 ///    "form": {
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "url": {
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    }
 ///  }
 ///}
@@ -951,9 +953,9 @@ pub struct ClientCapabilities {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ClientElicitation {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub form: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub form: ::std::option::Option<JsonObject>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub url: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub url: ::std::option::Option<JsonObject>,
 }
 ///ClientNotification
 ///
@@ -1306,13 +1308,11 @@ pub struct ClientRoots {
 ///  "properties": {
 ///    "context": {
 ///      "description": "Whether the client supports context inclusion via includeContext parameter.\nIf not declared, servers SHOULD only use includeContext: \"none\" (or omit it).",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "tools": {
 ///      "description": "Whether the client supports tool use via tools and toolChoice parameters.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    }
 ///  }
 ///}
@@ -1323,10 +1323,10 @@ pub struct ClientSampling {
     /**Whether the client supports context inclusion via includeContext parameter.
     If not declared, servers SHOULD only use includeContext: "none" (or omit it).*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub context: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub context: ::std::option::Option<JsonObject>,
     ///Whether the client supports tool use via tools and toolChoice parameters.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub tools: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub tools: ::std::option::Option<JsonObject>,
 }
 ///Task support for elicitation-related requests.
 ///
@@ -1339,8 +1339,7 @@ pub struct ClientSampling {
 ///  "properties": {
 ///    "create": {
 ///      "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    }
 ///  }
 ///}
@@ -1350,7 +1349,7 @@ pub struct ClientSampling {
 pub struct ClientTaskElicitation {
     ///Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub create: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub create: ::std::option::Option<JsonObject>,
 }
 ///Specifies which request types can be augmented with tasks.
 ///
@@ -1367,8 +1366,7 @@ pub struct ClientTaskElicitation {
 ///      "properties": {
 ///        "create": {
 ///          "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        }
 ///      }
 ///    },
@@ -1378,8 +1376,7 @@ pub struct ClientTaskElicitation {
 ///      "properties": {
 ///        "createMessage": {
 ///          "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        }
 ///      }
 ///    }
@@ -1405,8 +1402,7 @@ pub struct ClientTaskRequest {
 ///  "properties": {
 ///    "createMessage": {
 ///      "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    }
 ///  }
 ///}
@@ -1416,7 +1412,7 @@ pub struct ClientTaskRequest {
 pub struct ClientTaskSampling {
     ///Whether the client supports task-augmented sampling/createMessage requests.
     #[serde(rename = "createMessage", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub create_message: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub create_message: ::std::option::Option<JsonObject>,
 }
 ///Present if the client supports task-augmented requests.
 ///
@@ -1429,13 +1425,11 @@ pub struct ClientTaskSampling {
 ///  "properties": {
 ///    "cancel": {
 ///      "description": "Whether this client supports {@link CancelTaskRequesttasks/cancel}.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "list": {
 ///      "description": "Whether this client supports {@link ListTasksRequesttasks/list}.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "requests": {
 ///      "description": "Specifies which request types can be augmented with tasks.",
@@ -1447,8 +1441,7 @@ pub struct ClientTaskSampling {
 ///          "properties": {
 ///            "create": {
 ///              "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///              "type": "object",
-///              "additionalProperties": true
+///              "$ref": "#/$defs/JSONObject"
 ///            }
 ///          }
 ///        },
@@ -1458,8 +1451,7 @@ pub struct ClientTaskSampling {
 ///          "properties": {
 ///            "createMessage": {
 ///              "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///              "type": "object",
-///              "additionalProperties": true
+///              "$ref": "#/$defs/JSONObject"
 ///            }
 ///          }
 ///        }
@@ -1473,10 +1465,10 @@ pub struct ClientTaskSampling {
 pub struct ClientTasks {
     ///Whether this client supports {@link CancelTaskRequesttasks/cancel}.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub cancel: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub cancel: ::std::option::Option<JsonObject>,
     ///Whether this client supports {@link ListTasksRequesttasks/list}.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub list: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub list: ::std::option::Option<JsonObject>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub requests: ::std::option::Option<ClientTaskRequest>,
 }
@@ -1742,7 +1734,8 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestRef {
 ///          "type": "array",
 ///          "items": {
 ///            "type": "string"
-///          }
+///          },
+///          "maxItems": 100
 ///        }
 ///      }
 ///    }
@@ -1780,7 +1773,8 @@ pub struct CompleteResult {
 ///      "type": "array",
 ///      "items": {
 ///        "type": "string"
-///      }
+///      },
+///      "maxItems": 100
 ///    }
 ///  }
 ///}
@@ -2079,8 +2073,7 @@ impl CreateMessageRequest {
 ///    },
 ///    "metadata": {
 ///      "description": "Optional metadata to pass through to the LLM provider. The format of this metadata is provider-specific.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "modelPreferences": {
 ///      "description": "The server's preferences for which model to select. The client MAY ignore these preferences.",
@@ -2135,7 +2128,7 @@ pub struct CreateMessageRequestParams {
     pub meta: ::std::option::Option<RequestMetaObject>,
     ///Optional metadata to pass through to the LLM provider. The format of this metadata is provider-specific.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub metadata: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub metadata: ::std::option::Option<JsonObject>,
     ///The server's preferences for which model to select. The client MAY ignore these preferences.
     #[serde(
         rename = "modelPreferences",
@@ -4047,6 +4040,7 @@ impl ImageContent {
 ///      "type": "string"
 ///    },
 ///    "version": {
+///      "description": "The version of this implementation.",
 ///      "type": "string"
 ///    },
 ///    "websiteUrl": {
@@ -4084,6 +4078,7 @@ pub struct Implementation {
     if present).*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<::std::string::String>,
+    ///The version of this implementation.
     pub version: ::std::string::String,
     ///An optional URL of the website for this implementation.
     #[serde(rename = "websiteUrl", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4255,7 +4250,7 @@ pub struct InitializeRequestParams {
 ///      "$ref": "#/$defs/ServerCapabilities"
 ///    },
 ///    "instructions": {
-///      "description": "Instructions describing how to use the server and its features.\n\nThis can be used by clients to improve the LLM's understanding of available tools, resources, etc. It can be thought of like a \"hint\" to the model. For example, this information MAY be added to the system prompt.",
+///      "description": "Instructions describing how to use the server and its features.\n\nInstructions should focus on information that helps the model use the server effectively (e.g., cross-tool relationships, workflow patterns, constraints), but should not duplicate information already in tool descriptions.\n\nClients MAY add this information to the system prompt.",
 ///      "type": "string"
 ///    },
 ///    "protocolVersion": {
@@ -4273,7 +4268,8 @@ pub struct InitializeRequestParams {
 pub struct InitializeResult {
     pub capabilities: ServerCapabilities,
     /**Instructions describing how to use the server and its features.
-    This can be used by clients to improve the LLM's understanding of available tools, resources, etc. It can be thought of like a "hint" to the model. For example, this information MAY be added to the system prompt.*/
+    Instructions should focus on information that helps the model use the server effectively (e.g., cross-tool relationships, workflow patterns, constraints), but should not duplicate information already in tool descriptions.
+    Clients MAY add this information to the system prompt.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub instructions: ::std::option::Option<::std::string::String>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -4515,6 +4511,118 @@ pub struct InvalidRequestError {
     pub data: ::std::option::Option<::serde_json::Value>,
     ///A short description of the error. The message SHOULD be limited to a concise single sentence.
     pub message: ::std::string::String,
+}
+///JsonArray
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "array",
+///  "items": {
+///    "$ref": "#/$defs/JSONValue"
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(transparent)]
+pub struct JsonArray(pub ::std::vec::Vec<JsonValue>);
+///JsonObject
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "additionalProperties": {
+///    "$ref": "#/$defs/JSONValue"
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(transparent)]
+pub struct JsonObject(pub ::std::collections::HashMap<::std::string::String, JsonValue>);
+///JsonValue
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "anyOf": [
+///    {
+///      "$ref": "#/$defs/JSONObject"
+///    },
+///    {
+///      "type": "array",
+///      "items": {
+///        "$ref": "#/$defs/JSONValue"
+///      }
+///    },
+///    {
+///      "type": [
+///        "string",
+///        "integer",
+///        "boolean"
+///      ]
+///    }
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum JsonValue {
+    Variant0(JsonObject),
+    Variant1(::std::vec::Vec<JsonValue>),
+    Variant2(JsonValueVariant2),
+}
+impl ::std::convert::From<JsonObject> for JsonValue {
+    fn from(value: JsonObject) -> Self {
+        Self::Variant0(value)
+    }
+}
+impl ::std::convert::From<::std::vec::Vec<JsonValue>> for JsonValue {
+    fn from(value: ::std::vec::Vec<JsonValue>) -> Self {
+        Self::Variant1(value)
+    }
+}
+impl ::std::convert::From<JsonValueVariant2> for JsonValue {
+    fn from(value: JsonValueVariant2) -> Self {
+        Self::Variant2(value)
+    }
+}
+///JsonValueVariant2
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": [
+///    "string",
+///    "integer",
+///    "boolean"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum JsonValueVariant2 {
+    Boolean(bool),
+    String(::std::string::String),
+    Integer(i64),
+}
+impl ::std::convert::From<bool> for JsonValueVariant2 {
+    fn from(value: bool) -> Self {
+        Self::Boolean(value)
+    }
+}
+impl ::std::convert::From<i64> for JsonValueVariant2 {
+    fn from(value: i64) -> Self {
+        Self::Integer(value)
+    }
 }
 ///A response to a request that indicates an error occurred.
 ///
@@ -8382,11 +8490,17 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 ///  "properties": {
 ///    "completions": {
 ///      "description": "Present if the server supports argument autocompletion suggestions.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "experimental": {
 ///      "description": "Experimental, non-standard capabilities that the server supports.",
+///      "type": "object",
+///      "additionalProperties": {
+///        "$ref": "#/$defs/JSONObject"
+///      }
+///    },
+///    "extensions": {
+///      "description": "Optional MCP extensions that the server supports. Keys are extension identifiers\n(e.g., \"io.modelcontextprotocol/apps\"), and values are per-extension settings\nobjects. An empty object indicates support with no settings.",
 ///      "type": "object",
 ///      "additionalProperties": {
 ///        "type": "object",
@@ -8395,8 +8509,7 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 ///    },
 ///    "logging": {
 ///      "description": "Present if the server supports sending log messages to the client.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "prompts": {
 ///      "description": "Present if the server offers any prompt templates.",
@@ -8428,13 +8541,11 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 ///      "properties": {
 ///        "cancel": {
 ///          "description": "Whether this server supports {@link CancelTaskRequesttasks/cancel}.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        },
 ///        "list": {
 ///          "description": "Whether this server supports {@link ListTasksRequesttasks/list}.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        },
 ///        "requests": {
 ///          "description": "Specifies which request types can be augmented with tasks.",
@@ -8446,8 +8557,7 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 ///              "properties": {
 ///                "call": {
 ///                  "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///                  "type": "object",
-///                  "additionalProperties": true
+///                  "$ref": "#/$defs/JSONObject"
 ///                }
 ///              }
 ///            }
@@ -8473,15 +8583,20 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 pub struct ServerCapabilities {
     ///Present if the server supports argument autocompletion suggestions.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub completions: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub completions: ::std::option::Option<JsonObject>,
     ///Experimental, non-standard capabilities that the server supports.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub experimental: ::std::option::Option<
+    pub experimental: ::std::option::Option<::std::collections::HashMap<::std::string::String, JsonObject>>,
+    /**Optional MCP extensions that the server supports. Keys are extension identifiers
+    (e.g., "io.modelcontextprotocol/apps"), and values are per-extension settings
+    objects. An empty object indicates support with no settings.*/
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extensions: ::std::option::Option<
         ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     ///Present if the server supports sending log messages to the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub logging: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub logging: ::std::option::Option<JsonObject>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub prompts: ::std::option::Option<ServerCapabilitiesPrompts>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -8786,6 +8901,9 @@ impl ::std::convert::From<ElicitRequest> for ServerRequest {
 ///      "$ref": "#/$defs/CallToolResult"
 ///    },
 ///    {
+///      "$ref": "#/$defs/CreateTaskResult"
+///    },
+///    {
 ///      "description": "The result returned for a {@link GetTaskRequesttasks/get} request.",
 ///      "$ref": "#/$defs/GetTaskResult"
 ///    },
@@ -8818,6 +8936,7 @@ pub enum ServerResult {
     GetPromptResult(GetPromptResult),
     ListToolsResult(ListToolsResult),
     CallToolResult(CallToolResult),
+    CreateTaskResult(CreateTaskResult),
     GetTaskResult(GetTaskResult),
     CancelTaskResult(CancelTaskResult),
     ListTasksResult(ListTasksResult),
@@ -8865,6 +8984,11 @@ impl ::std::convert::From<CallToolResult> for ServerResult {
         Self::CallToolResult(value)
     }
 }
+impl ::std::convert::From<CreateTaskResult> for ServerResult {
+    fn from(value: CreateTaskResult) -> Self {
+        Self::CreateTaskResult(value)
+    }
+}
 impl ::std::convert::From<GetTaskResult> for ServerResult {
     fn from(value: GetTaskResult) -> Self {
         Self::GetTaskResult(value)
@@ -8910,8 +9034,7 @@ impl ::std::convert::From<GetTaskPayloadResult> for ServerResult {
 ///      "properties": {
 ///        "call": {
 ///          "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///          "type": "object",
-///          "additionalProperties": true
+///          "$ref": "#/$defs/JSONObject"
 ///        }
 ///      }
 ///    }
@@ -8935,8 +9058,7 @@ pub struct ServerTaskRequest {
 ///  "properties": {
 ///    "call": {
 ///      "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    }
 ///  }
 ///}
@@ -8946,7 +9068,7 @@ pub struct ServerTaskRequest {
 pub struct ServerTaskTools {
     ///Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub call: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub call: ::std::option::Option<JsonObject>,
 }
 ///Present if the server supports task-augmented requests.
 ///
@@ -8959,13 +9081,11 @@ pub struct ServerTaskTools {
 ///  "properties": {
 ///    "cancel": {
 ///      "description": "Whether this server supports {@link CancelTaskRequesttasks/cancel}.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "list": {
 ///      "description": "Whether this server supports {@link ListTasksRequesttasks/list}.",
-///      "type": "object",
-///      "additionalProperties": true
+///      "$ref": "#/$defs/JSONObject"
 ///    },
 ///    "requests": {
 ///      "description": "Specifies which request types can be augmented with tasks.",
@@ -8977,8 +9097,7 @@ pub struct ServerTaskTools {
 ///          "properties": {
 ///            "call": {
 ///              "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///              "type": "object",
-///              "additionalProperties": true
+///              "$ref": "#/$defs/JSONObject"
 ///            }
 ///          }
 ///        }
@@ -8992,10 +9111,10 @@ pub struct ServerTaskTools {
 pub struct ServerTasks {
     ///Whether this server supports {@link CancelTaskRequesttasks/cancel}.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub cancel: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub cancel: ::std::option::Option<JsonObject>,
     ///Whether this server supports {@link ListTasksRequesttasks/list}.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub list: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub list: ::std::option::Option<JsonObject>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub requests: ::std::option::Option<ServerTaskRequest>,
 }
@@ -10216,8 +10335,7 @@ pub struct TitledSingleSelectEnumSchemaOneOfItem {
 ///        "properties": {
 ///          "type": "object",
 ///          "additionalProperties": {
-///            "type": "object",
-///            "additionalProperties": true
+///            "$ref": "#/$defs/JSONValue"
 ///          }
 ///        },
 ///        "required": {
@@ -10249,8 +10367,7 @@ pub struct TitledSingleSelectEnumSchemaOneOfItem {
 ///        "properties": {
 ///          "type": "object",
 ///          "additionalProperties": {
-///            "type": "object",
-///            "additionalProperties": true
+///            "$ref": "#/$defs/JSONValue"
 ///          }
 ///        },
 ///        "required": {
@@ -10538,8 +10655,7 @@ impl ::std::fmt::Display for ToolExecutionTaskSupport {
 ///    "properties": {
 ///      "type": "object",
 ///      "additionalProperties": {
-///        "type": "object",
-///        "additionalProperties": true
+///        "$ref": "#/$defs/JSONValue"
 ///      }
 ///    },
 ///    "required": {
@@ -10559,9 +10675,7 @@ impl ::std::fmt::Display for ToolExecutionTaskSupport {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ToolInputSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub properties: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-    >,
+    pub properties: ::std::option::Option<::std::collections::HashMap<::std::string::String, JsonValue>>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "$schema", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -10572,12 +10686,7 @@ pub struct ToolInputSchema {
 impl ToolInputSchema {
     pub fn new(
         required: ::std::vec::Vec<::std::string::String>,
-        properties: ::std::option::Option<
-            ::std::collections::HashMap<
-                ::std::string::String,
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            >,
-        >,
+        properties: ::std::option::Option<::std::collections::HashMap<::std::string::String, JsonValue>>,
         schema: ::std::option::Option<::std::string::String>,
     ) -> Self {
         Self {
@@ -10680,8 +10789,7 @@ Currently restricted to type: "object" at the root level.*/
 ///    "properties": {
 ///      "type": "object",
 ///      "additionalProperties": {
-///        "type": "object",
-///        "additionalProperties": true
+///        "$ref": "#/$defs/JSONValue"
 ///      }
 ///    },
 ///    "required": {
@@ -10701,9 +10809,7 @@ Currently restricted to type: "object" at the root level.*/
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ToolOutputSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub properties: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-    >,
+    pub properties: ::std::option::Option<::std::collections::HashMap<::std::string::String, JsonValue>>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "$schema", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -10714,12 +10820,7 @@ pub struct ToolOutputSchema {
 impl ToolOutputSchema {
     pub fn new(
         required: ::std::vec::Vec<::std::string::String>,
-        properties: ::std::option::Option<
-            ::std::collections::HashMap<
-                ::std::string::String,
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            >,
-        >,
+        properties: ::std::option::Option<::std::collections::HashMap<::std::string::String, JsonValue>>,
         schema: ::std::option::Option<::std::string::String>,
     ) -> Self {
         Self {
@@ -11862,6 +11963,11 @@ impl From<ListToolsResult> for GenericResult {
 }
 impl From<CallToolResult> for GenericResult {
     fn from(value: CallToolResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<CreateTaskResult> for GenericResult {
+    fn from(value: CreateTaskResult) -> Self {
         into_result(value)
     }
 }

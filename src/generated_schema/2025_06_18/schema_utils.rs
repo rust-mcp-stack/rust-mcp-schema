@@ -131,6 +131,14 @@ impl Hash for RequestId {
     }
 }
 
+impl core::fmt::Display for RequestId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match *self {
+            RequestId::String(ref s) => write!(f, "{}", s),
+            RequestId::Integer(i) => write!(f, "{}", i),
+        }
+    }
+}
 //*******************//
 //** ClientMessage **//
 //*******************//
