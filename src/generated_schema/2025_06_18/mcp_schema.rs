@@ -579,7 +579,7 @@ pub struct ClientCapabilities {
     ///Experimental, non-standard capabilities that the client supports.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub experimental: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ::std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub roots: ::std::option::Option<ClientCapabilitiesRoots>,
@@ -1056,7 +1056,7 @@ pub struct CompleteRequestParamsArgument {
 pub struct CompleteRequestParamsContext {
     ///Previously-resolved variables in a URI template or prompt.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub arguments: ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
+    pub arguments: ::std::option::Option<::std::collections::BTreeMap<::std::string::String, ::std::string::String>>,
 }
 ///CompleteRequestParamsRef
 ///
@@ -1738,7 +1738,7 @@ Only top-level properties are allowed, without nesting.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ElicitRequestedSchema {
-    pub properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
+    pub properties: ::std::collections::BTreeMap<::std::string::String, PrimitiveSchemaDefinition>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "type", deserialize_with = "validate::elicit_requested_schema_type_")]
@@ -1746,7 +1746,7 @@ pub struct ElicitRequestedSchema {
 }
 impl ElicitRequestedSchema {
     pub fn new(
-        properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
+        properties: ::std::collections::BTreeMap<::std::string::String, PrimitiveSchemaDefinition>,
         required: ::std::vec::Vec<::std::string::String>,
     ) -> Self {
         Self {
@@ -1813,7 +1813,7 @@ pub struct ElicitResult {
     /**The submitted form data, only present when action is "accept".
     Contains values matching the requested schema.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub content: ::std::option::Option<::std::collections::HashMap<::std::string::String, ElicitResultContentValue>>,
+    pub content: ::std::option::Option<::std::collections::BTreeMap<::std::string::String, ElicitResultContentValue>>,
     ///See [General fields: _meta](/specification/2025-06-18/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
@@ -2169,7 +2169,7 @@ impl GetPromptRequest {
 pub struct GetPromptRequestParams {
     ///Arguments to use for templating the prompt.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub arguments: ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
+    pub arguments: ::std::option::Option<::std::collections::BTreeMap<::std::string::String, ::std::string::String>>,
     ///The name of the prompt or prompt template.
     pub name: ::std::string::String,
 }
@@ -5771,7 +5771,7 @@ pub struct ServerCapabilities {
     ///Experimental, non-standard capabilities that the server supports.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub experimental: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ::std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     ///Present if the server supports sending log messages to the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -6702,7 +6702,7 @@ pub struct ToolAnnotations {
 pub struct ToolInputSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub properties: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ::std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
@@ -6713,7 +6713,7 @@ impl ToolInputSchema {
     pub fn new(
         required: ::std::vec::Vec<::std::string::String>,
         properties: ::std::option::Option<
-            ::std::collections::HashMap<
+            ::std::collections::BTreeMap<
                 ::std::string::String,
                 ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             >,
@@ -6848,7 +6848,7 @@ the structuredContent field of a CallToolResult.*/
 pub struct ToolOutputSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub properties: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ::std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
@@ -6859,7 +6859,7 @@ impl ToolOutputSchema {
     pub fn new(
         required: ::std::vec::Vec<::std::string::String>,
         properties: ::std::option::Option<
-            ::std::collections::HashMap<
+            ::std::collections::BTreeMap<
                 ::std::string::String,
                 ::serde_json::Map<::std::string::String, ::serde_json::Value>,
             >,

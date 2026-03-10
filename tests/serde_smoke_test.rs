@@ -15,7 +15,7 @@ mod test_deserialize {
     use serde::{Deserialize, Serialize};
     use serde_json::json;
     use serde_json::{Map, Value};
-    use std::collections::HashMap;
+    use std::collections::BTreeMap;
 
     /* ---------------------- TESTS ---------------------- */
 
@@ -209,7 +209,7 @@ mod test_deserialize {
         let capabilities = ClientCapabilities {
             #[cfg(any(feature = "draft", feature = "2025_06_18"))]
             elicitation: Some(Map::new()),
-            experimental: Some(HashMap::new()),
+            experimental: Some(BTreeMap::new()),
             roots: Some(ClientCapabilitiesRoots::default()),
             sampling: Some(Map::new()),
         };
@@ -358,7 +358,7 @@ mod test_deserialize {
     fn test_elicit_request() {
         let params = ElicitRequestParams {
             message: "test".to_string(),
-            requested_schema: ElicitRequestedSchema::new(HashMap::new(), vec![]),
+            requested_schema: ElicitRequestedSchema::new(BTreeMap::new(), vec![]),
         };
 
         let req = ElicitRequest::new(
