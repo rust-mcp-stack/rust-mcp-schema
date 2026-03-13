@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.6...v0.10.0) (2026-03-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* using BTreeMap for deterministic serialization ([#108](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/108))
+
+### Features
+
+* using BTreeMap for deterministic serialization ([#108](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/108)) ([3401552](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/3401552e3f3a8200b2adad728254af9d80ff6c74))
+
 ## [0.9.6](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.5...v0.9.6) (2026-03-10)
 
 
