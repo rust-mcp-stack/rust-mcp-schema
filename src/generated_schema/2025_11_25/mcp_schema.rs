@@ -7,8 +7,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : e14831553a82c059d6e2fc866084b26e82ae791a
-/// Generated at : 2026-03-10 19:10:30
+/// Hash : 9e7768c802b606e2d3dc4ebdaeaf07c40f943054
+/// Generated at : 2026-03-12 21:06:20
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
@@ -871,7 +871,7 @@ pub struct ClientCapabilities {
     ///Experimental, non-standard capabilities that the client supports.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub experimental: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub roots: ::std::option::Option<ClientRoots>,
@@ -1555,7 +1555,7 @@ pub struct CompleteRequestArgument {
 pub struct CompleteRequestContext {
     ///Previously-resolved variables in a URI template or prompt.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub arguments: ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
+    pub arguments: ::std::option::Option<std::collections::BTreeMap<::std::string::String, ::std::string::String>>,
 }
 ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
 ///
@@ -2333,7 +2333,7 @@ Only top-level properties are allowed, without nesting.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ElicitFormSchema {
-    pub properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
+    pub properties: std::collections::BTreeMap<::std::string::String, PrimitiveSchemaDefinition>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "$schema", default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2343,7 +2343,7 @@ pub struct ElicitFormSchema {
 }
 impl ElicitFormSchema {
     pub fn new(
-        properties: ::std::collections::HashMap<::std::string::String, PrimitiveSchemaDefinition>,
+        properties: std::collections::BTreeMap<::std::string::String, PrimitiveSchemaDefinition>,
         required: ::std::vec::Vec<::std::string::String>,
         schema: ::std::option::Option<::std::string::String>,
     ) -> Self {
@@ -2752,7 +2752,7 @@ pub struct ElicitResult {
     Contains values matching the requested schema.
     Omitted for out-of-band mode responses.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub content: ::std::option::Option<::std::collections::HashMap<::std::string::String, ElicitResultContent>>,
+    pub content: ::std::option::Option<std::collections::BTreeMap<::std::string::String, ElicitResultContent>>,
     ///See [General fields: _meta](https://modelcontextprotocol.io/specification/2025-11-25/basic/index#meta) for notes on _meta usage.
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
@@ -3279,7 +3279,7 @@ impl GetPromptRequest {
 pub struct GetPromptRequestParams {
     ///Arguments to use for templating the prompt.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub arguments: ::std::option::Option<::std::collections::HashMap<::std::string::String, ::std::string::String>>,
+    pub arguments: ::std::option::Option<std::collections::BTreeMap<::std::string::String, ::std::string::String>>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<GetPromptMeta>,
     ///The name of the prompt or prompt template.
@@ -7850,7 +7850,7 @@ pub struct ServerCapabilities {
     ///Experimental, non-standard capabilities that the server supports.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub experimental: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     ///Present if the server supports sending log messages to the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -9951,7 +9951,7 @@ impl ::std::fmt::Display for ToolExecutionTaskSupport {
 pub struct ToolInputSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub properties: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
@@ -9964,10 +9964,7 @@ impl ToolInputSchema {
     pub fn new(
         required: ::std::vec::Vec<::std::string::String>,
         properties: ::std::option::Option<
-            ::std::collections::HashMap<
-                ::std::string::String,
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            >,
+            std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         >,
         schema: ::std::option::Option<::std::string::String>,
     ) -> Self {
@@ -10093,7 +10090,7 @@ Currently restricted to type: "object" at the root level.*/
 pub struct ToolOutputSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub properties: ::std::option::Option<
-        ::std::collections::HashMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     >,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
@@ -10106,10 +10103,7 @@ impl ToolOutputSchema {
     pub fn new(
         required: ::std::vec::Vec<::std::string::String>,
         properties: ::std::option::Option<
-            ::std::collections::HashMap<
-                ::std::string::String,
-                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-            >,
+            std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         >,
         schema: ::std::option::Option<::std::string::String>,
     ) -> Self {
