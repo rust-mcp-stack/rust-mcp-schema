@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.0...v0.10.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* incorrect NotificationFromServer method name mapping ([#111](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/111)) ([98054fe](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/98054feffb07c4da54e6ed13ceb5d4e3b549b929))
+
 ## [0.10.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.9.6...v0.10.0) (2026-03-13)
 
 
