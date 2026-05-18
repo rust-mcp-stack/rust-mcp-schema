@@ -317,7 +317,7 @@ impl RpcMessage for ClientMessage {
         }
     }
 
-     fn method(&self) -> Option<&str> {
+    fn method(&self) -> Option<&str> {
         match self {
             ClientMessage::Request(client_jsonrpc_request) => Some(client_jsonrpc_request.method()),
             ClientMessage::Notification(client_jsonrpc_notification) => Some(client_jsonrpc_notification.method()),
@@ -1505,14 +1505,18 @@ impl NotificationFromServer {
     pub fn method(&self) -> &str {
         match self {
             NotificationFromServer::CancelledNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ProgressNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ResourceListChangedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ResourceUpdatedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::PromptListChangedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ToolListChangedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::TaskStatusNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::LoggingMessageNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ElicitationCompleteNotification(_params) => CancelledNotification::method_value(),
+            NotificationFromServer::ProgressNotification(_params) => ProgressNotification::method_value(),
+            NotificationFromServer::ResourceListChangedNotification(_params) => {
+                ResourceListChangedNotification::method_value()
+            }
+            NotificationFromServer::ResourceUpdatedNotification(_params) => ResourceUpdatedNotification::method_value(),
+            NotificationFromServer::PromptListChangedNotification(_params) => PromptListChangedNotification::method_value(),
+            NotificationFromServer::ToolListChangedNotification(_params) => ToolListChangedNotification::method_value(),
+            NotificationFromServer::TaskStatusNotification(_params) => TaskStatusNotification::method_value(),
+            NotificationFromServer::LoggingMessageNotification(_params) => LoggingMessageNotification::method_value(),
+            NotificationFromServer::ElicitationCompleteNotification(_params) => {
+                ElicitationCompleteNotification::method_value()
+            }
             NotificationFromServer::CustomNotification(params) => params.method.as_str(),
         }
     }
@@ -2762,15 +2766,13 @@ impl ClientCapabilities {
                     return Err(create_error("sampling task", request_method));
                 }
             }
-            ServerJsonrpcRequest::ListRootsRequest(_) => {
-                if self.roots.is_none() {
-                    return Err(create_error("roots capability", request_method));
-                }
+            ServerJsonrpcRequest::ListRootsRequest(_) if self.roots.is_none() => {
+                return Err(create_error("roots capability", request_method));
             }
-            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_) => {
-                if self.tasks.is_none() {
-                    return Err(create_error("Task", request_method));
-                }
+            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_)
+                if self.tasks.is_none() =>
+            {
+                return Err(create_error("Task", request_method));
             }
             ServerJsonrpcRequest::CancelTaskRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
