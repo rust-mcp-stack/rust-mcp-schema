@@ -318,7 +318,7 @@ impl RpcMessage for ClientMessage {
         }
     }
 
-     fn method(&self) -> Option<&str> {
+    fn method(&self) -> Option<&str> {
         match self {
             ClientMessage::Request(client_jsonrpc_request) => Some(client_jsonrpc_request.method()),
             ClientMessage::Notification(client_jsonrpc_notification) => Some(client_jsonrpc_notification.method()),
@@ -1506,14 +1506,18 @@ impl NotificationFromServer {
     pub fn method(&self) -> &str {
         match self {
             NotificationFromServer::CancelledNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ProgressNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ResourceListChangedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ResourceUpdatedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::PromptListChangedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ToolListChangedNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::TaskStatusNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::LoggingMessageNotification(_params) => CancelledNotification::method_value(),
-            NotificationFromServer::ElicitationCompleteNotification(_params) => CancelledNotification::method_value(),
+            NotificationFromServer::ProgressNotification(_params) => ProgressNotification::method_value(),
+            NotificationFromServer::ResourceListChangedNotification(_params) => {
+                ResourceListChangedNotification::method_value()
+            }
+            NotificationFromServer::ResourceUpdatedNotification(_params) => ResourceUpdatedNotification::method_value(),
+            NotificationFromServer::PromptListChangedNotification(_params) => PromptListChangedNotification::method_value(),
+            NotificationFromServer::ToolListChangedNotification(_params) => ToolListChangedNotification::method_value(),
+            NotificationFromServer::TaskStatusNotification(_params) => TaskStatusNotification::method_value(),
+            NotificationFromServer::LoggingMessageNotification(_params) => LoggingMessageNotification::method_value(),
+            NotificationFromServer::ElicitationCompleteNotification(_params) => {
+                ElicitationCompleteNotification::method_value()
+            }
             NotificationFromServer::CustomNotification(params) => params.method.as_str(),
         }
     }
