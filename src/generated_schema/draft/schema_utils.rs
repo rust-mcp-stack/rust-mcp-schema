@@ -2767,15 +2767,13 @@ impl ClientCapabilities {
                     return Err(create_error("sampling task", request_method));
                 }
             }
-            ServerJsonrpcRequest::ListRootsRequest(_) => {
-                if self.roots.is_none() {
-                    return Err(create_error("roots capability", request_method));
-                }
+            ServerJsonrpcRequest::ListRootsRequest(_) if self.roots.is_none() => {
+                return Err(create_error("roots capability", request_method));
             }
-            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_) => {
-                if self.tasks.is_none() {
-                    return Err(create_error("Task", request_method));
-                }
+            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_)
+                if self.tasks.is_none() =>
+            {
+                return Err(create_error("Task", request_method));
             }
             ServerJsonrpcRequest::CancelTaskRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
