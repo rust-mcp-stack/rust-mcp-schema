@@ -23,12 +23,8 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Release Please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
-          release-type: rust
-          pull-request-header: ":robot: Automated release created! :rocket:"
-          bump-minor-pre-major: true
-          bump-patch-for-minor-pre-major: true
-          extra-files: |
-            README.md
           token: ${{ secrets.RP_SECRET }}
+          config-file: .release-config.json
+          manifest-file: .release-manifest.json
