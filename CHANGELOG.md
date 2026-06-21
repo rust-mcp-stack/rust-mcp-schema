@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.1...v0.10.2) (2026-06-21)
+
+
+### 🐛 Bug Fixes
+
+* Use f64 for numeric schema fields ([#113](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/113)) ([9459ed8](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/9459ed8add99d09f37b23f5007cdbaa5e5bb55c0))
+
 ## [0.10.1](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.0...v0.10.1) (2026-05-18)
 
 
