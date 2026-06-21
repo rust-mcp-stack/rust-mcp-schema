@@ -2418,9 +2418,9 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
                 ))
             }
             "number" | "integer" => {
-                let maximum = value.get("maximum").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
-                let minimum = value.get("minimum").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
-                let default = value.get("default").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
+                let maximum = value.get("maximum").and_then(|v| v.as_number().and_then(|n| n.as_f64()));
+                let minimum = value.get("minimum").and_then(|v| v.as_number().and_then(|n| n.as_f64()));
+                let default = value.get("default").and_then(|v| v.as_number().and_then(|n| n.as_f64()));
 
                 PrimitiveSchemaDefinition::NumberSchema(NumberSchema {
                     default,
