@@ -5609,13 +5609,13 @@ pub struct NotificationParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct NumberSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub default: ::std::option::Option<i64>,
+    pub default: ::std::option::Option<f64>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub maximum: ::std::option::Option<i64>,
+    pub maximum: ::std::option::Option<f64>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub minimum: ::std::option::Option<i64>,
+    pub minimum: ::std::option::Option<f64>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<::std::string::String>,
     #[serde(rename = "type")]
