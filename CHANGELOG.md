@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.2...v0.10.3) (2026-06-24)
+
+
+### 🚀 Features
+
+* Add `ContentBlock` embedded resource helpers and fix `NumberSchema` field types ([#115](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/115)) ([c63a2db](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/c63a2dba1dbe82472501c6841d7847003d4fbc35))
+
 ## [0.10.2](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.1...v0.10.2) (2026-06-21)
 
 
