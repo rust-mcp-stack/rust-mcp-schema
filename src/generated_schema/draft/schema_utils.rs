@@ -4218,6 +4218,42 @@ impl ContentBlock {
             ))),
         }
     }
+
+    /// Build a `ContentBlock::EmbeddedResource` carrying a text payload
+    /// (e.g. JSON, plain text, source code).
+    ///
+    /// Shortcut for:
+    /// ```ignore
+    /// EmbeddedResource::new(
+    ///     EmbeddedResourceResource::TextResourceContents(
+    ///         TextResourceContents::new(text, uri).with_mime_type(mime_type),
+    ///     ),
+    ///     None, None,
+    /// ).into()
+    /// ```
+    pub fn embedded_text_resource<U, M, T>(uri: U, mime_type: M, text: T) -> Self
+    where
+        U: Into<String>,
+        M: Into<String>,
+        T: Into<String>,
+    {
+        let trc = TextResourceContents::new(text.into(), uri.into()).with_mime_type(mime_type.into());
+        EmbeddedResource::new(EmbeddedResourceResource::TextResourceContents(trc), None, None).into()
+    }
+
+    /// Build a `ContentBlock::EmbeddedResource` carrying a base64-encoded
+    /// binary payload (images, audio, arbitrary file blobs).
+    ///
+    /// `base64_data` must already be base64-encoded.
+    pub fn embedded_blob_resource<U, M, D>(uri: U, mime_type: M, base64_data: D) -> Self
+    where
+        U: Into<String>,
+        M: Into<String>,
+        D: Into<String>,
+    {
+        let brc = BlobResourceContents::new(base64_data.into(), uri.into()).with_mime_type(mime_type.into());
+        EmbeddedResource::new(EmbeddedResourceResource::BlobResourceContents(brc), None, None).into()
+    }
 }
 impl CallToolResult {
     pub fn text_content(content: Vec<TextContent>) -> Self {
