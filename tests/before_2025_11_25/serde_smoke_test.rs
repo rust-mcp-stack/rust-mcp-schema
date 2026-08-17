@@ -4,9 +4,9 @@ mod test_deserialize {
     use rust_mcp_schema::mcp_2025_06_18::*;
 
     #[cfg(feature = "2024_11_05")]
-    use rust_mcp_schema::mcp_2024_11_05::*;
-    #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::CreateMessageResultContent as CreateMessageContent;
+    #[cfg(feature = "2024_11_05")]
+    use rust_mcp_schema::mcp_2024_11_05::*;
 
     #[cfg(feature = "2025_03_26")]
     use rust_mcp_schema::mcp_2025_03_26::*;

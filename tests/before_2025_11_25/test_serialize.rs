@@ -4,9 +4,9 @@ use std::vec;
 #[cfg(feature = "2024_11_05")]
 use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
 #[cfg(feature = "2024_11_05")]
-use rust_mcp_schema::mcp_2024_11_05::*;
-#[cfg(feature = "2024_11_05")]
 use rust_mcp_schema::mcp_2024_11_05::CreateMessageResultContent as CreateMessageContent;
+#[cfg(feature = "2024_11_05")]
+use rust_mcp_schema::mcp_2024_11_05::*;
 
 #[cfg(feature = "2025_06_18")]
 use rust_mcp_schema::mcp_2025_06_18::schema_utils::*;
