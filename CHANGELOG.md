@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.3...v1.0.0) (2026-08-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove deprecated items for v1.0.0 ([#117](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/117))
+
+### ⚙️ Miscellaneous Chores
+
+* Remove deprecated items for v1.0.0 ([#117](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/117)) ([1483956](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/14839562de67aca3f4dfc9b6f367d43ede3b75f6))
+
 ## [0.10.3](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.2...v0.10.3) (2026-06-24)
 
 
