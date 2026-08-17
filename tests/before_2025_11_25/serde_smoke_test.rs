@@ -5,6 +5,8 @@ mod test_deserialize {
 
     #[cfg(feature = "2024_11_05")]
     use rust_mcp_schema::mcp_2024_11_05::*;
+    #[cfg(feature = "2024_11_05")]
+    use rust_mcp_schema::mcp_2024_11_05::CreateMessageResultContent as CreateMessageContent;
 
     #[cfg(feature = "2025_03_26")]
     use rust_mcp_schema::mcp_2025_03_26::*;
@@ -218,7 +220,7 @@ mod test_deserialize {
             #[cfg(any(feature = "draft", feature = "2025_06_18"))]
             elicitation: Some(Map::new()),
             experimental: Some(BTreeMap::new()),
-            roots: Some(ClientCapabilitiesRoots::default()),
+            roots: Some(ClientRoots::default()),
             sampling: Some(Map::new()),
         };
         test_serde(&capabilities);
@@ -230,13 +232,13 @@ mod test_deserialize {
 
     #[test]
     fn test_client_capabilities_roots() {
-        let roots = ClientCapabilitiesRoots {
+        let roots = ClientRoots {
             list_changed: Some(true),
         };
         test_serde(&roots);
 
         // Edge case: empty
-        let roots_empty = ClientCapabilitiesRoots::default();
+        let roots_empty = ClientRoots::default();
         test_serde(&roots_empty);
     }
 
@@ -267,7 +269,7 @@ mod test_deserialize {
     #[test]
     fn test_client_result() {
         let result = ClientResult::CreateMessageResult(CreateMessageResult {
-            content: CreateMessageResultContent::TextContent(TextContent::new(
+            content: CreateMessageContent::TextContent(TextContent::new(
                 "test".to_string(),
                 None,
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
@@ -352,7 +354,7 @@ mod test_deserialize {
     #[test]
     fn test_create_message_result() {
         let result = CreateMessageResult {
-            content: CreateMessageResultContent::TextContent(TextContent::new(
+            content: CreateMessageContent::TextContent(TextContent::new(
                 "test".to_string(),
                 None,
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
@@ -758,7 +760,7 @@ mod test_deserialize {
     fn test_read_resource_result() {
         let result = ReadResourceResult {
             meta: None,
-            contents: vec![ReadResourceResultContentsItem::TextResourceContents(TextResourceContents {
+            contents: vec![ReadResourceContent::TextResourceContents(TextResourceContents {
                 #[cfg(any(feature = "draft", feature = "2025_06_18"))]
                 meta: None,
                 mime_type: None,

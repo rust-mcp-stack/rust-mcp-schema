@@ -8,8 +8,6 @@ run_clippy = [
     "--fix",
     "--allow-dirty",
     "--",
-    "-A",
-    "deprecated",
     "-D",
     "warnings",
 ]

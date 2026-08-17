@@ -1915,10 +1915,6 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
     }
 }
 
-#[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
-pub type RPCMessage = ();
-#[deprecated(since = "0.4.0", note = "This trait was renamed to McpMessage. Use McpMessage instead.")]
-pub type MCPMessage = ();
 
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {

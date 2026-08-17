@@ -12,7 +12,7 @@ COMMON_FEATURES_STR="${COMMON_FEATURES[*]}"
 run_clippy() {
     local target_flag="$1"  # "" for default, "--bins", "--tests", "--examples"
     echo "🚀 Running Clippy $target_flag with features \"$COMMON_FEATURES_STR $FEATURE\""
-    cargo clippy $target_flag --no-default-features --features "$COMMON_FEATURES_STR $FEATURE" -- -A deprecated -D warnings
+    cargo clippy $target_flag --no-default-features --features "$COMMON_FEATURES_STR $FEATURE" -- -D warnings
 
     if [ $? -ne 0 ]; then
         echo "❌ Clippy failed for $target_flag with features \"$COMMON_FEATURES_STR $FEATURE\""
