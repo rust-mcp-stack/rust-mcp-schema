@@ -4,6 +4,8 @@ use std::vec;
 #[cfg(feature = "2024_11_05")]
 use rust_mcp_schema::mcp_2024_11_05::schema_utils::*;
 #[cfg(feature = "2024_11_05")]
+use rust_mcp_schema::mcp_2024_11_05::CreateMessageResultContent as CreateMessageContent;
+#[cfg(feature = "2024_11_05")]
 use rust_mcp_schema::mcp_2024_11_05::*;
 
 #[cfg(feature = "2025_06_18")]
@@ -240,7 +242,7 @@ fn test_client_custom_request() {
 #[test]
 fn test_list_tools_result() {
     let client_result = ClientResult::CreateMessageResult(CreateMessageResult {
-        content: CreateMessageResultContent::TextContent(TextContent::new(
+        content: CreateMessageContent::TextContent(TextContent::new(
             "This is a stub response.".to_string(),
             None,
             #[cfg(any(feature = "draft", feature = "2025_06_18"))]
