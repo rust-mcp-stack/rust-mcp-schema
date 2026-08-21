@@ -4,7 +4,7 @@
 COMMON_FEATURES=("schema_utils")
 
 # schema versions features (tested one at a time)
-SCHEMA_VERSION_FEATURES=("2025_11_25" "2025_06_18" "2025_03_26" "2024_11_05" "draft")
+SCHEMA_VERSION_FEATURES=("2025_11_25" "2025_06_18" "2025_03_26" "2024_11_05" "2026_07_28" "draft")
 
 # space-separated string
 COMMON_FEATURES_STR="${COMMON_FEATURES[*]}"
@@ -27,8 +27,8 @@ for FEATURE in "${SCHEMA_VERSION_FEATURES[@]}"; do
     # Run lib + bin + integration tests (NO examples)
     run_nextest "--lib --bins --tests"
 
-    # Run example tests only for 2025_11_25
-    if [ "$FEATURE" == "2025_11_25" ]; then
+    # Run example tests only for 2026_07_28
+    if [ "$FEATURE" == "2026_07_28" ]; then
         run_nextest "--examples"
     fi
 done

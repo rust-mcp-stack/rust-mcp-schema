@@ -7,13 +7,13 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 9e7768c802b606e2d3dc4ebdaeaf07c40f943054
-/// Generated at : 2026-03-12 21:06:21
+/// Hash : 4e67bdc2f3403a8602f72025b28ac27fe7fd4e44
+/// Generated at : 2026-08-21 20:10:25
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
 /// MCP Protocol Version
-pub const LATEST_PROTOCOL_VERSION: &str = "DRAFT-2026-v1";
+pub const LATEST_PROTOCOL_VERSION: &str = "2026-07-28";
 /// JSON-RPC Version
 pub const JSONRPC_VERSION: &str = "2.0";
 /// Parse error. Invalid JSON was received. An error occurred while parsing the JSON text.
@@ -26,8 +26,12 @@ pub const METHOD_NOT_FOUND: i64 = -32601i64;
 pub const INVALID_PARAMS: i64 = -32602i64;
 /// Internal error. Internal JSON-RPC error.
 pub const INTERNAL_ERROR: i64 = -32603i64;
-/// The server cannot proceed without additional client input.
-pub const URL_ELICITATION_REQUIRED: i64 = -32042i64;
+///HEADER_MISMATCH
+pub const HEADER_MISMATCH: i64 = -32020i64;
+///MISSING_REQUIRED_CLIENT_CAPABILITY
+pub const MISSING_REQUIRED_CLIENT_CAPABILITY: i64 = -32021i64;
+///UNSUPPORTED_PROTOCOL_VERSION
+pub const UNSUPPORTED_PROTOCOL_VERSION: i64 = -32022i64;
 ///Optional annotations for the client. The client can use annotations to inform how objects are used or displayed
 ///
 /// <details><summary>JSON schema</summary>
@@ -148,6 +152,10 @@ impl AudioContent {
     pub fn type_value() -> &'static str {
         "audio"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "audio"
+    }
 }
 ///Base interface for metadata with name (identifier) and title (display name) properties.
 ///
@@ -173,7 +181,7 @@ impl AudioContent {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct BaseMetadata {
     ///Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).
     pub name: ::std::string::String,
@@ -218,7 +226,7 @@ pub struct BaseMetadata {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct BlobResourceContents {
     ///A base64-encoded string representing the binary data of the item.
     pub blob: ::std::string::String,
@@ -289,6 +297,119 @@ impl BooleanSchema {
     pub fn type_value() -> &'static str {
         "boolean"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "boolean"
+    }
+}
+///A result that supports a time-to-live (TTL) hint for client-side caching.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "A result that supports a time-to-live (TTL) hint for client-side caching.",
+///  "type": "object",
+///  "required": [
+///    "cacheScope",
+///    "resultType",
+///    "ttlMs"
+///  ],
+///  "properties": {
+///    "_meta": {
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct CacheableResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: CacheableResultCacheScope,
+    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum CacheableResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for CacheableResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
 }
 ///Used by the client to invoke a tool provided by the server.
 ///
@@ -351,6 +472,10 @@ impl CallToolRequest {
     pub fn method_value() -> &'static str {
         "tools/call"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "tools/call"
+    }
 }
 ///Parameters for a tools/call request.
 ///
@@ -361,6 +486,7 @@ impl CallToolRequest {
 ///  "description": "Parameters for a tools/call request.",
 ///  "type": "object",
 ///  "required": [
+///    "_meta",
 ///    "name"
 ///  ],
 ///  "properties": {
@@ -372,13 +498,15 @@ impl CallToolRequest {
 ///      "type": "object",
 ///      "additionalProperties": {}
 ///    },
+///    "inputResponses": {
+///      "$ref": "#/$defs/InputResponses"
+///    },
 ///    "name": {
 ///      "description": "The name of the tool.",
 ///      "type": "string"
 ///    },
-///    "task": {
-///      "description": "If specified, the caller is requesting task-augmented execution for this request.\nThe request will return a {@link CreateTaskResult} immediately, and the actual result can be\nretrieved later via {@link GetTaskPayloadRequesttasks/result}.\n\nTask augmentation is subject to capability negotiation - receivers MUST declare support\nfor task augmentation of specific request types in their capabilities.",
-///      "$ref": "#/$defs/TaskMetadata"
+///    "requestState": {
+///      "type": "string"
 ///    }
 ///  }
 ///}
@@ -389,17 +517,14 @@ pub struct CallToolRequestParams {
     ///Arguments to use for the tool call.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub arguments: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "inputResponses", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub input_responses: ::std::option::Option<InputResponses>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
     ///The name of the tool.
     pub name: ::std::string::String,
-    /**If specified, the caller is requesting task-augmented execution for this request.
-    The request will return a {@link CreateTaskResult} immediately, and the actual result can be
-    retrieved later via {@link GetTaskPayloadRequesttasks/result}.
-    Task augmentation is subject to capability negotiation - receivers MUST declare support
-    for task augmentation of specific request types in their capabilities.*/
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub task: ::std::option::Option<TaskMetadata>,
+    #[serde(rename = "requestState", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub request_state: ::std::option::Option<::std::string::String>,
 }
 ///The result returned by the server for a {@link CallToolRequesttools/call} request.
 ///
@@ -410,11 +535,12 @@ pub struct CallToolRequestParams {
 ///  "description": "The result returned by the server for a {@link CallToolRequesttools/call} request.",
 ///  "type": "object",
 ///  "required": [
-///    "content"
+///    "content",
+///    "resultType"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
 ///    },
 ///    "content": {
 ///      "description": "A list of content objects that represent the unstructured result of the tool call.",
@@ -427,10 +553,12 @@ pub struct CallToolRequestParams {
 ///      "description": "Whether the tool call ended in an error.\n\nIf not set, this is assumed to be false (the call was successful).\n\nAny errors that originate from the tool SHOULD be reported inside the result\nobject, with isError set to true, _not_ as an MCP protocol-level error\nresponse. Otherwise, the LLM would not be able to see that an error occurred\nand self-correct.\n\nHowever, any errors in _finding_ the tool, an error indicating that the\nserver does not support tool calls, or any other exceptional conditions,\nshould be reported as an MCP error response.",
 ///      "type": "boolean"
 ///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
 ///    "structuredContent": {
-///      "description": "An optional JSON object that represents the structured result of the tool call.",
-///      "type": "object",
-///      "additionalProperties": {}
+///      "description": "An optional JSON value that represents the structured result of the tool call.\n\nThis can be any JSON value (object, array, string, number, boolean, or null)\nthat conforms to the tool's outputSchema if one is defined."
 ///    }
 ///  }
 ///}
@@ -452,14 +580,24 @@ pub struct CallToolResult {
     #[serde(rename = "isError", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub is_error: ::std::option::Option<bool>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    ///An optional JSON object that represents the structured result of the tool call.
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**An optional JSON value that represents the structured result of the tool call.
+    This can be any JSON value (object, array, string, number, boolean, or null)
+    that conforms to the tool's outputSchema if one is defined.*/
     #[serde(
         rename = "structuredContent",
         default,
         skip_serializing_if = "::std::option::Option::is_none"
     )]
-    pub structured_content: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub structured_content: ::std::option::Option<::serde_json::Value>,
 }
 ///A successful response from the server for a {@link CallToolRequesttools/call} request.
 ///
@@ -483,7 +621,14 @@ pub struct CallToolResult {
 ///      "const": "2.0"
 ///    },
 ///    "result": {
-///      "$ref": "#/$defs/CallToolResult"
+///      "anyOf": [
+///        {
+///          "$ref": "#/$defs/InputRequiredResult"
+///        },
+///        {
+///          "$ref": "#/$defs/CallToolResult"
+///        }
+///      ]
 ///    }
 ///  }
 ///}
@@ -494,10 +639,10 @@ pub struct CallToolResultResponse {
     pub id: RequestId,
     #[serde(deserialize_with = "validate::call_tool_result_response_jsonrpc")]
     jsonrpc: ::std::string::String,
-    pub result: CallToolResult,
+    pub result: CallToolResultResponseResult,
 }
 impl CallToolResultResponse {
-    pub fn new(id: RequestId, result: CallToolResult) -> Self {
+    pub fn new(id: RequestId, result: CallToolResultResponseResult) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -508,197 +653,49 @@ impl CallToolResultResponse {
         &self.jsonrpc
     }
 }
-///CancelTaskParams
+///CallToolResultResponseResult
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "type": "object",
-///  "required": [
-///    "taskId"
-///  ],
-///  "properties": {
-///    "taskId": {
-///      "description": "The task identifier to cancel.",
-///      "type": "string"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CancelTaskParams {
-    ///The task identifier to cancel.
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-}
-///A request to cancel a task.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A request to cancel a task.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "tasks/cancel"
-///    },
-///    "params": {
-///      "type": "object",
-///      "required": [
-///        "taskId"
-///      ],
-///      "properties": {
-///        "taskId": {
-///          "description": "The task identifier to cancel.",
-///          "type": "string"
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CancelTaskRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::cancel_task_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::cancel_task_request_method")]
-    method: ::std::string::String,
-    pub params: CancelTaskParams,
-}
-impl CancelTaskRequest {
-    pub fn new(id: RequestId, params: CancelTaskParams) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "tasks/cancel".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "tasks/cancel"
-    pub fn method_value() -> &'static str {
-        "tasks/cancel"
-    }
-}
-///The result returned for a {@link CancelTaskRequesttasks/cancel} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The result returned for a {@link CancelTaskRequesttasks/cancel} request.",
-///  "allOf": [
+///  "anyOf": [
 ///    {
-///      "$ref": "#/$defs/Result"
+///      "$ref": "#/$defs/InputRequiredResult"
 ///    },
 ///    {
-///      "$ref": "#/$defs/Task"
+///      "$ref": "#/$defs/CallToolResult"
 ///    }
 ///  ]
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CancelTaskResult {
-    #[serde(rename = "createdAt")]
-    pub created_at: ::std::string::String,
-    #[serde(rename = "lastUpdatedAt")]
-    pub last_updated_at: ::std::string::String,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    #[serde(rename = "pollInterval", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub poll_interval: ::std::option::Option<i64>,
-    pub status: TaskStatus,
-    #[serde(rename = "statusMessage", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub status_message: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-    pub ttl: i64,
-    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+#[serde(untagged)]
+pub enum CallToolResultResponseResult {
+    InputRequiredResult(InputRequiredResult),
+    CallToolResult(CallToolResult),
 }
-///A successful response for a {@link CancelTaskRequesttasks/cancel} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response for a {@link CancelTaskRequesttasks/cancel} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/CancelTaskResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CancelTaskResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::cancel_task_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: CancelTaskResult,
-}
-impl CancelTaskResultResponse {
-    pub fn new(id: RequestId, result: CancelTaskResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
+impl ::std::convert::From<InputRequiredResult> for CallToolResultResponseResult {
+    fn from(value: InputRequiredResult) -> Self {
+        Self::InputRequiredResult(value)
     }
 }
-/**This notification can be sent by either side to indicate that it is cancelling a previously-issued request.
+impl ::std::convert::From<CallToolResult> for CallToolResultResponseResult {
+    fn from(value: CallToolResult) -> Self {
+        Self::CallToolResult(value)
+    }
+}
+/**This notification is sent by the client to indicate that it is cancelling a request it previously issued.
+On stdio, the server also sends this notification, solely to terminate a {@link SubscriptionsListenRequestsubscriptions/listen} stream: it references the ID of the subscriptions/listen request that opened the stream. Servers MUST NOT use this notification to cancel any other request.
 The request SHOULD still be in-flight, but due to communication latency, it is always possible that this notification MAY arrive after the request has already finished.
-This notification indicates that the result will be unused, so any associated processing SHOULD cease.
-A client MUST NOT attempt to cancel its initialize request.
-For task cancellation, use the {@link CancelTaskRequesttasks/cancel} request instead of this notification.*/
+This notification indicates that the result will be unused, so any associated processing SHOULD cease.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "This notification can be sent by either side to indicate that it is cancelling a previously-issued request.\n\nThe request SHOULD still be in-flight, but due to communication latency, it is always possible that this notification MAY arrive after the request has already finished.\n\nThis notification indicates that the result will be unused, so any associated processing SHOULD cease.\n\nA client MUST NOT attempt to cancel its initialize request.\n\nFor task cancellation, use the {@link CancelTaskRequesttasks/cancel} request instead of this notification.",
+///  "description": "This notification is sent by the client to indicate that it is cancelling a request it previously issued.\n\nOn stdio, the server also sends this notification, solely to terminate a {@link SubscriptionsListenRequestsubscriptions/listen} stream: it references the ID of the subscriptions/listen request that opened the stream. Servers MUST NOT use this notification to cancel any other request.\n\nThe request SHOULD still be in-flight, but due to communication latency, it is always possible that this notification MAY arrive after the request has already finished.\n\nThis notification indicates that the result will be unused, so any associated processing SHOULD cease.",
 ///  "type": "object",
 ///  "required": [
 ///    "jsonrpc",
@@ -747,6 +744,10 @@ impl CancelledNotification {
     pub fn method_value() -> &'static str {
         "notifications/cancelled"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/cancelled"
+    }
 }
 ///Parameters for a notifications/cancelled notification.
 ///
@@ -756,16 +757,19 @@ impl CancelledNotification {
 ///{
 ///  "description": "Parameters for a notifications/cancelled notification.",
 ///  "type": "object",
+///  "required": [
+///    "requestId"
+///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/NotificationMetaObject"
 ///    },
 ///    "reason": {
 ///      "description": "An optional string describing the reason for the cancellation. This MAY be logged or presented to the user.",
 ///      "type": "string"
 ///    },
 ///    "requestId": {
-///      "description": "The ID of the request to cancel.\n\nThis MUST correspond to the ID of a request previously issued in the same direction.\nThis MUST be provided for cancelling non-task requests.\nThis MUST NOT be used for cancelling tasks (use the {@link CancelTaskRequesttasks/cancel} request instead).",
+///      "description": "The ID of the request to cancel.\n\nThis MUST correspond to the ID of a request the client previously issued.",
 ///      "$ref": "#/$defs/RequestId"
 ///    }
 ///  }
@@ -775,16 +779,14 @@ impl CancelledNotification {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct CancelledNotificationParams {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<NotificationMetaObject>,
     ///An optional string describing the reason for the cancellation. This MAY be logged or presented to the user.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub reason: ::std::option::Option<::std::string::String>,
     /**The ID of the request to cancel.
-    This MUST correspond to the ID of a request previously issued in the same direction.
-    This MUST be provided for cancelling non-task requests.
-    This MUST NOT be used for cancelling tasks (use the {@link CancelTaskRequesttasks/cancel} request instead).*/
-    #[serde(rename = "requestId", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub request_id: ::std::option::Option<RequestId>,
+    This MUST correspond to the ID of a request the client previously issued.*/
+    #[serde(rename = "requestId")]
+    pub request_id: RequestId,
 }
 ///Capabilities a client may support. Known capabilities are defined here, in this schema, but this is not a closed set: any client can define its own, additional capabilities.
 ///
@@ -815,22 +817,15 @@ pub struct CancelledNotificationParams {
 ///      }
 ///    },
 ///    "extensions": {
-///      "description": "Optional MCP extensions that the client supports. Keys are extension identifiers\n(e.g., \"io.modelcontextprotocol/oauth-client-credentials\"), and values are\nper-extension settings objects. An empty object indicates support with no settings.",
+///      "description": "Optional MCP extensions that the client supports. Keys are extension identifiers\n(e.g., \"io.modelcontextprotocol/oauth-client-credentials\"), and values are\nper-extension settings objects. An empty object indicates support with no settings.\n\nKeys MUST follow the {@link MetaObject_meta key naming rules}, with a\nmandatory prefix.",
 ///      "type": "object",
 ///      "additionalProperties": {
-///        "type": "object",
-///        "additionalProperties": true
+///        "$ref": "#/$defs/JSONObject"
 ///      }
 ///    },
 ///    "roots": {
 ///      "description": "Present if the client supports listing roots.",
-///      "type": "object",
-///      "properties": {
-///        "listChanged": {
-///          "description": "Whether the client supports notifications for changes to the roots list.",
-///          "type": "boolean"
-///        }
-///      }
+///      "type": "object"
 ///    },
 ///    "sampling": {
 ///      "description": "Present if the client supports sampling from an LLM.",
@@ -843,46 +838,6 @@ pub struct CancelledNotificationParams {
 ///        "tools": {
 ///          "description": "Whether the client supports tool use via tools and toolChoice parameters.",
 ///          "$ref": "#/$defs/JSONObject"
-///        }
-///      }
-///    },
-///    "tasks": {
-///      "description": "Present if the client supports task-augmented requests.",
-///      "type": "object",
-///      "properties": {
-///        "cancel": {
-///          "description": "Whether this client supports {@link CancelTaskRequesttasks/cancel}.",
-///          "$ref": "#/$defs/JSONObject"
-///        },
-///        "list": {
-///          "description": "Whether this client supports {@link ListTasksRequesttasks/list}.",
-///          "$ref": "#/$defs/JSONObject"
-///        },
-///        "requests": {
-///          "description": "Specifies which request types can be augmented with tasks.",
-///          "type": "object",
-///          "properties": {
-///            "elicitation": {
-///              "description": "Task support for elicitation-related requests.",
-///              "type": "object",
-///              "properties": {
-///                "create": {
-///                  "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///                  "$ref": "#/$defs/JSONObject"
-///                }
-///              }
-///            },
-///            "sampling": {
-///              "description": "Task support for sampling-related requests.",
-///              "type": "object",
-///              "properties": {
-///                "createMessage": {
-///                  "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///                  "$ref": "#/$defs/JSONObject"
-///                }
-///              }
-///            }
-///          }
 ///        }
 ///      }
 ///    }
@@ -899,17 +854,16 @@ pub struct ClientCapabilities {
     pub experimental: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonObject>>,
     /**Optional MCP extensions that the client supports. Keys are extension identifiers
     (e.g., "io.modelcontextprotocol/oauth-client-credentials"), and values are
-    per-extension settings objects. An empty object indicates support with no settings.*/
+    per-extension settings objects. An empty object indicates support with no settings.
+    Keys MUST follow the {@link MetaObject_meta key naming rules}, with a
+    mandatory prefix.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub extensions: ::std::option::Option<
-        std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-    >,
+    pub extensions: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonObject>>,
+    ///Present if the client supports listing roots.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub roots: ::std::option::Option<ClientRoots>,
+    pub roots: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub sampling: ::std::option::Option<ClientSampling>,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub tasks: ::std::option::Option<ClientTasks>,
 }
 ///Present if the client supports elicitation from the server.
 ///
@@ -937,64 +891,67 @@ pub struct ClientElicitation {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub url: ::std::option::Option<JsonObject>,
 }
-///ClientNotification
+/**This notification is sent by the client to indicate that it is cancelling a request it previously issued.
+On stdio, the server also sends this notification, solely to terminate a {@link SubscriptionsListenRequestsubscriptions/listen} stream: it references the ID of the subscriptions/listen request that opened the stream. Servers MUST NOT use this notification to cancel any other request.
+The request SHOULD still be in-flight, but due to communication latency, it is always possible that this notification MAY arrive after the request has already finished.
+This notification indicates that the result will be unused, so any associated processing SHOULD cease.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "anyOf": [
-///    {
-///      "$ref": "#/$defs/CancelledNotification"
+///  "description": "This notification is sent by the client to indicate that it is cancelling a request it previously issued.\n\nOn stdio, the server also sends this notification, solely to terminate a {@link SubscriptionsListenRequestsubscriptions/listen} stream: it references the ID of the subscriptions/listen request that opened the stream. Servers MUST NOT use this notification to cancel any other request.\n\nThe request SHOULD still be in-flight, but due to communication latency, it is always possible that this notification MAY arrive after the request has already finished.\n\nThis notification indicates that the result will be unused, so any associated processing SHOULD cease.",
+///  "type": "object",
+///  "required": [
+///    "jsonrpc",
+///    "method",
+///    "params"
+///  ],
+///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
 ///    },
-///    {
-///      "$ref": "#/$defs/InitializedNotification"
+///    "method": {
+///      "type": "string",
+///      "const": "notifications/cancelled"
 ///    },
-///    {
-///      "$ref": "#/$defs/ProgressNotification"
-///    },
-///    {
-///      "$ref": "#/$defs/TaskStatusNotification"
-///    },
-///    {
-///      "$ref": "#/$defs/RootsListChangedNotification"
+///    "params": {
+///      "$ref": "#/$defs/CancelledNotificationParams"
 ///    }
-///  ]
+///  }
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Serialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum ClientNotification {
-    CancelledNotification(CancelledNotification),
-    InitializedNotification(InitializedNotification),
-    ProgressNotification(ProgressNotification),
-    TaskStatusNotification(TaskStatusNotification),
-    RootsListChangedNotification(RootsListChangedNotification),
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct ClientNotification {
+    #[serde(deserialize_with = "validate::client_notification_jsonrpc")]
+    jsonrpc: ::std::string::String,
+    #[serde(deserialize_with = "validate::client_notification_method")]
+    method: ::std::string::String,
+    pub params: CancelledNotificationParams,
 }
-impl ::std::convert::From<CancelledNotification> for ClientNotification {
-    fn from(value: CancelledNotification) -> Self {
-        Self::CancelledNotification(value)
+impl ClientNotification {
+    pub fn new(params: CancelledNotificationParams) -> Self {
+        Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
+            method: "notifications/cancelled".to_string(),
+            params,
+        }
     }
-}
-impl ::std::convert::From<InitializedNotification> for ClientNotification {
-    fn from(value: InitializedNotification) -> Self {
-        Self::InitializedNotification(value)
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
     }
-}
-impl ::std::convert::From<ProgressNotification> for ClientNotification {
-    fn from(value: ProgressNotification) -> Self {
-        Self::ProgressNotification(value)
+    pub fn method(&self) -> &::std::string::String {
+        &self.method
     }
-}
-impl ::std::convert::From<TaskStatusNotification> for ClientNotification {
-    fn from(value: TaskStatusNotification) -> Self {
-        Self::TaskStatusNotification(value)
+    /// returns "notifications/cancelled"
+    pub fn method_value() -> &'static str {
+        "notifications/cancelled"
     }
-}
-impl ::std::convert::From<RootsListChangedNotification> for ClientNotification {
-    fn from(value: RootsListChangedNotification) -> Self {
-        Self::RootsListChangedNotification(value)
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/cancelled"
     }
 }
 ///ClientRequest
@@ -1005,10 +962,7 @@ impl ::std::convert::From<RootsListChangedNotification> for ClientNotification {
 ///{
 ///  "anyOf": [
 ///    {
-///      "$ref": "#/$defs/InitializeRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/PingRequest"
+///      "$ref": "#/$defs/DiscoverRequest"
 ///    },
 ///    {
 ///      "$ref": "#/$defs/ListResourcesRequest"
@@ -1020,10 +974,7 @@ impl ::std::convert::From<RootsListChangedNotification> for ClientNotification {
 ///      "$ref": "#/$defs/ReadResourceRequest"
 ///    },
 ///    {
-///      "$ref": "#/$defs/SubscribeRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/UnsubscribeRequest"
+///      "$ref": "#/$defs/SubscriptionsListenRequest"
 ///    },
 ///    {
 ///      "$ref": "#/$defs/ListPromptsRequest"
@@ -1038,21 +989,6 @@ impl ::std::convert::From<RootsListChangedNotification> for ClientNotification {
 ///      "$ref": "#/$defs/CallToolRequest"
 ///    },
 ///    {
-///      "$ref": "#/$defs/GetTaskRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/GetTaskPayloadRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/CancelTaskRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/ListTasksRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/SetLevelRequest"
-///    },
-///    {
 ///      "$ref": "#/$defs/CompleteRequest"
 ///    }
 ///  ]
@@ -1062,32 +998,20 @@ impl ::std::convert::From<RootsListChangedNotification> for ClientNotification {
 #[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum ClientRequest {
-    InitializeRequest(InitializeRequest),
-    PingRequest(PingRequest),
+    DiscoverRequest(DiscoverRequest),
     ListResourcesRequest(ListResourcesRequest),
     ListResourceTemplatesRequest(ListResourceTemplatesRequest),
     ReadResourceRequest(ReadResourceRequest),
-    SubscribeRequest(SubscribeRequest),
-    UnsubscribeRequest(UnsubscribeRequest),
+    SubscriptionsListenRequest(SubscriptionsListenRequest),
     ListPromptsRequest(ListPromptsRequest),
     GetPromptRequest(GetPromptRequest),
     ListToolsRequest(ListToolsRequest),
     CallToolRequest(CallToolRequest),
-    GetTaskRequest(GetTaskRequest),
-    GetTaskPayloadRequest(GetTaskPayloadRequest),
-    CancelTaskRequest(CancelTaskRequest),
-    ListTasksRequest(ListTasksRequest),
-    SetLevelRequest(SetLevelRequest),
     CompleteRequest(CompleteRequest),
 }
-impl ::std::convert::From<InitializeRequest> for ClientRequest {
-    fn from(value: InitializeRequest) -> Self {
-        Self::InitializeRequest(value)
-    }
-}
-impl ::std::convert::From<PingRequest> for ClientRequest {
-    fn from(value: PingRequest) -> Self {
-        Self::PingRequest(value)
+impl ::std::convert::From<DiscoverRequest> for ClientRequest {
+    fn from(value: DiscoverRequest) -> Self {
+        Self::DiscoverRequest(value)
     }
 }
 impl ::std::convert::From<ListResourcesRequest> for ClientRequest {
@@ -1105,14 +1029,9 @@ impl ::std::convert::From<ReadResourceRequest> for ClientRequest {
         Self::ReadResourceRequest(value)
     }
 }
-impl ::std::convert::From<SubscribeRequest> for ClientRequest {
-    fn from(value: SubscribeRequest) -> Self {
-        Self::SubscribeRequest(value)
-    }
-}
-impl ::std::convert::From<UnsubscribeRequest> for ClientRequest {
-    fn from(value: UnsubscribeRequest) -> Self {
-        Self::UnsubscribeRequest(value)
+impl ::std::convert::From<SubscriptionsListenRequest> for ClientRequest {
+    fn from(value: SubscriptionsListenRequest) -> Self {
+        Self::SubscriptionsListenRequest(value)
     }
 }
 impl ::std::convert::From<ListPromptsRequest> for ClientRequest {
@@ -1135,148 +1054,25 @@ impl ::std::convert::From<CallToolRequest> for ClientRequest {
         Self::CallToolRequest(value)
     }
 }
-impl ::std::convert::From<GetTaskRequest> for ClientRequest {
-    fn from(value: GetTaskRequest) -> Self {
-        Self::GetTaskRequest(value)
-    }
-}
-impl ::std::convert::From<GetTaskPayloadRequest> for ClientRequest {
-    fn from(value: GetTaskPayloadRequest) -> Self {
-        Self::GetTaskPayloadRequest(value)
-    }
-}
-impl ::std::convert::From<CancelTaskRequest> for ClientRequest {
-    fn from(value: CancelTaskRequest) -> Self {
-        Self::CancelTaskRequest(value)
-    }
-}
-impl ::std::convert::From<ListTasksRequest> for ClientRequest {
-    fn from(value: ListTasksRequest) -> Self {
-        Self::ListTasksRequest(value)
-    }
-}
-impl ::std::convert::From<SetLevelRequest> for ClientRequest {
-    fn from(value: SetLevelRequest) -> Self {
-        Self::SetLevelRequest(value)
-    }
-}
 impl ::std::convert::From<CompleteRequest> for ClientRequest {
     fn from(value: CompleteRequest) -> Self {
         Self::CompleteRequest(value)
     }
 }
-///ClientResult
+///Common result fields.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "anyOf": [
-///    {
-///      "$ref": "#/$defs/Result"
-///    },
-///    {
-///      "description": "The result returned for a {@link GetTaskRequesttasks/get} request.",
-///      "$ref": "#/$defs/GetTaskResult"
-///    },
-///    {
-///      "$ref": "#/$defs/GetTaskPayloadResult"
-///    },
-///    {
-///      "description": "The result returned for a {@link CancelTaskRequesttasks/cancel} request.",
-///      "$ref": "#/$defs/CancelTaskResult"
-///    },
-///    {
-///      "$ref": "#/$defs/ListTasksResult"
-///    },
-///    {
-///      "$ref": "#/$defs/CreateMessageResult"
-///    },
-///    {
-///      "$ref": "#/$defs/ListRootsResult"
-///    },
-///    {
-///      "$ref": "#/$defs/ElicitResult"
-///    }
-///  ]
+///  "description": "Common result fields.",
+///  "$ref": "#/$defs/Result"
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-#[serde(untagged)]
-pub enum ClientResult {
-    GetTaskResult(GetTaskResult),
-    CancelTaskResult(CancelTaskResult),
-    ListTasksResult(ListTasksResult),
-    CreateMessageResult(CreateMessageResult),
-    ListRootsResult(ListRootsResult),
-    ElicitResult(ElicitResult),
-    Result(Result),
-    GetTaskPayloadResult(GetTaskPayloadResult),
-}
-impl ::std::convert::From<GetTaskResult> for ClientResult {
-    fn from(value: GetTaskResult) -> Self {
-        Self::GetTaskResult(value)
-    }
-}
-impl ::std::convert::From<CancelTaskResult> for ClientResult {
-    fn from(value: CancelTaskResult) -> Self {
-        Self::CancelTaskResult(value)
-    }
-}
-impl ::std::convert::From<ListTasksResult> for ClientResult {
-    fn from(value: ListTasksResult) -> Self {
-        Self::ListTasksResult(value)
-    }
-}
-impl ::std::convert::From<CreateMessageResult> for ClientResult {
-    fn from(value: CreateMessageResult) -> Self {
-        Self::CreateMessageResult(value)
-    }
-}
-impl ::std::convert::From<ListRootsResult> for ClientResult {
-    fn from(value: ListRootsResult) -> Self {
-        Self::ListRootsResult(value)
-    }
-}
-impl ::std::convert::From<ElicitResult> for ClientResult {
-    fn from(value: ElicitResult) -> Self {
-        Self::ElicitResult(value)
-    }
-}
-impl ::std::convert::From<Result> for ClientResult {
-    fn from(value: Result) -> Self {
-        Self::Result(value)
-    }
-}
-impl ::std::convert::From<GetTaskPayloadResult> for ClientResult {
-    fn from(value: GetTaskPayloadResult) -> Self {
-        Self::GetTaskPayloadResult(value)
-    }
-}
-///Present if the client supports listing roots.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Present if the client supports listing roots.",
-///  "type": "object",
-///  "properties": {
-///    "listChanged": {
-///      "description": "Whether the client supports notifications for changes to the roots list.",
-///      "type": "boolean"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ClientRoots {
-    ///Whether the client supports notifications for changes to the roots list.
-    #[serde(rename = "listChanged", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub list_changed: ::std::option::Option<bool>,
-}
+#[serde(transparent)]
+pub struct ClientResult(pub Result);
 ///Present if the client supports sampling from an LLM.
 ///
 /// <details><summary>JSON schema</summary>
@@ -1307,150 +1103,6 @@ pub struct ClientSampling {
     ///Whether the client supports tool use via tools and toolChoice parameters.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub tools: ::std::option::Option<JsonObject>,
-}
-///Task support for elicitation-related requests.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Task support for elicitation-related requests.",
-///  "type": "object",
-///  "properties": {
-///    "create": {
-///      "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///      "$ref": "#/$defs/JSONObject"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ClientTaskElicitation {
-    ///Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub create: ::std::option::Option<JsonObject>,
-}
-///Specifies which request types can be augmented with tasks.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Specifies which request types can be augmented with tasks.",
-///  "type": "object",
-///  "properties": {
-///    "elicitation": {
-///      "description": "Task support for elicitation-related requests.",
-///      "type": "object",
-///      "properties": {
-///        "create": {
-///          "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///          "$ref": "#/$defs/JSONObject"
-///        }
-///      }
-///    },
-///    "sampling": {
-///      "description": "Task support for sampling-related requests.",
-///      "type": "object",
-///      "properties": {
-///        "createMessage": {
-///          "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///          "$ref": "#/$defs/JSONObject"
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ClientTaskRequest {
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub elicitation: ::std::option::Option<ClientTaskElicitation>,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub sampling: ::std::option::Option<ClientTaskSampling>,
-}
-///Task support for sampling-related requests.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Task support for sampling-related requests.",
-///  "type": "object",
-///  "properties": {
-///    "createMessage": {
-///      "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///      "$ref": "#/$defs/JSONObject"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ClientTaskSampling {
-    ///Whether the client supports task-augmented sampling/createMessage requests.
-    #[serde(rename = "createMessage", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub create_message: ::std::option::Option<JsonObject>,
-}
-///Present if the client supports task-augmented requests.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Present if the client supports task-augmented requests.",
-///  "type": "object",
-///  "properties": {
-///    "cancel": {
-///      "description": "Whether this client supports {@link CancelTaskRequesttasks/cancel}.",
-///      "$ref": "#/$defs/JSONObject"
-///    },
-///    "list": {
-///      "description": "Whether this client supports {@link ListTasksRequesttasks/list}.",
-///      "$ref": "#/$defs/JSONObject"
-///    },
-///    "requests": {
-///      "description": "Specifies which request types can be augmented with tasks.",
-///      "type": "object",
-///      "properties": {
-///        "elicitation": {
-///          "description": "Task support for elicitation-related requests.",
-///          "type": "object",
-///          "properties": {
-///            "create": {
-///              "description": "Whether the client supports task-augmented {@link ElicitRequestelicitation/create} requests.",
-///              "$ref": "#/$defs/JSONObject"
-///            }
-///          }
-///        },
-///        "sampling": {
-///          "description": "Task support for sampling-related requests.",
-///          "type": "object",
-///          "properties": {
-///            "createMessage": {
-///              "description": "Whether the client supports task-augmented sampling/createMessage requests.",
-///              "$ref": "#/$defs/JSONObject"
-///            }
-///          }
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ClientTasks {
-    ///Whether this client supports {@link CancelTaskRequesttasks/cancel}.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub cancel: ::std::option::Option<JsonObject>,
-    ///Whether this client supports {@link ListTasksRequesttasks/list}.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub list: ::std::option::Option<JsonObject>,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub requests: ::std::option::Option<ClientTaskRequest>,
 }
 ///A request from the client to the server, to ask for completion options.
 ///
@@ -1513,6 +1165,10 @@ impl CompleteRequest {
     pub fn method_value() -> &'static str {
         "completion/complete"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "completion/complete"
+    }
 }
 ///The argument's information
 ///
@@ -1539,7 +1195,7 @@ impl CompleteRequest {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct CompleteRequestArgument {
     ///The name of the argument
     pub name: ::std::string::String,
@@ -1581,6 +1237,7 @@ pub struct CompleteRequestContext {
 ///  "description": "Parameters for a completion/complete request.",
 ///  "type": "object",
 ///  "required": [
+///    "_meta",
 ///    "argument",
 ///    "ref"
 ///  ],
@@ -1638,8 +1295,8 @@ pub struct CompleteRequestParams {
     pub argument: CompleteRequestArgument,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub context: ::std::option::Option<CompleteRequestContext>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
     #[serde(rename = "ref")]
     pub ref_: CompleteRequestRef,
 }
@@ -1685,11 +1342,12 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestRef {
 ///  "description": "The result returned by the server for a {@link CompleteRequestcompletion/complete} request.",
 ///  "type": "object",
 ///  "required": [
-///    "completion"
+///    "completion",
+///    "resultType"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
 ///    },
 ///    "completion": {
 ///      "type": "object",
@@ -1714,6 +1372,10 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestRef {
 ///          "maxItems": 100
 ///        }
 ///      }
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
 ///    }
 ///  }
 ///}
@@ -1723,7 +1385,15 @@ impl ::std::convert::From<ResourceTemplateReference> for CompleteRequestRef {
 pub struct CompleteResult {
     pub completion: CompleteResultCompletion,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
 }
 ///CompleteResultCompletion
 ///
@@ -1955,19 +1625,10 @@ impl ::std::convert::From<::std::vec::Vec<SamplingMessageContentBlock>> for Crea
 ///  "description": "A request from the server to sample an LLM via the client. The client has full discretion over which model to select. The client should also inform the user before beginning sampling, to allow them to inspect the request (human in the loop) and decide whether to approve it.",
 ///  "type": "object",
 ///  "required": [
-///    "id",
-///    "jsonrpc",
 ///    "method",
 ///    "params"
 ///  ],
 ///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "sampling/createMessage"
@@ -1981,30 +1642,26 @@ impl ::std::convert::From<::std::vec::Vec<SamplingMessageContentBlock>> for Crea
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct CreateMessageRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::create_message_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
     #[serde(deserialize_with = "validate::create_message_request_method")]
     method: ::std::string::String,
     pub params: CreateMessageRequestParams,
 }
 impl CreateMessageRequest {
-    pub fn new(id: RequestId, params: CreateMessageRequestParams) -> Self {
+    pub fn new(params: CreateMessageRequestParams) -> Self {
         Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "sampling/createMessage".to_string(),
             params,
         }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
     }
     /// returns "sampling/createMessage"
     pub fn method_value() -> &'static str {
+        "sampling/createMessage"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "sampling/createMessage"
     }
 }
@@ -2021,11 +1678,8 @@ impl CreateMessageRequest {
 ///    "messages"
 ///  ],
 ///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/RequestMetaObject"
-///    },
 ///    "includeContext": {
-///      "description": "A request to include context from one or more MCP servers (including the caller), to be attached to the prompt.\nThe client MAY ignore this request.\n\nDefault is \"none\". Values \"thisServer\" and \"allServers\" are soft-deprecated. Servers SHOULD only use these values if the client\ndeclares {@link ClientCapabilities.sampling.context}. These values may be removed in future spec releases.",
+///      "description": "A request to include context from one or more MCP servers (including the caller), to be attached to the prompt.\nThe client MAY ignore this request.\n\nDefault is \"none\". The values \"thisServer\" and \"allServers\" are deprecated (SEP-2596): servers SHOULD\nomit this field or use \"none\", and SHOULD only use the deprecated values if the client declares\n{@link ClientCapabilities.sampling.context}.",
 ///      "type": "string",
 ///      "enum": [
 ///        "allServers",
@@ -2061,10 +1715,6 @@ impl CreateMessageRequest {
 ///      "description": "An optional system prompt the server wants to use for sampling. The client MAY modify or omit this prompt.",
 ///      "type": "string"
 ///    },
-///    "task": {
-///      "description": "If specified, the caller is requesting task-augmented execution for this request.\nThe request will return a {@link CreateTaskResult} immediately, and the actual result can be\nretrieved later via {@link GetTaskPayloadRequesttasks/result}.\n\nTask augmentation is subject to capability negotiation - receivers MUST declare support\nfor task augmentation of specific request types in their capabilities.",
-///      "$ref": "#/$defs/TaskMetadata"
-///    },
 ///    "temperature": {
 ///      "type": "number"
 ///    },
@@ -2087,8 +1737,9 @@ impl CreateMessageRequest {
 pub struct CreateMessageRequestParams {
     /**A request to include context from one or more MCP servers (including the caller), to be attached to the prompt.
     The client MAY ignore this request.
-    Default is "none". Values "thisServer" and "allServers" are soft-deprecated. Servers SHOULD only use these values if the client
-    declares {@link ClientCapabilities.sampling.context}. These values may be removed in future spec releases.*/
+    Default is "none". The values "thisServer" and "allServers" are deprecated (SEP-2596): servers SHOULD
+    omit this field or use "none", and SHOULD only use the deprecated values if the client declares
+    {@link ClientCapabilities.sampling.context}.*/
     #[serde(rename = "includeContext", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub include_context: ::std::option::Option<IncludeContext>,
     /**The requested maximum number of tokens to sample (to prevent runaway completions).
@@ -2096,8 +1747,6 @@ pub struct CreateMessageRequestParams {
     #[serde(rename = "maxTokens")]
     pub max_tokens: i64,
     pub messages: ::std::vec::Vec<SamplingMessage>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
     ///Optional metadata to pass through to the LLM provider. The format of this metadata is provider-specific.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub metadata: ::std::option::Option<JsonObject>,
@@ -2113,13 +1762,6 @@ pub struct CreateMessageRequestParams {
     ///An optional system prompt the server wants to use for sampling. The client MAY modify or omit this prompt.
     #[serde(rename = "systemPrompt", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub system_prompt: ::std::option::Option<::std::string::String>,
-    /**If specified, the caller is requesting task-augmented execution for this request.
-    The request will return a {@link CreateTaskResult} immediately, and the actual result can be
-    retrieved later via {@link GetTaskPayloadRequesttasks/result}.
-    Task augmentation is subject to capability negotiation - receivers MUST declare support
-    for task augmentation of specific request types in their capabilities.*/
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub task: ::std::option::Option<TaskMetadata>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub temperature: ::std::option::Option<f64>,
     /**Controls how the model uses tools.
@@ -2209,128 +1851,6 @@ pub struct CreateMessageResult {
     #[serde(rename = "stopReason", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub stop_reason: ::std::option::Option<::std::string::String>,
 }
-///A successful response from the client for a {@link CreateMessageRequestsampling/createMessage} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response from the client for a {@link CreateMessageRequestsampling/createMessage} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/CreateMessageResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CreateMessageResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::create_message_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: CreateMessageResult,
-}
-impl CreateMessageResultResponse {
-    pub fn new(id: RequestId, result: CreateMessageResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
-///The result returned for a task-augmented request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The result returned for a task-augmented request.",
-///  "type": "object",
-///  "required": [
-///    "task"
-///  ],
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
-///    },
-///    "task": {
-///      "$ref": "#/$defs/Task"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CreateTaskResult {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    pub task: Task,
-}
-///A successful response for a task-augmented request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response for a task-augmented request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/CreateTaskResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct CreateTaskResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::create_task_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: CreateTaskResult,
-}
-impl CreateTaskResultResponse {
-    pub fn new(id: RequestId, result: CreateTaskResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
 ///An opaque token used to represent a cursor for pagination.
 ///
 /// <details><summary>JSON schema</summary>
@@ -2342,33 +1862,401 @@ impl CreateTaskResultResponse {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 #[serde(transparent)]
 pub struct Cursor(pub ::std::string::String);
-///ElicitCompleteParams
+/**A request from the client asking the server to advertise its supported
+protocol versions, capabilities, and other metadata. Servers **MUST**
+implement server/discover. Clients **MAY** call it but are not required
+to — version negotiation can also happen inline via per-request _meta.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
+///  "description": "A request from the client asking the server to advertise its supported\nprotocol versions, capabilities, and other metadata. Servers **MUST**\nimplement server/discover. Clients **MAY** call it but are not required\nto — version negotiation can also happen inline via per-request _meta.",
 ///  "type": "object",
 ///  "required": [
-///    "elicitationId"
+///    "id",
+///    "jsonrpc",
+///    "method",
+///    "params"
 ///  ],
 ///  "properties": {
-///    "elicitationId": {
-///      "description": "The ID of the elicitation that completed.",
-///      "type": "string"
+///    "id": {
+///      "$ref": "#/$defs/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
+///    "method": {
+///      "type": "string",
+///      "const": "server/discover"
+///    },
+///    "params": {
+///      "$ref": "#/$defs/RequestParams"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitCompleteParams {
-    ///The ID of the elicitation that completed.
-    #[serde(rename = "elicitationId")]
-    pub elicitation_id: ::std::string::String,
+pub struct DiscoverRequest {
+    pub id: RequestId,
+    #[serde(deserialize_with = "validate::discover_request_jsonrpc")]
+    jsonrpc: ::std::string::String,
+    #[serde(deserialize_with = "validate::discover_request_method")]
+    method: ::std::string::String,
+    pub params: RequestParams,
+}
+impl DiscoverRequest {
+    pub fn new(id: RequestId, params: RequestParams) -> Self {
+        Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
+            method: "server/discover".to_string(),
+            params,
+        }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
+    }
+    pub fn method(&self) -> &::std::string::String {
+        &self.method
+    }
+    /// returns "server/discover"
+    pub fn method_value() -> &'static str {
+        "server/discover"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "server/discover"
+    }
+}
+///The result returned by the server for a {@link DiscoverRequestserver/discover} request.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "The result returned by the server for a {@link DiscoverRequestserver/discover} request.",
+///  "type": "object",
+///  "required": [
+///    "cacheScope",
+///    "capabilities",
+///    "resultType",
+///    "supportedVersions",
+///    "ttlMs"
+///  ],
+///  "properties": {
+///    "_meta": {
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
+///    },
+///    "capabilities": {
+///      "description": "The capabilities of the server.",
+///      "$ref": "#/$defs/ServerCapabilities"
+///    },
+///    "instructions": {
+///      "description": "Natural-language guidance describing the server and its features.\n\nThis can be used by clients to improve an LLM's understanding of\navailable tools (e.g., by including it in a system prompt). It should\nfocus on information that helps the model use the server effectively\nand should not duplicate information already in tool descriptions.",
+///      "type": "string"
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
+///    "supportedVersions": {
+///      "description": "MCP Protocol Versions this server supports. The client should choose a\nversion from this list for use in subsequent requests.",
+///      "type": "array",
+///      "items": {
+///        "type": "string"
+///      }
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct DiscoverResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: DiscoverResultCacheScope,
+    ///The capabilities of the server.
+    pub capabilities: ServerCapabilities,
+    /**Natural-language guidance describing the server and its features.
+    This can be used by clients to improve an LLM's understanding of
+    available tools (e.g., by including it in a system prompt). It should
+    focus on information that helps the model use the server effectively
+    and should not duplicate information already in tool descriptions.*/
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub instructions: ::std::option::Option<::std::string::String>,
+    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**MCP Protocol Versions this server supports. The client should choose a
+    version from this list for use in subsequent requests.*/
+    #[serde(rename = "supportedVersions")]
+    pub supported_versions: ::std::vec::Vec<::std::string::String>,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum DiscoverResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for DiscoverResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
+}
+///A successful response from the server for a {@link DiscoverRequestserver/discover} request.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "A successful response from the server for a {@link DiscoverRequestserver/discover} request.",
+///  "type": "object",
+///  "required": [
+///    "id",
+///    "jsonrpc",
+///    "result"
+///  ],
+///  "properties": {
+///    "id": {
+///      "$ref": "#/$defs/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
+///    "result": {
+///      "$ref": "#/$defs/DiscoverResult"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct DiscoverResultResponse {
+    pub id: RequestId,
+    #[serde(deserialize_with = "validate::discover_result_response_jsonrpc")]
+    jsonrpc: ::std::string::String,
+    pub result: DiscoverResult,
+}
+impl DiscoverResultResponse {
+    pub fn new(id: RequestId, result: DiscoverResult) -> Self {
+        Self {
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
+            result,
+        }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
+    }
+}
+///A request from the server to elicit additional information from the user via the client.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "A request from the server to elicit additional information from the user via the client.",
+///  "type": "object",
+///  "required": [
+///    "method",
+///    "params"
+///  ],
+///  "properties": {
+///    "method": {
+///      "type": "string",
+///      "const": "elicitation/create"
+///    },
+///    "params": {
+///      "$ref": "#/$defs/ElicitRequestParams"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct ElicitRequest {
+    #[serde(deserialize_with = "validate::elicit_request_method")]
+    method: ::std::string::String,
+    pub params: ElicitRequestParams,
+}
+impl ElicitRequest {
+    pub fn new(params: ElicitRequestParams) -> Self {
+        Self {
+            method: "elicitation/create".to_string(),
+            params,
+        }
+    }
+    pub fn method(&self) -> &::std::string::String {
+        &self.method
+    }
+    /// returns "elicitation/create"
+    pub fn method_value() -> &'static str {
+        "elicitation/create"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "elicitation/create"
+    }
+}
+///The parameters for a request to elicit non-sensitive information from the user via a form in the client.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "The parameters for a request to elicit non-sensitive information from the user via a form in the client.",
+///  "type": "object",
+///  "required": [
+///    "message",
+///    "requestedSchema"
+///  ],
+///  "properties": {
+///    "message": {
+///      "description": "The message to present to the user describing what information is being requested.",
+///      "type": "string"
+///    },
+///    "mode": {
+///      "description": "The elicitation mode.",
+///      "type": "string",
+///      "const": "form"
+///    },
+///    "requestedSchema": {
+///      "description": "A restricted subset of JSON Schema.\nOnly top-level properties are allowed, without nesting.",
+///      "type": "object",
+///      "required": [
+///        "properties",
+///        "type"
+///      ],
+///      "properties": {
+///        "$schema": {
+///          "type": "string"
+///        },
+///        "properties": {
+///          "type": "object",
+///          "additionalProperties": {
+///            "$ref": "#/$defs/PrimitiveSchemaDefinition"
+///          }
+///        },
+///        "required": {
+///          "type": "array",
+///          "items": {
+///            "type": "string"
+///          }
+///        },
+///        "type": {
+///          "type": "string",
+///          "const": "object"
+///        }
+///      }
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct ElicitRequestFormParams {
+    ///The message to present to the user describing what information is being requested.
+    pub message: ::std::string::String,
+    ///The elicitation mode.
+    #[serde(
+        default,
+        skip_serializing_if = "::std::option::Option::is_none",
+        deserialize_with = "validate::elicit_request_form_params_mode"
+    )]
+    mode: ::std::option::Option<::std::string::String>,
+    #[serde(rename = "requestedSchema")]
+    pub requested_schema: ElicitRequestFormParamsRequestedSchema,
+}
+impl ElicitRequestFormParams {
+    pub fn new(message: ::std::string::String, requested_schema: ElicitRequestFormParamsRequestedSchema) -> Self {
+        Self {
+            message,
+            mode: Some("form".to_string()),
+            requested_schema,
+        }
+    }
+    pub fn mode(&self) -> &::std::option::Option<::std::string::String> {
+        &self.mode
+    }
+    /// returns "form"
+    pub fn mode_value() -> &'static str {
+        "form"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `mode_value()` instead.")]
+    pub fn mode_name() -> &'static str {
+        "form"
+    }
 }
 /**A restricted subset of JSON Schema.
 Only top-level properties are allowed, without nesting.*/
@@ -2408,16 +2296,19 @@ Only top-level properties are allowed, without nesting.*/
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitFormSchema {
+pub struct ElicitRequestFormParamsRequestedSchema {
     pub properties: std::collections::BTreeMap<::std::string::String, PrimitiveSchemaDefinition>,
     #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
     pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "$schema", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub schema: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "type", deserialize_with = "validate::elicit_form_schema_type_")]
+    #[serde(
+        rename = "type",
+        deserialize_with = "validate::elicit_request_form_params_requested_schema_type_"
+    )]
     type_: ::std::string::String,
 }
-impl ElicitFormSchema {
+impl ElicitRequestFormParamsRequestedSchema {
     pub fn new(
         properties: std::collections::BTreeMap<::std::string::String, PrimitiveSchemaDefinition>,
         required: ::std::vec::Vec<::std::string::String>,
@@ -2437,175 +2328,9 @@ impl ElicitFormSchema {
     pub fn type_value() -> &'static str {
         "object"
     }
-}
-///A request from the server to elicit additional information from the user via the client.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A request from the server to elicit additional information from the user via the client.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "elicitation/create"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/ElicitRequestParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::elicit_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::elicit_request_method")]
-    method: ::std::string::String,
-    pub params: ElicitRequestParams,
-}
-impl ElicitRequest {
-    pub fn new(id: RequestId, params: ElicitRequestParams) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "elicitation/create".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "elicitation/create"
-    pub fn method_value() -> &'static str {
-        "elicitation/create"
-    }
-}
-///The parameters for a request to elicit non-sensitive information from the user via a form in the client.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The parameters for a request to elicit non-sensitive information from the user via a form in the client.",
-///  "type": "object",
-///  "required": [
-///    "message",
-///    "requestedSchema"
-///  ],
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/RequestMetaObject"
-///    },
-///    "message": {
-///      "description": "The message to present to the user describing what information is being requested.",
-///      "type": "string"
-///    },
-///    "mode": {
-///      "description": "The elicitation mode.",
-///      "type": "string",
-///      "const": "form"
-///    },
-///    "requestedSchema": {
-///      "description": "A restricted subset of JSON Schema.\nOnly top-level properties are allowed, without nesting.",
-///      "type": "object",
-///      "required": [
-///        "properties",
-///        "type"
-///      ],
-///      "properties": {
-///        "$schema": {
-///          "type": "string"
-///        },
-///        "properties": {
-///          "type": "object",
-///          "additionalProperties": {
-///            "$ref": "#/$defs/PrimitiveSchemaDefinition"
-///          }
-///        },
-///        "required": {
-///          "type": "array",
-///          "items": {
-///            "type": "string"
-///          }
-///        },
-///        "type": {
-///          "type": "string",
-///          "const": "object"
-///        }
-///      }
-///    },
-///    "task": {
-///      "description": "If specified, the caller is requesting task-augmented execution for this request.\nThe request will return a {@link CreateTaskResult} immediately, and the actual result can be\nretrieved later via {@link GetTaskPayloadRequesttasks/result}.\n\nTask augmentation is subject to capability negotiation - receivers MUST declare support\nfor task augmentation of specific request types in their capabilities.",
-///      "$ref": "#/$defs/TaskMetadata"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitRequestFormParams {
-    ///The message to present to the user describing what information is being requested.
-    pub message: ::std::string::String,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
-    ///The elicitation mode.
-    #[serde(
-        default,
-        skip_serializing_if = "::std::option::Option::is_none",
-        deserialize_with = "validate::elicit_request_form_params_mode"
-    )]
-    mode: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "requestedSchema")]
-    pub requested_schema: ElicitFormSchema,
-    /**If specified, the caller is requesting task-augmented execution for this request.
-    The request will return a {@link CreateTaskResult} immediately, and the actual result can be
-    retrieved later via {@link GetTaskPayloadRequesttasks/result}.
-    Task augmentation is subject to capability negotiation - receivers MUST declare support
-    for task augmentation of specific request types in their capabilities.*/
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub task: ::std::option::Option<TaskMetadata>,
-}
-impl ElicitRequestFormParams {
-    pub fn new(
-        message: ::std::string::String,
-        requested_schema: ElicitFormSchema,
-        meta: ::std::option::Option<RequestMetaObject>,
-        task: ::std::option::Option<TaskMetadata>,
-    ) -> Self {
-        Self {
-            message,
-            meta,
-            mode: Some("form".to_string()),
-            requested_schema,
-            task,
-        }
-    }
-    pub fn mode(&self) -> &::std::option::Option<::std::string::String> {
-        &self.mode
-    }
-    /// returns "form"
-    pub fn mode_value() -> &'static str {
-        "form"
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "object"
     }
 }
 ///The parameters for a request to elicit additional information from the user via the client.
@@ -2617,10 +2342,10 @@ impl ElicitRequestFormParams {
 ///  "description": "The parameters for a request to elicit additional information from the user via the client.",
 ///  "anyOf": [
 ///    {
-///      "$ref": "#/$defs/ElicitRequestURLParams"
+///      "$ref": "#/$defs/ElicitRequestFormParams"
 ///    },
 ///    {
-///      "$ref": "#/$defs/ElicitRequestFormParams"
+///      "$ref": "#/$defs/ElicitRequestURLParams"
 ///    }
 ///  ]
 ///}
@@ -2629,17 +2354,17 @@ impl ElicitRequestFormParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum ElicitRequestParams {
-    UrlParams(ElicitRequestUrlParams),
     FormParams(ElicitRequestFormParams),
-}
-impl ::std::convert::From<ElicitRequestUrlParams> for ElicitRequestParams {
-    fn from(value: ElicitRequestUrlParams) -> Self {
-        Self::UrlParams(value)
-    }
+    UrlParams(ElicitRequestUrlParams),
 }
 impl ::std::convert::From<ElicitRequestFormParams> for ElicitRequestParams {
     fn from(value: ElicitRequestFormParams) -> Self {
         Self::FormParams(value)
+    }
+}
+impl ::std::convert::From<ElicitRequestUrlParams> for ElicitRequestParams {
+    fn from(value: ElicitRequestUrlParams) -> Self {
+        Self::UrlParams(value)
     }
 }
 ///The parameters for a request to elicit information from the user via a URL in the client.
@@ -2651,19 +2376,11 @@ impl ::std::convert::From<ElicitRequestFormParams> for ElicitRequestParams {
 ///  "description": "The parameters for a request to elicit information from the user via a URL in the client.",
 ///  "type": "object",
 ///  "required": [
-///    "elicitationId",
 ///    "message",
 ///    "mode",
 ///    "url"
 ///  ],
 ///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/RequestMetaObject"
-///    },
-///    "elicitationId": {
-///      "description": "The ID of the elicitation, which must be unique within the context of the server.\nThe client MUST treat this ID as an opaque value.",
-///      "type": "string"
-///    },
 ///    "message": {
 ///      "description": "The message to present to the user explaining why the interaction is needed.",
 ///      "type": "string"
@@ -2672,10 +2389,6 @@ impl ::std::convert::From<ElicitRequestFormParams> for ElicitRequestParams {
 ///      "description": "The elicitation mode.",
 ///      "type": "string",
 ///      "const": "url"
-///    },
-///    "task": {
-///      "description": "If specified, the caller is requesting task-augmented execution for this request.\nThe request will return a {@link CreateTaskResult} immediately, and the actual result can be\nretrieved later via {@link GetTaskPayloadRequesttasks/result}.\n\nTask augmentation is subject to capability negotiation - receivers MUST declare support\nfor task augmentation of specific request types in their capabilities.",
-///      "$ref": "#/$defs/TaskMetadata"
 ///    },
 ///    "url": {
 ///      "description": "The URL that the user should navigate to.",
@@ -2688,41 +2401,19 @@ impl ::std::convert::From<ElicitRequestFormParams> for ElicitRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ElicitRequestUrlParams {
-    /**The ID of the elicitation, which must be unique within the context of the server.
-    The client MUST treat this ID as an opaque value.*/
-    #[serde(rename = "elicitationId")]
-    pub elicitation_id: ::std::string::String,
     ///The message to present to the user explaining why the interaction is needed.
     pub message: ::std::string::String,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
     ///The elicitation mode.
     #[serde(deserialize_with = "validate::elicit_request_url_params_mode")]
     mode: ::std::string::String,
-    /**If specified, the caller is requesting task-augmented execution for this request.
-    The request will return a {@link CreateTaskResult} immediately, and the actual result can be
-    retrieved later via {@link GetTaskPayloadRequesttasks/result}.
-    Task augmentation is subject to capability negotiation - receivers MUST declare support
-    for task augmentation of specific request types in their capabilities.*/
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub task: ::std::option::Option<TaskMetadata>,
     ///The URL that the user should navigate to.
     pub url: ::std::string::String,
 }
 impl ElicitRequestUrlParams {
-    pub fn new(
-        elicitation_id: ::std::string::String,
-        message: ::std::string::String,
-        url: ::std::string::String,
-        meta: ::std::option::Option<RequestMetaObject>,
-        task: ::std::option::Option<TaskMetadata>,
-    ) -> Self {
+    pub fn new(message: ::std::string::String, url: ::std::string::String) -> Self {
         Self {
-            elicitation_id,
             message,
-            meta,
             mode: "url".to_string(),
-            task,
             url,
         }
     }
@@ -2731,6 +2422,10 @@ impl ElicitRequestUrlParams {
     }
     /// returns "url"
     pub fn mode_value() -> &'static str {
+        "url"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `mode_value()` instead.")]
+    pub fn mode_name() -> &'static str {
         "url"
     }
 }
@@ -2746,9 +2441,6 @@ impl ElicitRequestUrlParams {
 ///    "action"
 ///  ],
 ///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
-///    },
 ///    "action": {
 ///      "description": "The user action in response to the elicitation.\n- \"accept\": User submitted the form/confirmed the action\n- \"decline\": User explicitly declined the action\n- \"cancel\": User dismissed without making an explicit choice",
 ///      "type": "string",
@@ -2795,8 +2487,6 @@ pub struct ElicitResult {
     Omitted for out-of-band mode responses.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub content: ::std::option::Option<std::collections::BTreeMap<::std::string::String, ElicitResultContent>>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
 }
 /**The user action in response to the elicitation.
 - "accept": User submitted the form/confirmed the action
@@ -2906,118 +2596,6 @@ impl ::std::convert::From<i64> for ElicitResultContentPrimitive {
         Self::Integer(value)
     }
 }
-///A successful response from the client for a {@link ElicitRequestelicitation/create} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response from the client for a {@link ElicitRequestelicitation/create} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/ElicitResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::elicit_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: ElicitResult,
-}
-impl ElicitResultResponse {
-    pub fn new(id: RequestId, result: ElicitResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
-///An optional notification from the server to the client, informing it of a completion of a out-of-band elicitation request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "An optional notification from the server to the client, informing it of a completion of a out-of-band elicitation request.",
-///  "type": "object",
-///  "required": [
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "notifications/elicitation/complete"
-///    },
-///    "params": {
-///      "type": "object",
-///      "required": [
-///        "elicitationId"
-///      ],
-///      "properties": {
-///        "elicitationId": {
-///          "description": "The ID of the elicitation that completed.",
-///          "type": "string"
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ElicitationCompleteNotification {
-    #[serde(deserialize_with = "validate::elicitation_complete_notification_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::elicitation_complete_notification_method")]
-    method: ::std::string::String,
-    pub params: ElicitCompleteParams,
-}
-impl ElicitationCompleteNotification {
-    pub fn new(params: ElicitCompleteParams) -> Self {
-        Self {
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "notifications/elicitation/complete".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "notifications/elicitation/complete"
-    pub fn method_value() -> &'static str {
-        "notifications/elicitation/complete"
-    }
-}
 /**The contents of a resource, embedded into a prompt or tool call result.
 It is up to the client how best to render embedded resources for the benefit
 of the LLM and/or the user.*/
@@ -3089,6 +2667,10 @@ impl EmbeddedResource {
     pub fn type_value() -> &'static str {
         "resource"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "resource"
+    }
 }
 ///EmbeddedResourceResource
 ///
@@ -3134,7 +2716,7 @@ impl ::std::convert::From<BlobResourceContents> for EmbeddedResourceResource {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 #[serde(transparent)]
 pub struct EmptyResult(pub Result);
 ///EnumSchema
@@ -3258,6 +2840,10 @@ impl GetPromptRequest {
     pub fn method_value() -> &'static str {
         "prompts/get"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "prompts/get"
+    }
 }
 ///Parameters for a prompts/get request.
 ///
@@ -3268,6 +2854,7 @@ impl GetPromptRequest {
 ///  "description": "Parameters for a prompts/get request.",
 ///  "type": "object",
 ///  "required": [
+///    "_meta",
 ///    "name"
 ///  ],
 ///  "properties": {
@@ -3281,8 +2868,14 @@ impl GetPromptRequest {
 ///        "type": "string"
 ///      }
 ///    },
+///    "inputResponses": {
+///      "$ref": "#/$defs/InputResponses"
+///    },
 ///    "name": {
 ///      "description": "The name of the prompt or prompt template.",
+///      "type": "string"
+///    },
+///    "requestState": {
 ///      "type": "string"
 ///    }
 ///  }
@@ -3294,10 +2887,14 @@ pub struct GetPromptRequestParams {
     ///Arguments to use for templating the prompt.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub arguments: ::std::option::Option<std::collections::BTreeMap<::std::string::String, ::std::string::String>>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "inputResponses", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub input_responses: ::std::option::Option<InputResponses>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
     ///The name of the prompt or prompt template.
     pub name: ::std::string::String,
+    #[serde(rename = "requestState", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub request_state: ::std::option::Option<::std::string::String>,
 }
 ///The result returned by the server for a {@link GetPromptRequestprompts/get} request.
 ///
@@ -3308,11 +2905,12 @@ pub struct GetPromptRequestParams {
 ///  "description": "The result returned by the server for a {@link GetPromptRequestprompts/get} request.",
 ///  "type": "object",
 ///  "required": [
-///    "messages"
+///    "messages",
+///    "resultType"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
 ///    },
 ///    "description": {
 ///      "description": "An optional description for the prompt.",
@@ -3323,6 +2921,10 @@ pub struct GetPromptRequestParams {
 ///      "items": {
 ///        "$ref": "#/$defs/PromptMessage"
 ///      }
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
 ///    }
 ///  }
 ///}
@@ -3335,7 +2937,15 @@ pub struct GetPromptResult {
     pub description: ::std::option::Option<::std::string::String>,
     pub messages: ::std::vec::Vec<PromptMessage>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
 }
 ///A successful response from the server for a {@link GetPromptRequestprompts/get} request.
 ///
@@ -3359,7 +2969,14 @@ pub struct GetPromptResult {
 ///      "const": "2.0"
 ///    },
 ///    "result": {
-///      "$ref": "#/$defs/GetPromptResult"
+///      "anyOf": [
+///        {
+///          "$ref": "#/$defs/InputRequiredResult"
+///        },
+///        {
+///          "$ref": "#/$defs/GetPromptResult"
+///        }
+///      ]
 ///    }
 ///  }
 ///}
@@ -3370,10 +2987,10 @@ pub struct GetPromptResultResponse {
     pub id: RequestId,
     #[serde(deserialize_with = "validate::get_prompt_result_response_jsonrpc")]
     jsonrpc: ::std::string::String,
-    pub result: GetPromptResult,
+    pub result: GetPromptResultResponseResult,
 }
 impl GetPromptResultResponse {
-    pub fn new(id: RequestId, result: GetPromptResult) -> Self {
+    pub fn new(id: RequestId, result: GetPromptResultResponseResult) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -3384,349 +3001,98 @@ impl GetPromptResultResponse {
         &self.jsonrpc
     }
 }
-///GetTaskParams
+///GetPromptResultResponseResult
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "type": "object",
-///  "required": [
-///    "taskId"
-///  ],
-///  "properties": {
-///    "taskId": {
-///      "description": "The task identifier to query.",
-///      "type": "string"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskParams {
-    ///The task identifier to query.
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-}
-///GetTaskPayloadParams
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "type": "object",
-///  "required": [
-///    "taskId"
-///  ],
-///  "properties": {
-///    "taskId": {
-///      "description": "The task identifier to retrieve results for.",
-///      "type": "string"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskPayloadParams {
-    ///The task identifier to retrieve results for.
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-}
-///A request to retrieve the result of a completed task.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A request to retrieve the result of a completed task.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "tasks/result"
-///    },
-///    "params": {
-///      "type": "object",
-///      "required": [
-///        "taskId"
-///      ],
-///      "properties": {
-///        "taskId": {
-///          "description": "The task identifier to retrieve results for.",
-///          "type": "string"
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskPayloadRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::get_task_payload_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::get_task_payload_request_method")]
-    method: ::std::string::String,
-    pub params: GetTaskPayloadParams,
-}
-impl GetTaskPayloadRequest {
-    pub fn new(id: RequestId, params: GetTaskPayloadParams) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "tasks/result".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "tasks/result"
-    pub fn method_value() -> &'static str {
-        "tasks/result"
-    }
-}
-/**The result returned for a {@link GetTaskPayloadRequesttasks/result} request.
-The structure matches the result type of the original request.
-For example, a {@link CallToolRequesttools/call} task would return the {@link CallToolResult} structure.*/
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The result returned for a {@link GetTaskPayloadRequesttasks/result} request.\nThe structure matches the result type of the original request.\nFor example, a {@link CallToolRequesttools/call} task would return the {@link CallToolResult} structure.",
-///  "type": "object",
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
-///    }
-///  },
-///  "additionalProperties": {}
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct GetTaskPayloadResult {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-}
-///A successful response for a {@link GetTaskPayloadRequesttasks/result} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response for a {@link GetTaskPayloadRequesttasks/result} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/GetTaskPayloadResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskPayloadResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::get_task_payload_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: GetTaskPayloadResult,
-}
-impl GetTaskPayloadResultResponse {
-    pub fn new(id: RequestId, result: GetTaskPayloadResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
-///A request to retrieve the state of a task.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A request to retrieve the state of a task.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "tasks/get"
-///    },
-///    "params": {
-///      "type": "object",
-///      "required": [
-///        "taskId"
-///      ],
-///      "properties": {
-///        "taskId": {
-///          "description": "The task identifier to query.",
-///          "type": "string"
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::get_task_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::get_task_request_method")]
-    method: ::std::string::String,
-    pub params: GetTaskParams,
-}
-impl GetTaskRequest {
-    pub fn new(id: RequestId, params: GetTaskParams) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "tasks/get".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "tasks/get"
-    pub fn method_value() -> &'static str {
-        "tasks/get"
-    }
-}
-///The result returned for a {@link GetTaskRequesttasks/get} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The result returned for a {@link GetTaskRequesttasks/get} request.",
-///  "allOf": [
+///  "anyOf": [
 ///    {
-///      "$ref": "#/$defs/Result"
+///      "$ref": "#/$defs/InputRequiredResult"
 ///    },
 ///    {
-///      "$ref": "#/$defs/Task"
+///      "$ref": "#/$defs/GetPromptResult"
 ///    }
 ///  ]
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskResult {
-    #[serde(rename = "createdAt")]
-    pub created_at: ::std::string::String,
-    #[serde(rename = "lastUpdatedAt")]
-    pub last_updated_at: ::std::string::String,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    #[serde(rename = "pollInterval", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub poll_interval: ::std::option::Option<i64>,
-    pub status: TaskStatus,
-    #[serde(rename = "statusMessage", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub status_message: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-    pub ttl: i64,
-    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+#[serde(untagged)]
+pub enum GetPromptResultResponseResult {
+    InputRequiredResult(InputRequiredResult),
+    GetPromptResult(GetPromptResult),
 }
-///A successful response for a {@link GetTaskRequesttasks/get} request.
+impl ::std::convert::From<InputRequiredResult> for GetPromptResultResponseResult {
+    fn from(value: InputRequiredResult) -> Self {
+        Self::InputRequiredResult(value)
+    }
+}
+impl ::std::convert::From<GetPromptResult> for GetPromptResultResponseResult {
+    fn from(value: GetPromptResult) -> Self {
+        Self::GetPromptResult(value)
+    }
+}
+/**Returned when a server rejects a request because the values in the HTTP
+headers do not match the corresponding values in the request body, or
+because required headers are missing or malformed. For HTTP, the response
+status code MUST be 400 Bad Request.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "A successful response for a {@link GetTaskRequesttasks/get} request.",
+///  "description": "Returned when a server rejects a request because the values in the HTTP\nheaders do not match the corresponding values in the request body, or\nbecause required headers are missing or malformed. For HTTP, the response\nstatus code MUST be 400 Bad Request.",
 ///  "type": "object",
 ///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
+///    "error",
+///    "jsonrpc"
 ///  ],
 ///  "properties": {
+///    "error": {
+///      "allOf": [
+///        {
+///          "$ref": "#/$defs/Error"
+///        },
+///        {
+///          "type": "object",
+///          "required": [
+///            "code"
+///          ],
+///          "properties": {
+///            "code": {
+///              "type": "integer"
+///            }
+///          }
+///        }
+///      ]
+///    },
 ///    "id": {
 ///      "$ref": "#/$defs/RequestId"
 ///    },
 ///    "jsonrpc": {
 ///      "type": "string",
 ///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/GetTaskResult"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct GetTaskResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::get_task_result_response_jsonrpc")]
+pub struct HeaderMismatchError {
+    pub error: RpcError,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub id: ::std::option::Option<RequestId>,
+    #[serde(deserialize_with = "validate::header_mismatch_error_jsonrpc")]
     jsonrpc: ::std::string::String,
-    pub result: GetTaskResult,
 }
-impl GetTaskResultResponse {
-    pub fn new(id: RequestId, result: GetTaskResult) -> Self {
+impl HeaderMismatchError {
+    pub fn new(error: RpcError, id: ::std::option::Option<RequestId>) -> Self {
         Self {
+            error,
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
         }
     }
     pub fn jsonrpc(&self) -> &::std::string::String {
@@ -3938,6 +3304,10 @@ impl ImageContent {
     pub fn type_value() -> &'static str {
         "image"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "image"
+    }
 }
 ///Describes the MCP implementation.
 ///
@@ -3984,7 +3354,7 @@ impl ImageContent {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct Implementation {
     /**An optional human-readable description of what this implementation does.
     This can be used by clients or servers to provide context about their purpose
@@ -4018,14 +3388,15 @@ pub struct Implementation {
 }
 /**A request to include context from one or more MCP servers (including the caller), to be attached to the prompt.
 The client MAY ignore this request.
-Default is "none". Values "thisServer" and "allServers" are soft-deprecated. Servers SHOULD only use these values if the client
-declares {@link ClientCapabilities.sampling.context}. These values may be removed in future spec releases.*/
+Default is "none". The values "thisServer" and "allServers" are deprecated (SEP-2596): servers SHOULD
+omit this field or use "none", and SHOULD only use the deprecated values if the client declares
+{@link ClientCapabilities.sampling.context}.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "A request to include context from one or more MCP servers (including the caller), to be attached to the prompt.\nThe client MAY ignore this request.\n\nDefault is \"none\". Values \"thisServer\" and \"allServers\" are soft-deprecated. Servers SHOULD only use these values if the client\ndeclares {@link ClientCapabilities.sampling.context}. These values may be removed in future spec releases.",
+///  "description": "A request to include context from one or more MCP servers (including the caller), to be attached to the prompt.\nThe client MAY ignore this request.\n\nDefault is \"none\". The values \"thisServer\" and \"allServers\" are deprecated (SEP-2596): servers SHOULD\nomit this field or use \"none\", and SHOULD only use the deprecated values if the client declares\n{@link ClientCapabilities.sampling.context}.",
 ///  "type": "string",
 ///  "enum": [
 ///    "allServers",
@@ -4053,93 +3424,174 @@ impl ::std::fmt::Display for IncludeContext {
         }
     }
 }
-///This request is sent from the client to the server when it first connects, asking it to begin initialization.
+///InputRequest
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "This request is sent from the client to the server when it first connects, asking it to begin initialization.",
+///  "anyOf": [
+///    {
+///      "$ref": "#/$defs/CreateMessageRequest"
+///    },
+///    {
+///      "$ref": "#/$defs/ListRootsRequest"
+///    },
+///    {
+///      "$ref": "#/$defs/ElicitRequest"
+///    }
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum InputRequest {
+    CreateMessageRequest(CreateMessageRequest),
+    ListRootsRequest(ListRootsRequest),
+    ElicitRequest(ElicitRequest),
+}
+impl ::std::convert::From<CreateMessageRequest> for InputRequest {
+    fn from(value: CreateMessageRequest) -> Self {
+        Self::CreateMessageRequest(value)
+    }
+}
+impl ::std::convert::From<ListRootsRequest> for InputRequest {
+    fn from(value: ListRootsRequest) -> Self {
+        Self::ListRootsRequest(value)
+    }
+}
+impl ::std::convert::From<ElicitRequest> for InputRequest {
+    fn from(value: ElicitRequest) -> Self {
+        Self::ElicitRequest(value)
+    }
+}
+/**A map of server-initiated requests that the client must fulfill.
+Keys are server-assigned identifiers; values are the request objects.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "A map of server-initiated requests that the client must fulfill.\nKeys are server-assigned identifiers; values are the request objects.",
+///  "type": "object",
+///  "additionalProperties": {
+///    "$ref": "#/$defs/InputRequest"
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(transparent)]
+pub struct InputRequests(pub std::collections::BTreeMap<::std::string::String, InputRequest>);
+/**An InputRequiredResult sent by the server to indicate that additional input is needed
+before the request can be completed.
+At least one of inputRequests or requestState MUST be present.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "An InputRequiredResult sent by the server to indicate that additional input is needed\nbefore the request can be completed.\n\nAt least one of inputRequests or requestState MUST be present.",
 ///  "type": "object",
 ///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
+///    "resultType"
 ///  ],
 ///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
+///    "_meta": {
+///      "$ref": "#/$defs/ResultMetaObject"
 ///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
+///    "inputRequests": {
+///      "$ref": "#/$defs/InputRequests"
 ///    },
-///    "method": {
-///      "type": "string",
-///      "const": "initialize"
+///    "requestState": {
+///      "type": "string"
 ///    },
-///    "params": {
-///      "$ref": "#/$defs/InitializeRequestParams"
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct InitializeRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::initialize_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::initialize_request_method")]
-    method: ::std::string::String,
-    pub params: InitializeRequestParams,
+pub struct InputRequiredResult {
+    #[serde(rename = "inputRequests", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub input_requests: ::std::option::Option<InputRequests>,
+    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    #[serde(rename = "requestState", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub request_state: ::std::option::Option<::std::string::String>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
 }
-impl InitializeRequest {
-    pub fn new(id: RequestId, params: InitializeRequestParams) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "initialize".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "initialize"
-    pub fn method_value() -> &'static str {
-        "initialize"
-    }
-}
-///Parameters for an initialize request.
+///InputResponse
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Parameters for an initialize request.",
+///  "anyOf": [
+///    {
+///      "$ref": "#/$defs/CreateMessageResult"
+///    },
+///    {
+///      "$ref": "#/$defs/ListRootsResult"
+///    },
+///    {
+///      "$ref": "#/$defs/ElicitResult"
+///    }
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum InputResponse {
+    CreateMessageResult(CreateMessageResult),
+    ListRootsResult(ListRootsResult),
+    ElicitResult(ElicitResult),
+}
+impl ::std::convert::From<CreateMessageResult> for InputResponse {
+    fn from(value: CreateMessageResult) -> Self {
+        Self::CreateMessageResult(value)
+    }
+}
+impl ::std::convert::From<ListRootsResult> for InputResponse {
+    fn from(value: ListRootsResult) -> Self {
+        Self::ListRootsResult(value)
+    }
+}
+impl ::std::convert::From<ElicitResult> for InputResponse {
+    fn from(value: ElicitResult) -> Self {
+        Self::ElicitResult(value)
+    }
+}
+///InputResponseRequestParams
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
 ///  "type": "object",
 ///  "required": [
-///    "capabilities",
-///    "clientInfo",
-///    "protocolVersion"
+///    "_meta"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
 ///      "$ref": "#/$defs/RequestMetaObject"
 ///    },
-///    "capabilities": {
-///      "$ref": "#/$defs/ClientCapabilities"
+///    "inputResponses": {
+///      "$ref": "#/$defs/InputResponses"
 ///    },
-///    "clientInfo": {
-///      "$ref": "#/$defs/Implementation"
-///    },
-///    "protocolVersion": {
-///      "description": "The latest version of the Model Context Protocol that the client supports. The client MAY decide to support older versions as well.",
+///    "requestState": {
 ///      "type": "string"
 ///    }
 ///  }
@@ -4147,170 +3599,33 @@ impl InitializeRequest {
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct InitializeRequestParams {
-    pub capabilities: ClientCapabilities,
-    #[serde(rename = "clientInfo")]
-    pub client_info: Implementation,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
-    ///The latest version of the Model Context Protocol that the client supports. The client MAY decide to support older versions as well.
-    #[serde(rename = "protocolVersion")]
-    pub protocol_version: ::std::string::String,
+pub struct InputResponseRequestParams {
+    #[serde(rename = "inputResponses", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub input_responses: ::std::option::Option<InputResponses>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
+    #[serde(rename = "requestState", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub request_state: ::std::option::Option<::std::string::String>,
 }
-///The result returned by the server for an {@link InitializeRequestinitialize} request.
+/**A map of client responses to server-initiated requests.
+Keys correspond to the keys in the {@link InputRequests} map;
+values are the client's result for each request.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "The result returned by the server for an {@link InitializeRequestinitialize} request.",
+///  "description": "A map of client responses to server-initiated requests.\nKeys correspond to the keys in the {@link InputRequests} map;\nvalues are the client's result for each request.",
 ///  "type": "object",
-///  "required": [
-///    "capabilities",
-///    "protocolVersion",
-///    "serverInfo"
-///  ],
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
-///    },
-///    "capabilities": {
-///      "$ref": "#/$defs/ServerCapabilities"
-///    },
-///    "instructions": {
-///      "description": "Instructions describing how to use the server and its features.\n\nInstructions should focus on information that helps the model use the server effectively (e.g., cross-tool relationships, workflow patterns, constraints), but should not duplicate information already in tool descriptions.\n\nClients MAY add this information to the system prompt.",
-///      "type": "string"
-///    },
-///    "protocolVersion": {
-///      "description": "The version of the Model Context Protocol that the server wants to use. This may not match the version that the client requested. If the client cannot support this version, it MUST disconnect.",
-///      "type": "string"
-///    },
-///    "serverInfo": {
-///      "$ref": "#/$defs/Implementation"
-///    }
+///  "additionalProperties": {
+///    "$ref": "#/$defs/InputResponse"
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct InitializeResult {
-    pub capabilities: ServerCapabilities,
-    /**Instructions describing how to use the server and its features.
-    Instructions should focus on information that helps the model use the server effectively (e.g., cross-tool relationships, workflow patterns, constraints), but should not duplicate information already in tool descriptions.
-    Clients MAY add this information to the system prompt.*/
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub instructions: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    ///The version of the Model Context Protocol that the server wants to use. This may not match the version that the client requested. If the client cannot support this version, it MUST disconnect.
-    #[serde(rename = "protocolVersion")]
-    pub protocol_version: ::std::string::String,
-    #[serde(rename = "serverInfo")]
-    pub server_info: Implementation,
-}
-///A successful response from the server for a {@link InitializeRequestinitialize} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response from the server for a {@link InitializeRequestinitialize} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/InitializeResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct InitializeResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::initialize_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: InitializeResult,
-}
-impl InitializeResultResponse {
-    pub fn new(id: RequestId, result: InitializeResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
-///This notification is sent from the client to the server after initialization has finished.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "This notification is sent from the client to the server after initialization has finished.",
-///  "type": "object",
-///  "required": [
-///    "jsonrpc",
-///    "method"
-///  ],
-///  "properties": {
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "notifications/initialized"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/NotificationParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct InitializedNotification {
-    #[serde(deserialize_with = "validate::initialized_notification_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::initialized_notification_method")]
-    method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<NotificationParams>,
-}
-impl InitializedNotification {
-    pub fn new(params: ::std::option::Option<NotificationParams>) -> Self {
-        Self {
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "notifications/initialized".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "notifications/initialized"
-    pub fn method_value() -> &'static str {
-        "notifications/initialized"
-    }
-}
+#[serde(transparent)]
+pub struct InputResponses(pub std::collections::BTreeMap<::std::string::String, InputResponse>);
 ///A JSON-RPC error indicating that an internal error occurred on the receiver. This error is returned when the receiver encounters an unexpected condition that prevents it from fulfilling the request.
 ///
 /// <details><summary>JSON schema</summary>
@@ -4356,7 +3671,6 @@ In MCP, this error is returned in various contexts when request parameters fail 
 - **Prompts**: Unknown prompt name or missing required arguments
 - **Pagination**: Invalid or expired cursor values
 - **Logging**: Invalid log level
-- **Tasks**: Invalid or nonexistent task ID, invalid cursor, or attempting to cancel a task already in a terminal status
 - **Elicitation**: Server requests an elicitation mode not declared in client capabilities
 - **Sampling**: Missing tool result or tool results mixed with other content*/
 ///
@@ -4364,7 +3678,7 @@ In MCP, this error is returned in various contexts when request parameters fail 
 ///
 /// ```json
 ///{
-///  "description": "A JSON-RPC error indicating that the method parameters are invalid or malformed.\n\nIn MCP, this error is returned in various contexts when request parameters fail validation:\n\n- **Tools**: Unknown tool name or invalid tool arguments\n- **Prompts**: Unknown prompt name or missing required arguments\n- **Pagination**: Invalid or expired cursor values\n- **Logging**: Invalid log level\n- **Tasks**: Invalid or nonexistent task ID, invalid cursor, or attempting to cancel a task already in a terminal status\n- **Elicitation**: Server requests an elicitation mode not declared in client capabilities\n- **Sampling**: Missing tool result or tool results mixed with other content",
+///  "description": "A JSON-RPC error indicating that the method parameters are invalid or malformed.\n\nIn MCP, this error is returned in various contexts when request parameters fail validation:\n\n- **Tools**: Unknown tool name or invalid tool arguments\n- **Prompts**: Unknown prompt name or missing required arguments\n- **Pagination**: Invalid or expired cursor values\n- **Logging**: Invalid log level\n- **Elicitation**: Server requests an elicitation mode not declared in client capabilities\n- **Sampling**: Missing tool result or tool results mixed with other content",
 ///  "type": "object",
 ///  "required": [
 ///    "code",
@@ -4922,6 +4236,10 @@ impl LegacyTitledEnumSchema {
     pub fn type_value() -> &'static str {
         "string"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "string"
+    }
 }
 ///Sent from the client to request a list of prompts and prompt templates the server has.
 ///
@@ -4934,7 +4252,8 @@ impl LegacyTitledEnumSchema {
 ///  "required": [
 ///    "id",
 ///    "jsonrpc",
-///    "method"
+///    "method",
+///    "params"
 ///  ],
 ///  "properties": {
 ///    "id": {
@@ -4962,11 +4281,10 @@ pub struct ListPromptsRequest {
     jsonrpc: ::std::string::String,
     #[serde(deserialize_with = "validate::list_prompts_request_method")]
     method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<PaginatedRequestParams>,
+    pub params: PaginatedRequestParams,
 }
 impl ListPromptsRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: PaginatedRequestParams) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -4984,6 +4302,10 @@ impl ListPromptsRequest {
     pub fn method_value() -> &'static str {
         "prompts/list"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "prompts/list"
+    }
 }
 ///The result returned by the server for a {@link ListPromptsRequestprompts/list} request.
 ///
@@ -4994,11 +4316,22 @@ impl ListPromptsRequest {
 ///  "description": "The result returned by the server for a {@link ListPromptsRequestprompts/list} request.",
 ///  "type": "object",
 ///  "required": [
-///    "prompts"
+///    "cacheScope",
+///    "prompts",
+///    "resultType",
+///    "ttlMs"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
 ///    },
 ///    "nextCursor": {
 ///      "description": "An opaque token representing the pagination position after the last returned result.\nIf present, there may be more results available.",
@@ -5009,6 +4342,15 @@ impl ListPromptsRequest {
 ///      "items": {
 ///        "$ref": "#/$defs/Prompt"
 ///      }
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
 ///    }
 ///  }
 ///}
@@ -5016,13 +4358,79 @@ impl ListPromptsRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListPromptsResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: ListPromptsResultCacheScope,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
     /**An opaque token representing the pagination position after the last returned result.
     If present, there may be more results available.*/
     #[serde(rename = "nextCursor", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub next_cursor: ::std::option::Option<::std::string::String>,
     pub prompts: ::std::vec::Vec<Prompt>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ListPromptsResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for ListPromptsResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
 }
 ///A successful response from the server for a {@link ListPromptsRequestprompts/list} request.
 ///
@@ -5082,7 +4490,8 @@ impl ListPromptsResultResponse {
 ///  "required": [
 ///    "id",
 ///    "jsonrpc",
-///    "method"
+///    "method",
+///    "params"
 ///  ],
 ///  "properties": {
 ///    "id": {
@@ -5110,11 +4519,10 @@ pub struct ListResourceTemplatesRequest {
     jsonrpc: ::std::string::String,
     #[serde(deserialize_with = "validate::list_resource_templates_request_method")]
     method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<PaginatedRequestParams>,
+    pub params: PaginatedRequestParams,
 }
 impl ListResourceTemplatesRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: PaginatedRequestParams) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -5132,6 +4540,10 @@ impl ListResourceTemplatesRequest {
     pub fn method_value() -> &'static str {
         "resources/templates/list"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "resources/templates/list"
+    }
 }
 ///The result returned by the server for a {@link ListResourceTemplatesRequestresources/templates/list} request.
 ///
@@ -5142,11 +4554,22 @@ impl ListResourceTemplatesRequest {
 ///  "description": "The result returned by the server for a {@link ListResourceTemplatesRequestresources/templates/list} request.",
 ///  "type": "object",
 ///  "required": [
-///    "resourceTemplates"
+///    "cacheScope",
+///    "resourceTemplates",
+///    "resultType",
+///    "ttlMs"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
 ///    },
 ///    "nextCursor": {
 ///      "description": "An opaque token representing the pagination position after the last returned result.\nIf present, there may be more results available.",
@@ -5157,6 +4580,15 @@ impl ListResourceTemplatesRequest {
 ///      "items": {
 ///        "$ref": "#/$defs/ResourceTemplate"
 ///      }
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
 ///    }
 ///  }
 ///}
@@ -5164,14 +4596,80 @@ impl ListResourceTemplatesRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourceTemplatesResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: ListResourceTemplatesResultCacheScope,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
     /**An opaque token representing the pagination position after the last returned result.
     If present, there may be more results available.*/
     #[serde(rename = "nextCursor", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub next_cursor: ::std::option::Option<::std::string::String>,
     #[serde(rename = "resourceTemplates")]
     pub resource_templates: ::std::vec::Vec<ResourceTemplate>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ListResourceTemplatesResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for ListResourceTemplatesResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
 }
 ///A successful response from the server for a {@link ListResourceTemplatesRequestresources/templates/list} request.
 ///
@@ -5231,7 +4729,8 @@ impl ListResourceTemplatesResultResponse {
 ///  "required": [
 ///    "id",
 ///    "jsonrpc",
-///    "method"
+///    "method",
+///    "params"
 ///  ],
 ///  "properties": {
 ///    "id": {
@@ -5259,11 +4758,10 @@ pub struct ListResourcesRequest {
     jsonrpc: ::std::string::String,
     #[serde(deserialize_with = "validate::list_resources_request_method")]
     method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<PaginatedRequestParams>,
+    pub params: PaginatedRequestParams,
 }
 impl ListResourcesRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: PaginatedRequestParams) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -5281,6 +4779,10 @@ impl ListResourcesRequest {
     pub fn method_value() -> &'static str {
         "resources/list"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "resources/list"
+    }
 }
 ///The result returned by the server for a {@link ListResourcesRequestresources/list} request.
 ///
@@ -5291,11 +4793,22 @@ impl ListResourcesRequest {
 ///  "description": "The result returned by the server for a {@link ListResourcesRequestresources/list} request.",
 ///  "type": "object",
 ///  "required": [
-///    "resources"
+///    "cacheScope",
+///    "resources",
+///    "resultType",
+///    "ttlMs"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
 ///    },
 ///    "nextCursor": {
 ///      "description": "An opaque token representing the pagination position after the last returned result.\nIf present, there may be more results available.",
@@ -5306,6 +4819,15 @@ impl ListResourcesRequest {
 ///      "items": {
 ///        "$ref": "#/$defs/Resource"
 ///      }
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
 ///    }
 ///  }
 ///}
@@ -5313,13 +4835,79 @@ impl ListResourcesRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListResourcesResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: ListResourcesResultCacheScope,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
     /**An opaque token representing the pagination position after the last returned result.
     If present, there may be more results available.*/
     #[serde(rename = "nextCursor", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub next_cursor: ::std::option::Option<::std::string::String>,
     pub resources: ::std::vec::Vec<Resource>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ListResourcesResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for ListResourcesResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
 }
 ///A successful response from the server for a {@link ListResourcesRequestresources/list} request.
 ///
@@ -5382,24 +4970,20 @@ structure or access specific locations that the client has permission to read fr
 ///  "description": "Sent from the server to request a list of root URIs from the client. Roots allow\nservers to ask for specific directories or files to operate on. A common example\nfor roots is providing a set of repositories or directories a server should operate\non.\n\nThis request is typically used when the server needs to understand the file system\nstructure or access specific locations that the client has permission to read from.",
 ///  "type": "object",
 ///  "required": [
-///    "id",
-///    "jsonrpc",
 ///    "method"
 ///  ],
 ///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
 ///    "method": {
 ///      "type": "string",
 ///      "const": "roots/list"
 ///    },
 ///    "params": {
-///      "$ref": "#/$defs/RequestParams"
+///      "type": "object",
+///      "properties": {
+///        "_meta": {
+///          "$ref": "#/$defs/MetaObject"
+///        }
+///      }
 ///    }
 ///  }
 ///}
@@ -5407,25 +4991,17 @@ structure or access specific locations that the client has permission to read fr
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::list_roots_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
     #[serde(deserialize_with = "validate::list_roots_request_method")]
     method: ::std::string::String,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<RequestParams>,
+    pub params: ::std::option::Option<ListRootsRequestParams>,
 }
 impl ListRootsRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<RequestParams>) -> Self {
+    pub fn new(params: ::std::option::Option<ListRootsRequestParams>) -> Self {
         Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
             method: "roots/list".to_string(),
             params,
         }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
     }
     pub fn method(&self) -> &::std::string::String {
         &self.method
@@ -5434,6 +5010,30 @@ impl ListRootsRequest {
     pub fn method_value() -> &'static str {
         "roots/list"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "roots/list"
+    }
+}
+///ListRootsRequestParams
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "properties": {
+///    "_meta": {
+///      "$ref": "#/$defs/MetaObject"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct ListRootsRequestParams {
+    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub meta: ::std::option::Option<MetaObject>,
 }
 /**The result returned by the client for a {@link ListRootsRequestroots/list} request.
 This result contains an array of {@link Root} objects, each representing a root directory
@@ -5449,9 +5049,6 @@ or file that the server can operate on.*/
 ///    "roots"
 ///  ],
 ///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
-///    },
 ///    "roots": {
 ///      "type": "array",
 ///      "items": {
@@ -5464,204 +5061,7 @@ or file that the server can operate on.*/
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListRootsResult {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
     pub roots: ::std::vec::Vec<Root>,
-}
-///A successful response from the client for a {@link ListRootsRequestroots/list} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response from the client for a {@link ListRootsRequestroots/list} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/ListRootsResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ListRootsResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::list_roots_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: ListRootsResult,
-}
-impl ListRootsResultResponse {
-    pub fn new(id: RequestId, result: ListRootsResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
-///A request to retrieve a list of tasks.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A request to retrieve a list of tasks.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "tasks/list"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/PaginatedRequestParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ListTasksRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::list_tasks_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::list_tasks_request_method")]
-    method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<PaginatedRequestParams>,
-}
-impl ListTasksRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "tasks/list".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "tasks/list"
-    pub fn method_value() -> &'static str {
-        "tasks/list"
-    }
-}
-///The result returned for a {@link ListTasksRequesttasks/list} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The result returned for a {@link ListTasksRequesttasks/list} request.",
-///  "type": "object",
-///  "required": [
-///    "tasks"
-///  ],
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
-///    },
-///    "nextCursor": {
-///      "description": "An opaque token representing the pagination position after the last returned result.\nIf present, there may be more results available.",
-///      "type": "string"
-///    },
-///    "tasks": {
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/Task"
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ListTasksResult {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    /**An opaque token representing the pagination position after the last returned result.
-    If present, there may be more results available.*/
-    #[serde(rename = "nextCursor", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub next_cursor: ::std::option::Option<::std::string::String>,
-    pub tasks: ::std::vec::Vec<Task>,
-}
-///A successful response for a {@link ListTasksRequesttasks/list} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response for a {@link ListTasksRequesttasks/list} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/ListTasksResult"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct ListTasksResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::list_tasks_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: ListTasksResult,
-}
-impl ListTasksResultResponse {
-    pub fn new(id: RequestId, result: ListTasksResult) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
 }
 ///Sent from the client to request a list of tools the server has.
 ///
@@ -5674,7 +5074,8 @@ impl ListTasksResultResponse {
 ///  "required": [
 ///    "id",
 ///    "jsonrpc",
-///    "method"
+///    "method",
+///    "params"
 ///  ],
 ///  "properties": {
 ///    "id": {
@@ -5702,11 +5103,10 @@ pub struct ListToolsRequest {
     jsonrpc: ::std::string::String,
     #[serde(deserialize_with = "validate::list_tools_request_method")]
     method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<PaginatedRequestParams>,
+    pub params: PaginatedRequestParams,
 }
 impl ListToolsRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
+    pub fn new(id: RequestId, params: PaginatedRequestParams) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -5724,6 +5124,10 @@ impl ListToolsRequest {
     pub fn method_value() -> &'static str {
         "tools/list"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "tools/list"
+    }
 }
 ///The result returned by the server for a {@link ListToolsRequesttools/list} request.
 ///
@@ -5734,14 +5138,29 @@ impl ListToolsRequest {
 ///  "description": "The result returned by the server for a {@link ListToolsRequesttools/list} request.",
 ///  "type": "object",
 ///  "required": [
-///    "tools"
+///    "cacheScope",
+///    "resultType",
+///    "tools",
+///    "ttlMs"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
 ///    },
 ///    "nextCursor": {
 ///      "description": "An opaque token representing the pagination position after the last returned result.\nIf present, there may be more results available.",
+///      "type": "string"
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
 ///      "type": "string"
 ///    },
 ///    "tools": {
@@ -5749,6 +5168,11 @@ impl ListToolsRequest {
 ///      "items": {
 ///        "$ref": "#/$defs/Tool"
 ///      }
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
 ///    }
 ///  }
 ///}
@@ -5756,13 +5180,79 @@ impl ListToolsRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ListToolsResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: ListToolsResultCacheScope,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
     /**An opaque token representing the pagination position after the last returned result.
     If present, there may be more results available.*/
     #[serde(rename = "nextCursor", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub next_cursor: ::std::option::Option<::std::string::String>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
     pub tools: ::std::vec::Vec<Tool>,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ListToolsResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for ListToolsResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
 }
 ///A successful response from the server for a {@link ListToolsRequesttools/list} request.
 ///
@@ -5834,7 +5324,7 @@ These map to syslog message severities, as specified in RFC-5424:
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub enum LoggingLevel {
     #[serde(rename = "alert")]
     Alert,
@@ -5847,6 +5337,7 @@ pub enum LoggingLevel {
     #[serde(rename = "error")]
     Error,
     #[serde(rename = "info")]
+    #[default]
     Info,
     #[serde(rename = "notice")]
     Notice,
@@ -5867,13 +5358,13 @@ impl ::std::fmt::Display for LoggingLevel {
         }
     }
 }
-///JSONRPCNotification of a log message passed from server to client. If no logging/setLevel request has been sent from the client, the server MAY decide which messages to send automatically.
+///JSONRPCNotification of a log message passed from server to client. The client opts in by setting "io.modelcontextprotocol/logLevel" in a request's _meta.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "JSONRPCNotification of a log message passed from server to client. If no logging/setLevel request has been sent from the client, the server MAY decide which messages to send automatically.",
+///  "description": "JSONRPCNotification of a log message passed from server to client. The client opts in by setting \"io.modelcontextprotocol/logLevel\" in a request's _meta.",
 ///  "type": "object",
 ///  "required": [
 ///    "jsonrpc",
@@ -5922,6 +5413,10 @@ impl LoggingMessageNotification {
     pub fn method_value() -> &'static str {
         "notifications/message"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/message"
+    }
 }
 ///Parameters for a notifications/message notification.
 ///
@@ -5937,7 +5432,7 @@ impl LoggingMessageNotification {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/NotificationMetaObject"
 ///    },
 ///    "data": {
 ///      "description": "The data to be logged, such as a string message or an object. Any JSON serializable type is allowed here."
@@ -5954,7 +5449,7 @@ impl LoggingMessageNotification {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct LoggingMessageNotificationParams {
     ///The data to be logged, such as a string message or an object. Any JSON serializable type is allowed here.
     pub data: ::serde_json::Value,
@@ -5964,7 +5459,7 @@ pub struct LoggingMessageNotificationParams {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub logger: ::std::option::Option<::std::string::String>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<NotificationMetaObject>,
 }
 /**Represents the contents of a _meta field, which clients and servers use to attach additional metadata to their interactions.
 Certain key names are reserved by MCP for protocol-level metadata; implementations MUST NOT make assumptions about values at these keys. Additionally, specific schema definitions may reserve particular names for purpose-specific metadata, as declared in those definitions.
@@ -5972,8 +5467,8 @@ Valid keys have two segments:
 **Prefix:**
 - Optional — if specified, MUST be a series of _labels_ separated by dots (.), followed by a slash (/).
 - Labels MUST start with a letter and end with a letter or digit. Interior characters may be letters, digits, or hyphens (-).
-- Any prefix consisting of zero or more labels, followed by modelcontextprotocol or mcp, followed by any label, is **reserved** for MCP use. For example: modelcontextprotocol.io/, mcp.dev/, api.modelcontextprotocol.org/, and tools.mcp.com/ are all reserved.
-
+- Implementations SHOULD use reverse DNS notation (e.g., com.example/ rather than example.com/).
+- Any prefix where the second label is modelcontextprotocol or mcp is **reserved** for MCP use. For example: io.modelcontextprotocol/, dev.mcp/, org.modelcontextprotocol.api/, and com.mcp.tools/ are all reserved. However, com.example.mcp/ is NOT reserved, as the second label is example.
 **Name:**
 - Unless empty, MUST start and end with an alphanumeric character ([a-z0-9A-Z]).
 - Interior characters may be alphanumeric, hyphens (-), underscores (_), or dots (.).*/
@@ -5982,24 +5477,24 @@ Valid keys have two segments:
 ///
 /// ```json
 ///{
-///  "description": "Represents the contents of a _meta field, which clients and servers use to attach additional metadata to their interactions.\n\nCertain key names are reserved by MCP for protocol-level metadata; implementations MUST NOT make assumptions about values at these keys. Additionally, specific schema definitions may reserve particular names for purpose-specific metadata, as declared in those definitions.\n\nValid keys have two segments:\n\n**Prefix:**\n- Optional — if specified, MUST be a series of _labels_ separated by dots (.), followed by a slash (/).\n- Labels MUST start with a letter and end with a letter or digit. Interior characters may be letters, digits, or hyphens (-).\n- Any prefix consisting of zero or more labels, followed by modelcontextprotocol or mcp, followed by any label, is **reserved** for MCP use. For example: modelcontextprotocol.io/, mcp.dev/, api.modelcontextprotocol.org/, and tools.mcp.com/ are all reserved.\n\n**Name:**\n- Unless empty, MUST start and end with an alphanumeric character ([a-z0-9A-Z]).\n- Interior characters may be alphanumeric, hyphens (-), underscores (_), or dots (.).",
-///  "type": "object"
+///  "description": "Represents the contents of a _meta field, which clients and servers use to attach additional metadata to their interactions.\n\nCertain key names are reserved by MCP for protocol-level metadata; implementations MUST NOT make assumptions about values at these keys. Additionally, specific schema definitions may reserve particular names for purpose-specific metadata, as declared in those definitions.\n\nValid keys have two segments:\n\n**Prefix:**\n- Optional — if specified, MUST be a series of _labels_ separated by dots (.), followed by a slash (/).\n- Labels MUST start with a letter and end with a letter or digit. Interior characters may be letters, digits, or hyphens (-).\n- Implementations SHOULD use reverse DNS notation (e.g., com.example/ rather than example.com/).\n- Any prefix where the second label is modelcontextprotocol or mcp is **reserved** for MCP use. For example: io.modelcontextprotocol/, dev.mcp/, org.modelcontextprotocol.api/, and com.mcp.tools/ are all reserved. However, com.example.mcp/ is NOT reserved, as the second label is example.\n\n**Name:**\n- Unless empty, MUST start and end with an alphanumeric character ([a-z0-9A-Z]).\n- Interior characters may be alphanumeric, hyphens (-), underscores (_), or dots (.).",
+///  "type": "object",
+///  "additionalProperties": {}
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 #[serde(transparent)]
 pub struct MetaObject(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
 /**A JSON-RPC error indicating that the requested method does not exist or is not available.
-In MCP, this error is returned when a request is made for a method that requires a capability that has not been declared. This can occur in either direction:
-- A server returning this error when the client requests a capability it doesn't support (e.g., requesting completions when the completions capability was not advertised)
-- A client returning this error when the server requests a capability it doesn't support (e.g., requesting roots when the client did not declare the roots capability)*/
+In MCP, a server returns this error when a client invokes a method the server does not implement — either a genuinely unknown method, or one gated behind a server capability the server did not advertise (e.g., calling prompts/list when the prompts capability was not advertised).
+A request that requires a client capability the client did not declare is signalled instead by {@link MissingRequiredClientCapabilityError} (-32021).*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "A JSON-RPC error indicating that the requested method does not exist or is not available.\n\nIn MCP, this error is returned when a request is made for a method that requires a capability that has not been declared. This can occur in either direction:\n\n- A server returning this error when the client requests a capability it doesn't support (e.g., requesting completions when the completions capability was not advertised)\n- A client returning this error when the server requests a capability it doesn't support (e.g., requesting roots when the client did not declare the roots capability)",
+///  "description": "A JSON-RPC error indicating that the requested method does not exist or is not available.\n\nIn MCP, a server returns this error when a client invokes a method the server does not implement — either a genuinely unknown method, or one gated behind a server capability the server did not advertise (e.g., calling prompts/list when the prompts capability was not advertised).\n\nA request that requires a client capability the client did not declare is signalled instead by {@link MissingRequiredClientCapabilityError} (-32021).",
 ///  "type": "object",
 ///  "required": [
 ///    "code",
@@ -6031,6 +5526,153 @@ pub struct MethodNotFoundError {
     pub data: ::std::option::Option<::serde_json::Value>,
     ///A short description of the error. The message SHOULD be limited to a concise single sentence.
     pub message: ::std::string::String,
+}
+/**Returned when processing a request requires a capability the client did not
+declare in clientCapabilities. For HTTP, the response status code MUST be
+400 Bad Request.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Returned when processing a request requires a capability the client did not\ndeclare in clientCapabilities. For HTTP, the response status code MUST be\n400 Bad Request.",
+///  "type": "object",
+///  "required": [
+///    "error",
+///    "jsonrpc"
+///  ],
+///  "properties": {
+///    "error": {
+///      "allOf": [
+///        {
+///          "$ref": "#/$defs/Error"
+///        },
+///        {
+///          "type": "object",
+///          "required": [
+///            "code",
+///            "data"
+///          ],
+///          "properties": {
+///            "code": {
+///              "type": "integer"
+///            },
+///            "data": {
+///              "type": "object",
+///              "required": [
+///                "requiredCapabilities"
+///              ],
+///              "properties": {
+///                "requiredCapabilities": {
+///                  "description": "The capabilities the server requires from the client to process this request.",
+///                  "$ref": "#/$defs/ClientCapabilities"
+///                }
+///              }
+///            }
+///          }
+///        }
+///      ]
+///    },
+///    "id": {
+///      "$ref": "#/$defs/RequestId"
+///    },
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct MissingRequiredClientCapabilityError {
+    pub error: MissingRequiredClientCapabilityErrorError,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub id: ::std::option::Option<RequestId>,
+    #[serde(deserialize_with = "validate::missing_required_client_capability_error_jsonrpc")]
+    jsonrpc: ::std::string::String,
+}
+impl MissingRequiredClientCapabilityError {
+    pub fn new(error: MissingRequiredClientCapabilityErrorError, id: ::std::option::Option<RequestId>) -> Self {
+        Self {
+            error,
+            id,
+            jsonrpc: JSONRPC_VERSION.to_string(),
+        }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
+    }
+}
+///MissingRequiredClientCapabilityErrorError
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "allOf": [
+///    {
+///      "$ref": "#/$defs/Error"
+///    },
+///    {
+///      "type": "object",
+///      "required": [
+///        "code",
+///        "data"
+///      ],
+///      "properties": {
+///        "code": {
+///          "type": "integer"
+///        },
+///        "data": {
+///          "type": "object",
+///          "required": [
+///            "requiredCapabilities"
+///          ],
+///          "properties": {
+///            "requiredCapabilities": {
+///              "description": "The capabilities the server requires from the client to process this request.",
+///              "$ref": "#/$defs/ClientCapabilities"
+///            }
+///          }
+///        }
+///      }
+///    }
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct MissingRequiredClientCapabilityErrorError {
+    pub code: i64,
+    pub data: MissingRequiredClientCapabilityErrorErrorData,
+    ///A short description of the error. The message SHOULD be limited to a concise single sentence.
+    pub message: ::std::string::String,
+}
+///MissingRequiredClientCapabilityErrorErrorData
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "type": "object",
+///  "required": [
+///    "requiredCapabilities"
+///  ],
+///  "properties": {
+///    "requiredCapabilities": {
+///      "description": "The capabilities the server requires from the client to process this request.",
+///      "$ref": "#/$defs/ClientCapabilities"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct MissingRequiredClientCapabilityErrorErrorData {
+    ///The capabilities the server requires from the client to process this request.
+    #[serde(rename = "requiredCapabilities")]
+    pub required_capabilities: ClientCapabilities,
 }
 /**Hints to use for model selection.
 Keys not declared here are currently left unspecified by the spec and are up
@@ -6190,6 +5832,44 @@ pub struct Notification {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub params: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
+///Extends {@link MetaObject} with additional notification-specific fields. All key naming rules from MetaObject apply.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Extends {@link MetaObject} with additional notification-specific fields. All key naming rules from MetaObject apply.",
+///  "type": "object",
+///  "properties": {
+///    "io.modelcontextprotocol/subscriptionId": {
+///      "description": "Identifies the subscription stream a notification was delivered on. The\nserver MUST include this key on every notification delivered via a\n{@link SubscriptionsListenRequestsubscriptions/listen} stream, so the\nclient can correlate the notification with the originating subscription.\nThe key is absent on notifications not delivered via a subscription\nstream (e.g. progress notifications for an in-flight request), which is\nwhy it is optional here.\n\nThe value is the JSON-RPC ID of the subscriptions/listen request that\nopened the stream.",
+///      "$ref": "#/$defs/RequestId"
+///    }
+///  },
+///  "additionalProperties": {}
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct NotificationMetaObject {
+    /**Identifies the subscription stream a notification was delivered on. The
+    server MUST include this key on every notification delivered via a
+    {@link SubscriptionsListenRequestsubscriptions/listen} stream, so the
+    client can correlate the notification with the originating subscription.
+    The key is absent on notifications not delivered via a subscription
+    stream (e.g. progress notifications for an in-flight request), which is
+    why it is optional here.
+    The value is the JSON-RPC ID of the subscriptions/listen request that
+    opened the stream.*/
+    #[serde(
+        rename = "io.modelcontextprotocol/subscriptionId",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub io_modelcontextprotocol_subscription_id: ::std::option::Option<RequestId>,
+    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+}
 ///Common params for any notification.
 ///
 /// <details><summary>JSON schema</summary>
@@ -6200,7 +5880,7 @@ pub struct Notification {
 ///  "type": "object",
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/NotificationMetaObject"
 ///    }
 ///  }
 ///}
@@ -6209,7 +5889,7 @@ pub struct Notification {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct NotificationParams {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<NotificationMetaObject>,
 }
 ///NumberSchema
 ///
@@ -6223,16 +5903,16 @@ pub struct NotificationParams {
 ///  ],
 ///  "properties": {
 ///    "default": {
-///      "type": "integer"
+///      "type": "number"
 ///    },
 ///    "description": {
 ///      "type": "string"
 ///    },
 ///    "maximum": {
-///      "type": "integer"
+///      "type": "number"
 ///    },
 ///    "minimum": {
-///      "type": "integer"
+///      "type": "number"
 ///    },
 ///    "title": {
 ///      "type": "string"
@@ -6302,7 +5982,8 @@ impl ::std::fmt::Display for NumberSchemaType {
 ///  "required": [
 ///    "id",
 ///    "jsonrpc",
-///    "method"
+///    "method",
+///    "params"
 ///  ],
 ///  "properties": {
 ///    "id": {
@@ -6328,11 +6009,10 @@ pub struct PaginatedRequest {
     #[serde(deserialize_with = "validate::paginated_request_jsonrpc")]
     jsonrpc: ::std::string::String,
     pub method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<PaginatedRequestParams>,
+    pub params: PaginatedRequestParams,
 }
 impl PaginatedRequest {
-    pub fn new(id: RequestId, method: ::std::string::String, params: ::std::option::Option<PaginatedRequestParams>) -> Self {
+    pub fn new(id: RequestId, method: ::std::string::String, params: PaginatedRequestParams) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -6352,6 +6032,9 @@ impl PaginatedRequest {
 ///{
 ///  "description": "Common params for paginated requests.",
 ///  "type": "object",
+///  "required": [
+///    "_meta"
+///  ],
 ///  "properties": {
 ///    "_meta": {
 ///      "$ref": "#/$defs/RequestMetaObject"
@@ -6370,8 +6053,8 @@ pub struct PaginatedRequestParams {
     If provided, the server should return results starting after this cursor.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub cursor: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
 }
 ///PaginatedResult
 ///
@@ -6380,12 +6063,19 @@ pub struct PaginatedRequestParams {
 /// ```json
 ///{
 ///  "type": "object",
+///  "required": [
+///    "resultType"
+///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
 ///    },
 ///    "nextCursor": {
 ///      "description": "An opaque token representing the pagination position after the last returned result.\nIf present, there may be more results available.",
+///      "type": "string"
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
 ///      "type": "string"
 ///    }
 ///  }
@@ -6395,11 +6085,19 @@ pub struct PaginatedRequestParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct PaginatedResult {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
     /**An opaque token representing the pagination position after the last returned result.
     If present, there may be more results available.*/
     #[serde(rename = "nextCursor", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub next_cursor: ::std::option::Option<::std::string::String>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
 }
 ///A JSON-RPC error indicating that invalid JSON was received by the server. This error is returned when the server cannot parse the JSON text of a message.
 ///
@@ -6439,115 +6137,6 @@ pub struct ParseError {
     pub data: ::std::option::Option<::serde_json::Value>,
     ///A short description of the error. The message SHOULD be limited to a concise single sentence.
     pub message: ::std::string::String,
-}
-///A ping, issued by either the server or the client, to check that the other party is still alive. The receiver must promptly respond, or else may be disconnected.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A ping, issued by either the server or the client, to check that the other party is still alive. The receiver must promptly respond, or else may be disconnected.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "ping"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/RequestParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct PingRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::ping_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::ping_request_method")]
-    method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<RequestParams>,
-}
-impl PingRequest {
-    pub fn new(id: RequestId, params: ::std::option::Option<RequestParams>) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "ping".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "ping"
-    pub fn method_value() -> &'static str {
-        "ping"
-    }
-}
-///A successful response for a {@link PingRequestping} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response for a {@link PingRequestping} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/Result"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct PingResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::ping_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: Result,
-}
-impl PingResultResponse {
-    pub fn new(id: RequestId, result: Result) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
 }
 /**Restricted schema definitions that only allow primitive types
 without nested objects or arrays.*/
@@ -6693,6 +6282,10 @@ impl ProgressNotification {
     pub fn method_value() -> &'static str {
         "notifications/progress"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/progress"
+    }
 }
 ///Parameters for a {@link ProgressNotificationnotifications/progress} notification.
 ///
@@ -6708,7 +6301,7 @@ impl ProgressNotification {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/NotificationMetaObject"
 ///    },
 ///    "message": {
 ///      "description": "An optional message describing the current progress.",
@@ -6730,13 +6323,13 @@ impl ProgressNotification {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ProgressNotificationParams {
     ///An optional message describing the current progress.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub message: ::std::option::Option<::std::string::String>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<NotificationMetaObject>,
     pub progress: f64,
     ///The progress token which was given in the initial request, used to associate this notification with the request that is proceeding.
     #[serde(rename = "progressToken")]
@@ -6893,13 +6486,13 @@ pub struct PromptArgument {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<::std::string::String>,
 }
-///An optional notification from the server to the client, informing it that the list of prompts it offers has changed. This may be issued by servers without any previous subscription from the client.
+///An optional notification from the server to the client, informing it that the list of prompts it offers has changed. This is only delivered on a {@link SubscriptionsListenRequestsubscriptions/listen} stream when the client requested it via the promptsListChanged filter field.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "An optional notification from the server to the client, informing it that the list of prompts it offers has changed. This may be issued by servers without any previous subscription from the client.",
+///  "description": "An optional notification from the server to the client, informing it that the list of prompts it offers has changed. This is only delivered on a {@link SubscriptionsListenRequestsubscriptions/listen} stream when the client requested it via the promptsListChanged filter field.",
 ///  "type": "object",
 ///  "required": [
 ///    "jsonrpc",
@@ -6946,6 +6539,10 @@ impl PromptListChangedNotification {
     }
     /// returns "notifications/prompts/list_changed"
     pub fn method_value() -> &'static str {
+        "notifications/prompts/list_changed"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/prompts/list_changed"
     }
 }
@@ -7035,6 +6632,10 @@ impl PromptReference {
     }
     /// returns "ref/prompt"
     pub fn type_value() -> &'static str {
+        "ref/prompt"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "ref/prompt"
     }
 }
@@ -7132,6 +6733,10 @@ impl ReadResourceRequest {
     pub fn method_value() -> &'static str {
         "resources/read"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "resources/read"
+    }
 }
 ///Parameters for a resources/read request.
 ///
@@ -7142,11 +6747,18 @@ impl ReadResourceRequest {
 ///  "description": "Parameters for a resources/read request.",
 ///  "type": "object",
 ///  "required": [
+///    "_meta",
 ///    "uri"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
 ///      "$ref": "#/$defs/RequestMetaObject"
+///    },
+///    "inputResponses": {
+///      "$ref": "#/$defs/InputResponses"
+///    },
+///    "requestState": {
+///      "type": "string"
 ///    },
 ///    "uri": {
 ///      "description": "The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.",
@@ -7159,8 +6771,12 @@ impl ReadResourceRequest {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ReadResourceRequestParams {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "inputResponses", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub input_responses: ::std::option::Option<InputResponses>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
+    #[serde(rename = "requestState", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub request_state: ::std::option::Option<::std::string::String>,
     ///The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.
     pub uri: ::std::string::String,
 }
@@ -7173,11 +6789,22 @@ pub struct ReadResourceRequestParams {
 ///  "description": "The result returned by the server for a {@link ReadResourceRequestresources/read} request.",
 ///  "type": "object",
 ///  "required": [
-///    "contents"
+///    "cacheScope",
+///    "contents",
+///    "resultType",
+///    "ttlMs"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "cacheScope": {
+///      "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///      "type": "string",
+///      "enum": [
+///        "private",
+///        "public"
+///      ]
 ///    },
 ///    "contents": {
 ///      "type": "array",
@@ -7191,6 +6818,15 @@ pub struct ReadResourceRequestParams {
 ///          }
 ///        ]
 ///      }
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    },
+///    "ttlMs": {
+///      "description": "A hint from the server indicating how long (in milliseconds) the\nclient MAY cache this response before re-fetching. Semantics are\nanalogous to HTTP Cache-Control max-age.\n\n- If 0, The response SHOULD be considered immediately stale,\n  The client MAY re-fetch every time the result is needed.\n- If positive, the client SHOULD consider the result fresh for this many\n  milliseconds after receiving the response.",
+///      "type": "integer",
+///      "minimum": 0.0
 ///    }
 ///  }
 ///}
@@ -7198,9 +6834,75 @@ pub struct ReadResourceRequestParams {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ReadResourceResult {
+    /**Indicates the intended scope of the cached response, analogous to HTTP
+    Cache-Control: public vs Cache-Control: private.
+    - "public": The response does not contain user-specific data. Any
+      client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+      the response and serve it across authorization contexts.
+    - "private": The response MAY be cached and reused only within the
+      same authorization context. Caches MUST NOT be shared across
+      authorization contexts (e.g., a different access token requires a
+      different cache).*/
+    #[serde(rename = "cacheScope")]
+    pub cache_scope: ReadResourceResultCacheScope,
     pub contents: ::std::vec::Vec<ReadResourceContent>,
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+    /**A hint from the server indicating how long (in milliseconds) the
+    client MAY cache this response before re-fetching. Semantics are
+    analogous to HTTP Cache-Control max-age.
+    - If 0, The response SHOULD be considered immediately stale,
+      The client MAY re-fetch every time the result is needed.
+    - If positive, the client SHOULD consider the result fresh for this many
+      milliseconds after receiving the response.*/
+    #[serde(rename = "ttlMs")]
+    pub ttl_ms: u64,
+}
+/**Indicates the intended scope of the cached response, analogous to HTTP
+Cache-Control: public vs Cache-Control: private.
+- "public": The response does not contain user-specific data. Any
+  client or intermediary (e.g., shared gateway, caching proxy) MAY cache
+  the response and serve it across authorization contexts.
+- "private": The response MAY be cached and reused only within the
+  same authorization context. Caches MUST NOT be shared across
+  authorization contexts (e.g., a different access token requires a
+  different cache).*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the intended scope of the cached response, analogous to HTTP\nCache-Control: public vs Cache-Control: private.\n\n- \"public\": The response does not contain user-specific data. Any\n  client or intermediary (e.g., shared gateway, caching proxy) MAY cache\n  the response and serve it across authorization contexts.\n- \"private\": The response MAY be cached and reused only within the\n  same authorization context. Caches MUST NOT be shared across\n  authorization contexts (e.g., a different access token requires a\n  different cache).",
+///  "type": "string",
+///  "enum": [
+///    "private",
+///    "public"
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ReadResourceResultCacheScope {
+    #[serde(rename = "private")]
+    Private,
+    #[serde(rename = "public")]
+    Public,
+}
+impl ::std::fmt::Display for ReadResourceResultCacheScope {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Private => write!(f, "private"),
+            Self::Public => write!(f, "public"),
+        }
+    }
 }
 ///A successful response from the server for a {@link ReadResourceRequestresources/read} request.
 ///
@@ -7224,7 +6926,14 @@ pub struct ReadResourceResult {
 ///      "const": "2.0"
 ///    },
 ///    "result": {
-///      "$ref": "#/$defs/ReadResourceResult"
+///      "anyOf": [
+///        {
+///          "$ref": "#/$defs/InputRequiredResult"
+///        },
+///        {
+///          "$ref": "#/$defs/ReadResourceResult"
+///        }
+///      ]
 ///    }
 ///  }
 ///}
@@ -7235,10 +6944,10 @@ pub struct ReadResourceResultResponse {
     pub id: RequestId,
     #[serde(deserialize_with = "validate::read_resource_result_response_jsonrpc")]
     jsonrpc: ::std::string::String,
-    pub result: ReadResourceResult,
+    pub result: ReadResourceResultResponseResult,
 }
 impl ReadResourceResultResponse {
-    pub fn new(id: RequestId, result: ReadResourceResult) -> Self {
+    pub fn new(id: RequestId, result: ReadResourceResultResponseResult) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -7249,32 +6958,38 @@ impl ReadResourceResultResponse {
         &self.jsonrpc
     }
 }
-/**Metadata for associating messages with a task.
-Include this in the _meta field under the key io.modelcontextprotocol/related-task.*/
+///ReadResourceResultResponseResult
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Metadata for associating messages with a task.\nInclude this in the _meta field under the key io.modelcontextprotocol/related-task.",
-///  "type": "object",
-///  "required": [
-///    "taskId"
-///  ],
-///  "properties": {
-///    "taskId": {
-///      "description": "The task identifier this message is associated with.",
-///      "type": "string"
+///  "anyOf": [
+///    {
+///      "$ref": "#/$defs/InputRequiredResult"
+///    },
+///    {
+///      "$ref": "#/$defs/ReadResourceResult"
 ///    }
-///  }
+///  ]
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct RelatedTaskMetadata {
-    ///The task identifier this message is associated with.
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
+#[serde(untagged)]
+pub enum ReadResourceResultResponseResult {
+    InputRequiredResult(InputRequiredResult),
+    ReadResourceResult(ReadResourceResult),
+}
+impl ::std::convert::From<InputRequiredResult> for ReadResourceResultResponseResult {
+    fn from(value: InputRequiredResult) -> Self {
+        Self::InputRequiredResult(value)
+    }
+}
+impl ::std::convert::From<ReadResourceResult> for ReadResourceResultResponseResult {
+    fn from(value: ReadResourceResult) -> Self {
+        Self::ReadResourceResult(value)
+    }
 }
 ///Request
 ///
@@ -7337,20 +7052,81 @@ impl ::std::convert::From<i64> for RequestId {
 ///{
 ///  "description": "Extends {@link MetaObject} with additional request-specific fields. All key naming rules from MetaObject apply.",
 ///  "type": "object",
+///  "required": [
+///    "io.modelcontextprotocol/clientCapabilities",
+///    "io.modelcontextprotocol/protocolVersion"
+///  ],
 ///  "properties": {
+///    "io.modelcontextprotocol/clientCapabilities": {
+///      "description": "The client's capabilities for this specific request. Required.\n\nCapabilities are declared per-request rather than once at initialization;\nan empty object means the client supports no optional capabilities.\nServers MUST NOT infer capabilities from prior requests.",
+///      "$ref": "#/$defs/ClientCapabilities"
+///    },
+///    "io.modelcontextprotocol/clientInfo": {
+///      "description": "Identifies the client software making the request. Clients SHOULD\ninclude this field on every request unless specifically configured not\nto do so.\n\nThe {@link Implementation} schema requires name and version; other\nfields are optional.\n\nThe value is self-reported by the client and is not verified by the\nprotocol. It is intended for display, logging, and debugging. Servers\nSHOULD NOT use it to change their behavior, and SHOULD NOT rely on it for\nsecurity decisions.",
+///      "$ref": "#/$defs/Implementation"
+///    },
+///    "io.modelcontextprotocol/logLevel": {
+///      "description": "The desired log level for this request. Optional.\n\nIf absent, the server MUST NOT send any {@link LoggingMessageNotificationnotifications/message}\nnotifications for this request. The client opts in to log messages by\nexplicitly setting a level. Replaces the former logging/setLevel RPC.",
+///      "$ref": "#/$defs/LoggingLevel"
+///    },
+///    "io.modelcontextprotocol/protocolVersion": {
+///      "description": "The MCP Protocol Version being used for this request. Required.\n\nFor the HTTP transport, this value MUST match the MCP-Protocol-Version\nheader; otherwise the server MUST return a 400 Bad Request. If the\nserver does not support the requested version, it MUST return an\n{@link UnsupportedProtocolVersionError}.",
+///      "type": "string"
+///    },
 ///    "progressToken": {
 ///      "description": "If specified, the caller is requesting out-of-band progress notifications for this request (as represented by {@link ProgressNotificationnotifications/progress}). The value of this parameter is an opaque token that will be attached to any subsequent notifications. The receiver is not obligated to provide these notifications.",
 ///      "$ref": "#/$defs/ProgressToken"
 ///    }
-///  }
+///  },
+///  "additionalProperties": {}
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct RequestMetaObject {
+    /**The client's capabilities for this specific request. Required.
+    Capabilities are declared per-request rather than once at initialization;
+    an empty object means the client supports no optional capabilities.
+    Servers MUST NOT infer capabilities from prior requests.*/
+    #[serde(rename = "io.modelcontextprotocol/clientCapabilities")]
+    pub client_capabilities: ClientCapabilities,
+    /**Identifies the client software making the request. Clients SHOULD
+    include this field on every request unless specifically configured not
+    to do so.
+    The {@link Implementation} schema requires name and version; other
+    fields are optional.
+    The value is self-reported by the client and is not verified by the
+    protocol. It is intended for display, logging, and debugging. Servers
+    SHOULD NOT use it to change their behavior, and SHOULD NOT rely on it for
+    security decisions.*/
+    #[serde(
+        rename = "io.modelcontextprotocol/clientInfo",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub client_info: ::std::option::Option<Implementation>,
+    /**The desired log level for this request. Optional.
+    If absent, the server MUST NOT send any {@link LoggingMessageNotificationnotifications/message}
+    notifications for this request. The client opts in to log messages by
+    explicitly setting a level. Replaces the former logging/setLevel RPC.*/
+    #[serde(
+        rename = "io.modelcontextprotocol/logLevel",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub log_level: ::std::option::Option<LoggingLevel>,
+    /**The MCP Protocol Version being used for this request. Required.
+    For the HTTP transport, this value MUST match the MCP-Protocol-Version
+    header; otherwise the server MUST return a 400 Bad Request. If the
+    server does not support the requested version, it MUST return an
+    {@link UnsupportedProtocolVersionError}.*/
+    #[serde(rename = "io.modelcontextprotocol/protocolVersion")]
+    pub protocol_version: ::std::string::String,
     ///If specified, the caller is requesting out-of-band progress notifications for this request (as represented by {@link ProgressNotificationnotifications/progress}). The value of this parameter is an opaque token that will be attached to any subsequent notifications. The receiver is not obligated to provide these notifications.
     #[serde(rename = "progressToken", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub progress_token: ::std::option::Option<ProgressToken>,
+    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
 ///Common params for any request.
 ///
@@ -7360,6 +7136,9 @@ pub struct RequestMetaObject {
 ///{
 ///  "description": "Common params for any request.",
 ///  "type": "object",
+///  "required": [
+///    "_meta"
+///  ],
 ///  "properties": {
 ///    "_meta": {
 ///      "$ref": "#/$defs/RequestMetaObject"
@@ -7370,8 +7149,8 @@ pub struct RequestMetaObject {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct RequestParams {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
 }
 ///A known resource that the server is capable of reading.
 ///
@@ -7642,14 +7421,18 @@ impl ResourceLink {
     pub fn type_value() -> &'static str {
         "resource_link"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "resource_link"
+    }
 }
-///An optional notification from the server to the client, informing it that the list of resources it can read from has changed. This may be issued by servers without any previous subscription from the client.
+///An optional notification from the server to the client, informing it that the list of resources it can read from has changed. This is only delivered on a {@link SubscriptionsListenRequestsubscriptions/listen} stream when the client requested it via the resourcesListChanged filter field.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "An optional notification from the server to the client, informing it that the list of resources it can read from has changed. This may be issued by servers without any previous subscription from the client.",
+///  "description": "An optional notification from the server to the client, informing it that the list of resources it can read from has changed. This is only delivered on a {@link SubscriptionsListenRequestsubscriptions/listen} stream when the client requested it via the resourcesListChanged filter field.",
 ///  "type": "object",
 ///  "required": [
 ///    "jsonrpc",
@@ -7698,6 +7481,10 @@ impl ResourceListChangedNotification {
     pub fn method_value() -> &'static str {
         "notifications/resources/list_changed"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/resources/list_changed"
+    }
 }
 ///Common params for resource-related requests.
 ///
@@ -7708,6 +7495,7 @@ impl ResourceListChangedNotification {
 ///  "description": "Common params for resource-related requests.",
 ///  "type": "object",
 ///  "required": [
+///    "_meta",
 ///    "uri"
 ///  ],
 ///  "properties": {
@@ -7725,8 +7513,8 @@ impl ResourceListChangedNotification {
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ResourceRequestParams {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
     ///The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.
     pub uri: ::std::string::String,
 }
@@ -7865,14 +7653,18 @@ impl ResourceTemplateReference {
     pub fn type_value() -> &'static str {
         "ref/resource"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "ref/resource"
+    }
 }
-///A notification from the server to the client, informing it that a resource has changed and may need to be read again. This should only be sent if the client previously sent a {@link SubscribeRequestresources/subscribe} request.
+///A notification from the server to the client, informing it that a resource has changed and may need to be read again. This is only sent for resources the client opted in to via the resourceSubscriptions field of a {@link SubscriptionsListenRequestsubscriptions/listen} request.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "A notification from the server to the client, informing it that a resource has changed and may need to be read again. This should only be sent if the client previously sent a {@link SubscribeRequestresources/subscribe} request.",
+///  "description": "A notification from the server to the client, informing it that a resource has changed and may need to be read again. This is only sent for resources the client opted in to via the resourceSubscriptions field of a {@link SubscriptionsListenRequestsubscriptions/listen} request.",
 ///  "type": "object",
 ///  "required": [
 ///    "jsonrpc",
@@ -7921,6 +7713,10 @@ impl ResourceUpdatedNotification {
     pub fn method_value() -> &'static str {
         "notifications/resources/updated"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/resources/updated"
+    }
 }
 ///Parameters for a notifications/resources/updated notification.
 ///
@@ -7935,7 +7731,7 @@ impl ResourceUpdatedNotification {
 ///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/NotificationMetaObject"
 ///    },
 ///    "uri": {
 ///      "description": "The URI of the resource that has been updated. This might be a sub-resource of the one that the client actually subscribed to.",
@@ -7946,10 +7742,10 @@ impl ResourceUpdatedNotification {
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ResourceUpdatedNotificationParams {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<NotificationMetaObject>,
     ///The URI of the resource that has been updated. This might be a sub-resource of the one that the client actually subscribed to.
     pub uri: ::std::string::String,
 }
@@ -7961,9 +7757,16 @@ pub struct ResourceUpdatedNotificationParams {
 ///{
 ///  "description": "Common result fields.",
 ///  "type": "object",
+///  "required": [
+///    "resultType"
+///  ],
 ///  "properties": {
 ///    "_meta": {
-///      "$ref": "#/$defs/MetaObject"
+///      "$ref": "#/$defs/ResultMetaObject"
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
 ///    }
 ///  },
 ///  "additionalProperties": {}
@@ -7973,10 +7776,73 @@ pub struct ResourceUpdatedNotificationParams {
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct Result {
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
+    pub meta: ::std::option::Option<ResultMetaObject>,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
     #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
     pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
+///Extends {@link MetaObject} with additional result-specific fields. All key naming rules from MetaObject apply.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Extends {@link MetaObject} with additional result-specific fields. All key naming rules from MetaObject apply.",
+///  "type": "object",
+///  "properties": {
+///    "io.modelcontextprotocol/serverInfo": {
+///      "description": "Identifies the server software producing the response. Servers SHOULD\ninclude this field on every response unless specifically configured not\nto do so.\n\nThe {@link Implementation} schema requires name and version; other\nfields are optional.\n\nThe value is self-reported by the server and is not verified by the\nprotocol. It is intended for display, logging, and debugging. Clients\nSHOULD NOT use it to change their behavior, and SHOULD NOT rely on it for\nsecurity decisions.",
+///      "$ref": "#/$defs/Implementation"
+///    }
+///  },
+///  "additionalProperties": {}
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct ResultMetaObject {
+    /**Identifies the server software producing the response. Servers SHOULD
+    include this field on every response unless specifically configured not
+    to do so.
+    The {@link Implementation} schema requires name and version; other
+    fields are optional.
+    The value is self-reported by the server and is not verified by the
+    protocol. It is intended for display, logging, and debugging. Clients
+    SHOULD NOT use it to change their behavior, and SHOULD NOT rely on it for
+    security decisions.*/
+    #[serde(
+        rename = "io.modelcontextprotocol/serverInfo",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub io_modelcontextprotocol_server_info: ::std::option::Option<Implementation>,
+    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+}
+/**Indicates the type of a {@link Result} object, allowing the client to
+determine how to parse the response.
+complete - the request completed successfully and the result contains the final content.
+input_required - the request requires additional input and the result contains an {@link InputRequiredResult} object with instructions for the client to provide additional input before retrying the original request.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Indicates the type of a {@link Result} object, allowing the client to\ndetermine how to parse the response.\n\ncomplete - the request completed successfully and the result contains the final content.\ninput_required - the request requires additional input and the result contains an {@link InputRequiredResult} object with instructions for the client to provide additional input before retrying the original request.",
+///  "type": "string"
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[serde(transparent)]
+pub struct ResultType(pub ::std::string::String);
 ///The sender or recipient of messages and data in a conversation.
 ///
 /// <details><summary>JSON schema</summary>
@@ -8048,64 +7914,6 @@ pub struct Root {
     This restriction may be relaxed in future versions of the protocol to allow
     other URI schemes.*/
     pub uri: ::std::string::String,
-}
-/**A notification from the client to the server, informing it that the list of roots has changed.
-This notification should be sent whenever the client adds, removes, or modifies any root.
-The server should then request an updated list of roots using the {@link ListRootsRequest}.*/
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A notification from the client to the server, informing it that the list of roots has changed.\nThis notification should be sent whenever the client adds, removes, or modifies any root.\nThe server should then request an updated list of roots using the {@link ListRootsRequest}.",
-///  "type": "object",
-///  "required": [
-///    "jsonrpc",
-///    "method"
-///  ],
-///  "properties": {
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "notifications/roots/list_changed"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/NotificationParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct RootsListChangedNotification {
-    #[serde(deserialize_with = "validate::roots_list_changed_notification_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::roots_list_changed_notification_method")]
-    method: ::std::string::String,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub params: ::std::option::Option<NotificationParams>,
-}
-impl RootsListChangedNotification {
-    pub fn new(params: ::std::option::Option<NotificationParams>) -> Self {
-        Self {
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "notifications/roots/list_changed".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "notifications/roots/list_changed"
-    pub fn method_value() -> &'static str {
-        "notifications/roots/list_changed"
-    }
 }
 ///RpcError
 ///
@@ -8352,11 +8160,10 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 ///      }
 ///    },
 ///    "extensions": {
-///      "description": "Optional MCP extensions that the server supports. Keys are extension identifiers\n(e.g., \"io.modelcontextprotocol/apps\"), and values are per-extension settings\nobjects. An empty object indicates support with no settings.",
+///      "description": "Optional MCP extensions that the server supports. Keys are extension identifiers\n(e.g., \"io.modelcontextprotocol/tasks\"), and values are per-extension settings\nobjects. An empty object indicates support with no settings.\n\nKeys MUST follow the {@link MetaObject_meta key naming rules}, with a\nmandatory prefix.",
 ///      "type": "object",
 ///      "additionalProperties": {
-///        "type": "object",
-///        "additionalProperties": true
+///        "$ref": "#/$defs/JSONObject"
 ///      }
 ///    },
 ///    "logging": {
@@ -8387,36 +8194,6 @@ impl ::std::convert::From<ToolResultContent> for SamplingMessageContentBlock {
 ///        }
 ///      }
 ///    },
-///    "tasks": {
-///      "description": "Present if the server supports task-augmented requests.",
-///      "type": "object",
-///      "properties": {
-///        "cancel": {
-///          "description": "Whether this server supports {@link CancelTaskRequesttasks/cancel}.",
-///          "$ref": "#/$defs/JSONObject"
-///        },
-///        "list": {
-///          "description": "Whether this server supports {@link ListTasksRequesttasks/list}.",
-///          "$ref": "#/$defs/JSONObject"
-///        },
-///        "requests": {
-///          "description": "Specifies which request types can be augmented with tasks.",
-///          "type": "object",
-///          "properties": {
-///            "tools": {
-///              "description": "Task support for tool-related requests.",
-///              "type": "object",
-///              "properties": {
-///                "call": {
-///                  "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///                  "$ref": "#/$defs/JSONObject"
-///                }
-///              }
-///            }
-///          }
-///        }
-///      }
-///    },
 ///    "tools": {
 ///      "description": "Present if the server offers any tools to call.",
 ///      "type": "object",
@@ -8440,12 +8217,12 @@ pub struct ServerCapabilities {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub experimental: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonObject>>,
     /**Optional MCP extensions that the server supports. Keys are extension identifiers
-    (e.g., "io.modelcontextprotocol/apps"), and values are per-extension settings
-    objects. An empty object indicates support with no settings.*/
+    (e.g., "io.modelcontextprotocol/tasks"), and values are per-extension settings
+    objects. An empty object indicates support with no settings.
+    Keys MUST follow the {@link MetaObject_meta key naming rules}, with a
+    mandatory prefix.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub extensions: ::std::option::Option<
-        std::collections::BTreeMap<::std::string::String, ::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-    >,
+    pub extensions: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonObject>>,
     ///Present if the server supports sending log messages to the client.
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub logging: ::std::option::Option<JsonObject>,
@@ -8453,8 +8230,6 @@ pub struct ServerCapabilities {
     pub prompts: ::std::option::Option<ServerCapabilitiesPrompts>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub resources: ::std::option::Option<ServerCapabilitiesResources>,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub tasks: ::std::option::Option<ServerTasks>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub tools: ::std::option::Option<ServerCapabilitiesTools>,
 }
@@ -8551,6 +8326,9 @@ pub struct ServerCapabilitiesTools {
 ///      "$ref": "#/$defs/ResourceListChangedNotification"
 ///    },
 ///    {
+///      "$ref": "#/$defs/SubscriptionsAcknowledgedNotification"
+///    },
+///    {
 ///      "$ref": "#/$defs/ResourceUpdatedNotification"
 ///    },
 ///    {
@@ -8560,13 +8338,7 @@ pub struct ServerCapabilitiesTools {
 ///      "$ref": "#/$defs/ToolListChangedNotification"
 ///    },
 ///    {
-///      "$ref": "#/$defs/TaskStatusNotification"
-///    },
-///    {
 ///      "$ref": "#/$defs/LoggingMessageNotification"
-///    },
-///    {
-///      "$ref": "#/$defs/ElicitationCompleteNotification"
 ///    }
 ///  ]
 ///}
@@ -8578,12 +8350,11 @@ pub enum ServerNotification {
     CancelledNotification(CancelledNotification),
     ProgressNotification(ProgressNotification),
     ResourceListChangedNotification(ResourceListChangedNotification),
+    SubscriptionsAcknowledgedNotification(SubscriptionsAcknowledgedNotification),
     ResourceUpdatedNotification(ResourceUpdatedNotification),
     PromptListChangedNotification(PromptListChangedNotification),
     ToolListChangedNotification(ToolListChangedNotification),
-    TaskStatusNotification(TaskStatusNotification),
     LoggingMessageNotification(LoggingMessageNotification),
-    ElicitationCompleteNotification(ElicitationCompleteNotification),
 }
 impl ::std::convert::From<CancelledNotification> for ServerNotification {
     fn from(value: CancelledNotification) -> Self {
@@ -8598,6 +8369,11 @@ impl ::std::convert::From<ProgressNotification> for ServerNotification {
 impl ::std::convert::From<ResourceListChangedNotification> for ServerNotification {
     fn from(value: ResourceListChangedNotification) -> Self {
         Self::ResourceListChangedNotification(value)
+    }
+}
+impl ::std::convert::From<SubscriptionsAcknowledgedNotification> for ServerNotification {
+    fn from(value: SubscriptionsAcknowledgedNotification) -> Self {
+        Self::SubscriptionsAcknowledgedNotification(value)
     }
 }
 impl ::std::convert::From<ResourceUpdatedNotification> for ServerNotification {
@@ -8615,107 +8391,9 @@ impl ::std::convert::From<ToolListChangedNotification> for ServerNotification {
         Self::ToolListChangedNotification(value)
     }
 }
-impl ::std::convert::From<TaskStatusNotification> for ServerNotification {
-    fn from(value: TaskStatusNotification) -> Self {
-        Self::TaskStatusNotification(value)
-    }
-}
 impl ::std::convert::From<LoggingMessageNotification> for ServerNotification {
     fn from(value: LoggingMessageNotification) -> Self {
         Self::LoggingMessageNotification(value)
-    }
-}
-impl ::std::convert::From<ElicitationCompleteNotification> for ServerNotification {
-    fn from(value: ElicitationCompleteNotification) -> Self {
-        Self::ElicitationCompleteNotification(value)
-    }
-}
-///ServerRequest
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "anyOf": [
-///    {
-///      "$ref": "#/$defs/PingRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/GetTaskRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/GetTaskPayloadRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/CancelTaskRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/ListTasksRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/CreateMessageRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/ListRootsRequest"
-///    },
-///    {
-///      "$ref": "#/$defs/ElicitRequest"
-///    }
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Serialize, Clone, Debug)]
-#[serde(untagged)]
-#[allow(clippy::large_enum_variant)]
-pub enum ServerRequest {
-    PingRequest(PingRequest),
-    GetTaskRequest(GetTaskRequest),
-    GetTaskPayloadRequest(GetTaskPayloadRequest),
-    CancelTaskRequest(CancelTaskRequest),
-    ListTasksRequest(ListTasksRequest),
-    CreateMessageRequest(CreateMessageRequest),
-    ListRootsRequest(ListRootsRequest),
-    ElicitRequest(ElicitRequest),
-}
-impl ::std::convert::From<PingRequest> for ServerRequest {
-    fn from(value: PingRequest) -> Self {
-        Self::PingRequest(value)
-    }
-}
-impl ::std::convert::From<GetTaskRequest> for ServerRequest {
-    fn from(value: GetTaskRequest) -> Self {
-        Self::GetTaskRequest(value)
-    }
-}
-impl ::std::convert::From<GetTaskPayloadRequest> for ServerRequest {
-    fn from(value: GetTaskPayloadRequest) -> Self {
-        Self::GetTaskPayloadRequest(value)
-    }
-}
-impl ::std::convert::From<CancelTaskRequest> for ServerRequest {
-    fn from(value: CancelTaskRequest) -> Self {
-        Self::CancelTaskRequest(value)
-    }
-}
-impl ::std::convert::From<ListTasksRequest> for ServerRequest {
-    fn from(value: ListTasksRequest) -> Self {
-        Self::ListTasksRequest(value)
-    }
-}
-impl ::std::convert::From<CreateMessageRequest> for ServerRequest {
-    fn from(value: CreateMessageRequest) -> Self {
-        Self::CreateMessageRequest(value)
-    }
-}
-impl ::std::convert::From<ListRootsRequest> for ServerRequest {
-    fn from(value: ListRootsRequest) -> Self {
-        Self::ListRootsRequest(value)
-    }
-}
-impl ::std::convert::From<ElicitRequest> for ServerRequest {
-    fn from(value: ElicitRequest) -> Self {
-        Self::ElicitRequest(value)
     }
 }
 ///ServerResult
@@ -8729,7 +8407,10 @@ impl ::std::convert::From<ElicitRequest> for ServerRequest {
 ///      "$ref": "#/$defs/Result"
 ///    },
 ///    {
-///      "$ref": "#/$defs/InitializeResult"
+///      "$ref": "#/$defs/InputRequiredResult"
+///    },
+///    {
+///      "$ref": "#/$defs/DiscoverResult"
 ///    },
 ///    {
 ///      "$ref": "#/$defs/ListResourcesResult"
@@ -8739,6 +8420,9 @@ impl ::std::convert::From<ElicitRequest> for ServerRequest {
 ///    },
 ///    {
 ///      "$ref": "#/$defs/ReadResourceResult"
+///    },
+///    {
+///      "$ref": "#/$defs/SubscriptionsListenResult"
 ///    },
 ///    {
 ///      "$ref": "#/$defs/ListPromptsResult"
@@ -8753,52 +8437,37 @@ impl ::std::convert::From<ElicitRequest> for ServerRequest {
 ///      "$ref": "#/$defs/CallToolResult"
 ///    },
 ///    {
-///      "$ref": "#/$defs/CreateTaskResult"
-///    },
-///    {
-///      "description": "The result returned for a {@link GetTaskRequesttasks/get} request.",
-///      "$ref": "#/$defs/GetTaskResult"
-///    },
-///    {
-///      "$ref": "#/$defs/GetTaskPayloadResult"
-///    },
-///    {
-///      "description": "The result returned for a {@link CancelTaskRequesttasks/cancel} request.",
-///      "$ref": "#/$defs/CancelTaskResult"
-///    },
-///    {
-///      "$ref": "#/$defs/ListTasksResult"
-///    },
-///    {
 ///      "$ref": "#/$defs/CompleteResult"
 ///    }
 ///  ]
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Serialize, Clone, Debug)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum ServerResult {
-    InitializeResult(InitializeResult),
+    InputRequiredResult(InputRequiredResult),
+    DiscoverResult(DiscoverResult),
     ListResourcesResult(ListResourcesResult),
     ListResourceTemplatesResult(ListResourceTemplatesResult),
     ReadResourceResult(ReadResourceResult),
+    SubscriptionsListenResult(SubscriptionsListenResult),
     ListPromptsResult(ListPromptsResult),
     GetPromptResult(GetPromptResult),
     ListToolsResult(ListToolsResult),
     CallToolResult(CallToolResult),
-    CreateTaskResult(CreateTaskResult),
-    GetTaskResult(GetTaskResult),
-    CancelTaskResult(CancelTaskResult),
-    ListTasksResult(ListTasksResult),
     CompleteResult(CompleteResult),
     Result(Result),
-    GetTaskPayloadResult(GetTaskPayloadResult),
 }
-impl ::std::convert::From<InitializeResult> for ServerResult {
-    fn from(value: InitializeResult) -> Self {
-        Self::InitializeResult(value)
+impl ::std::convert::From<InputRequiredResult> for ServerResult {
+    fn from(value: InputRequiredResult) -> Self {
+        Self::InputRequiredResult(value)
+    }
+}
+impl ::std::convert::From<DiscoverResult> for ServerResult {
+    fn from(value: DiscoverResult) -> Self {
+        Self::DiscoverResult(value)
     }
 }
 impl ::std::convert::From<ListResourcesResult> for ServerResult {
@@ -8814,6 +8483,11 @@ impl ::std::convert::From<ListResourceTemplatesResult> for ServerResult {
 impl ::std::convert::From<ReadResourceResult> for ServerResult {
     fn from(value: ReadResourceResult) -> Self {
         Self::ReadResourceResult(value)
+    }
+}
+impl ::std::convert::From<SubscriptionsListenResult> for ServerResult {
+    fn from(value: SubscriptionsListenResult) -> Self {
+        Self::SubscriptionsListenResult(value)
     }
 }
 impl ::std::convert::From<ListPromptsResult> for ServerResult {
@@ -8836,26 +8510,6 @@ impl ::std::convert::From<CallToolResult> for ServerResult {
         Self::CallToolResult(value)
     }
 }
-impl ::std::convert::From<CreateTaskResult> for ServerResult {
-    fn from(value: CreateTaskResult) -> Self {
-        Self::CreateTaskResult(value)
-    }
-}
-impl ::std::convert::From<GetTaskResult> for ServerResult {
-    fn from(value: GetTaskResult) -> Self {
-        Self::GetTaskResult(value)
-    }
-}
-impl ::std::convert::From<CancelTaskResult> for ServerResult {
-    fn from(value: CancelTaskResult) -> Self {
-        Self::CancelTaskResult(value)
-    }
-}
-impl ::std::convert::From<ListTasksResult> for ServerResult {
-    fn from(value: ListTasksResult) -> Self {
-        Self::ListTasksResult(value)
-    }
-}
 impl ::std::convert::From<CompleteResult> for ServerResult {
     fn from(value: CompleteResult) -> Self {
         Self::CompleteResult(value)
@@ -8864,249 +8518,6 @@ impl ::std::convert::From<CompleteResult> for ServerResult {
 impl ::std::convert::From<Result> for ServerResult {
     fn from(value: Result) -> Self {
         Self::Result(value)
-    }
-}
-impl ::std::convert::From<GetTaskPayloadResult> for ServerResult {
-    fn from(value: GetTaskPayloadResult) -> Self {
-        Self::GetTaskPayloadResult(value)
-    }
-}
-///Specifies which request types can be augmented with tasks.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Specifies which request types can be augmented with tasks.",
-///  "type": "object",
-///  "properties": {
-///    "tools": {
-///      "description": "Task support for tool-related requests.",
-///      "type": "object",
-///      "properties": {
-///        "call": {
-///          "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///          "$ref": "#/$defs/JSONObject"
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ServerTaskRequest {
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub tools: ::std::option::Option<ServerTaskTools>,
-}
-///Task support for tool-related requests.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Task support for tool-related requests.",
-///  "type": "object",
-///  "properties": {
-///    "call": {
-///      "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///      "$ref": "#/$defs/JSONObject"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ServerTaskTools {
-    ///Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub call: ::std::option::Option<JsonObject>,
-}
-///Present if the server supports task-augmented requests.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Present if the server supports task-augmented requests.",
-///  "type": "object",
-///  "properties": {
-///    "cancel": {
-///      "description": "Whether this server supports {@link CancelTaskRequesttasks/cancel}.",
-///      "$ref": "#/$defs/JSONObject"
-///    },
-///    "list": {
-///      "description": "Whether this server supports {@link ListTasksRequesttasks/list}.",
-///      "$ref": "#/$defs/JSONObject"
-///    },
-///    "requests": {
-///      "description": "Specifies which request types can be augmented with tasks.",
-///      "type": "object",
-///      "properties": {
-///        "tools": {
-///          "description": "Task support for tool-related requests.",
-///          "type": "object",
-///          "properties": {
-///            "call": {
-///              "description": "Whether the server supports task-augmented {@link CallToolRequesttools/call} requests.",
-///              "$ref": "#/$defs/JSONObject"
-///            }
-///          }
-///        }
-///      }
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ServerTasks {
-    ///Whether this server supports {@link CancelTaskRequesttasks/cancel}.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub cancel: ::std::option::Option<JsonObject>,
-    ///Whether this server supports {@link ListTasksRequesttasks/list}.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub list: ::std::option::Option<JsonObject>,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub requests: ::std::option::Option<ServerTaskRequest>,
-}
-///A request from the client to the server, to enable or adjust logging.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A request from the client to the server, to enable or adjust logging.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "logging/setLevel"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/SetLevelRequestParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct SetLevelRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::set_level_request_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::set_level_request_method")]
-    method: ::std::string::String,
-    pub params: SetLevelRequestParams,
-}
-impl SetLevelRequest {
-    pub fn new(id: RequestId, params: SetLevelRequestParams) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "logging/setLevel".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "logging/setLevel"
-    pub fn method_value() -> &'static str {
-        "logging/setLevel"
-    }
-}
-///Parameters for a logging/setLevel request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Parameters for a logging/setLevel request.",
-///  "type": "object",
-///  "required": [
-///    "level"
-///  ],
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/RequestMetaObject"
-///    },
-///    "level": {
-///      "description": "The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as {@link LoggingMessageNotificationnotifications/message}.",
-///      "$ref": "#/$defs/LoggingLevel"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct SetLevelRequestParams {
-    ///The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as {@link LoggingMessageNotificationnotifications/message}.
-    pub level: LoggingLevel,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
-}
-///A successful response from the server for a {@link SetLevelRequestlogging/setLevel} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response from the server for a {@link SetLevelRequestlogging/setLevel} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/Result"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct SetLevelResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::set_level_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: Result,
-}
-impl SetLevelResultResponse {
-    pub fn new(id: RequestId, result: Result) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
     }
 }
 ///SingleSelectEnumSchema
@@ -9228,6 +8639,10 @@ impl StringSchema {
     pub fn type_value() -> &'static str {
         "string"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "string"
+    }
 }
 ///StringSchemaFormat
 ///
@@ -9266,13 +8681,183 @@ impl ::std::fmt::Display for StringSchemaFormat {
         }
     }
 }
-///Sent from the client to request {@link ResourceUpdatedNotificationresources/updated} notifications from the server whenever a particular resource changes.
+/**The set of notification types a client may opt in to on a
+{@link SubscriptionsListenRequestsubscriptions/listen} request.
+Each notification type is **opt-in**; the server **MUST NOT** send
+notification types the client has not explicitly requested here.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Sent from the client to request {@link ResourceUpdatedNotificationresources/updated} notifications from the server whenever a particular resource changes.",
+///  "description": "The set of notification types a client may opt in to on a\n{@link SubscriptionsListenRequestsubscriptions/listen} request.\n\nEach notification type is **opt-in**; the server **MUST NOT** send\nnotification types the client has not explicitly requested here.",
+///  "type": "object",
+///  "properties": {
+///    "promptsListChanged": {
+///      "description": "If true, receive {@link PromptListChangedNotificationnotifications/prompts/list_changed}.",
+///      "type": "boolean"
+///    },
+///    "resourceSubscriptions": {
+///      "description": "Subscribe to {@link ResourceUpdatedNotificationnotifications/resources/updated} for these resource URIs.\nReplaces the former resources/subscribe RPC.",
+///      "type": "array",
+///      "items": {
+///        "type": "string"
+///      }
+///    },
+///    "resourcesListChanged": {
+///      "description": "If true, receive {@link ResourceListChangedNotificationnotifications/resources/list_changed}.",
+///      "type": "boolean"
+///    },
+///    "toolsListChanged": {
+///      "description": "If true, receive {@link ToolListChangedNotificationnotifications/tools/list_changed}.",
+///      "type": "boolean"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct SubscriptionFilter {
+    ///If true, receive {@link PromptListChangedNotificationnotifications/prompts/list_changed}.
+    #[serde(
+        rename = "promptsListChanged",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub prompts_list_changed: ::std::option::Option<bool>,
+    /**Subscribe to {@link ResourceUpdatedNotificationnotifications/resources/updated} for these resource URIs.
+    Replaces the former resources/subscribe RPC.*/
+    #[serde(
+        rename = "resourceSubscriptions",
+        default,
+        skip_serializing_if = "::std::vec::Vec::is_empty"
+    )]
+    pub resource_subscriptions: ::std::vec::Vec<::std::string::String>,
+    ///If true, receive {@link ResourceListChangedNotificationnotifications/resources/list_changed}.
+    #[serde(
+        rename = "resourcesListChanged",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub resources_list_changed: ::std::option::Option<bool>,
+    ///If true, receive {@link ToolListChangedNotificationnotifications/tools/list_changed}.
+    #[serde(
+        rename = "toolsListChanged",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub tools_list_changed: ::std::option::Option<bool>,
+}
+/**Sent by the server to acknowledge that a
+{@link SubscriptionsListenRequestsubscriptions/listen} subscription has been
+established and to report which notification types it agreed to honor.
+This notification MUST be the first message the server sends carrying the
+subscription's ID in io.modelcontextprotocol/subscriptionId. The server MUST
+NOT send any notification on the subscription before acknowledging it. On
+stdio, where every subscription shares one channel, this ordering is defined
+per subscription ID and not per channel: messages belonging to other
+subscriptions MAY be interleaved before it.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Sent by the server to acknowledge that a\n{@link SubscriptionsListenRequestsubscriptions/listen} subscription has been\nestablished and to report which notification types it agreed to honor.\n\nThis notification MUST be the first message the server sends carrying the\nsubscription's ID in io.modelcontextprotocol/subscriptionId. The server MUST\nNOT send any notification on the subscription before acknowledging it. On\nstdio, where every subscription shares one channel, this ordering is defined\nper subscription ID and not per channel: messages belonging to other\nsubscriptions MAY be interleaved before it.",
+///  "type": "object",
+///  "required": [
+///    "jsonrpc",
+///    "method",
+///    "params"
+///  ],
+///  "properties": {
+///    "jsonrpc": {
+///      "type": "string",
+///      "const": "2.0"
+///    },
+///    "method": {
+///      "type": "string",
+///      "const": "notifications/subscriptions/acknowledged"
+///    },
+///    "params": {
+///      "$ref": "#/$defs/SubscriptionsAcknowledgedNotificationParams"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct SubscriptionsAcknowledgedNotification {
+    #[serde(deserialize_with = "validate::subscriptions_acknowledged_notification_jsonrpc")]
+    jsonrpc: ::std::string::String,
+    #[serde(deserialize_with = "validate::subscriptions_acknowledged_notification_method")]
+    method: ::std::string::String,
+    pub params: SubscriptionsAcknowledgedNotificationParams,
+}
+impl SubscriptionsAcknowledgedNotification {
+    pub fn new(params: SubscriptionsAcknowledgedNotificationParams) -> Self {
+        Self {
+            jsonrpc: JSONRPC_VERSION.to_string(),
+            method: "notifications/subscriptions/acknowledged".to_string(),
+            params,
+        }
+    }
+    pub fn jsonrpc(&self) -> &::std::string::String {
+        &self.jsonrpc
+    }
+    pub fn method(&self) -> &::std::string::String {
+        &self.method
+    }
+    /// returns "notifications/subscriptions/acknowledged"
+    pub fn method_value() -> &'static str {
+        "notifications/subscriptions/acknowledged"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/subscriptions/acknowledged"
+    }
+}
+///Parameters for a {@link SubscriptionsAcknowledgedNotificationnotifications/subscriptions/acknowledged} notification.
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Parameters for a {@link SubscriptionsAcknowledgedNotificationnotifications/subscriptions/acknowledged} notification.",
+///  "type": "object",
+///  "required": [
+///    "notifications"
+///  ],
+///  "properties": {
+///    "_meta": {
+///      "$ref": "#/$defs/NotificationMetaObject"
+///    },
+///    "notifications": {
+///      "description": "The subset of requested notification types the server agreed to honor.\nOnly includes notification types the server actually supports; if the\nclient requested an unsupported type (e.g., promptsListChanged when\nthe server has no prompts), it is omitted from this set.",
+///      "$ref": "#/$defs/SubscriptionFilter"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
+pub struct SubscriptionsAcknowledgedNotificationParams {
+    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub meta: ::std::option::Option<NotificationMetaObject>,
+    /**The subset of requested notification types the server agreed to honor.
+    Only includes notification types the server actually supports; if the
+    client requested an unsupported type (e.g., promptsListChanged when
+    the server has no prompts), it is omitted from this set.*/
+    pub notifications: SubscriptionFilter,
+}
+/**Sent from the client to open a long-lived channel for receiving notifications
+outside the context of a specific request. Replaces the previous HTTP GET
+endpoint and ensures consistent behavior between HTTP and STDIO.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Sent from the client to open a long-lived channel for receiving notifications\noutside the context of a specific request. Replaces the previous HTTP GET\nendpoint and ensures consistent behavior between HTTP and STDIO.",
 ///  "type": "object",
 ///  "required": [
 ///    "id",
@@ -9290,30 +8875,30 @@ impl ::std::fmt::Display for StringSchemaFormat {
 ///    },
 ///    "method": {
 ///      "type": "string",
-///      "const": "resources/subscribe"
+///      "const": "subscriptions/listen"
 ///    },
 ///    "params": {
-///      "$ref": "#/$defs/SubscribeRequestParams"
+///      "$ref": "#/$defs/SubscriptionsListenRequestParams"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct SubscribeRequest {
+pub struct SubscriptionsListenRequest {
     pub id: RequestId,
-    #[serde(deserialize_with = "validate::subscribe_request_jsonrpc")]
+    #[serde(deserialize_with = "validate::subscriptions_listen_request_jsonrpc")]
     jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::subscribe_request_method")]
+    #[serde(deserialize_with = "validate::subscriptions_listen_request_method")]
     method: ::std::string::String,
-    pub params: SubscribeRequestParams,
+    pub params: SubscriptionsListenRequestParams,
 }
-impl SubscribeRequest {
-    pub fn new(id: RequestId, params: SubscribeRequestParams) -> Self {
+impl SubscriptionsListenRequest {
+    pub fn new(id: RequestId, params: SubscriptionsListenRequestParams) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "resources/subscribe".to_string(),
+            method: "subscriptions/listen".to_string(),
             params,
         }
     }
@@ -9323,49 +8908,150 @@ impl SubscribeRequest {
     pub fn method(&self) -> &::std::string::String {
         &self.method
     }
-    /// returns "resources/subscribe"
+    /// returns "subscriptions/listen"
     pub fn method_value() -> &'static str {
-        "resources/subscribe"
+        "subscriptions/listen"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "subscriptions/listen"
     }
 }
-///Parameters for a resources/subscribe request.
+///Parameters for a {@link SubscriptionsListenRequestsubscriptions/listen} request.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Parameters for a resources/subscribe request.",
+///  "description": "Parameters for a {@link SubscriptionsListenRequestsubscriptions/listen} request.",
 ///  "type": "object",
 ///  "required": [
-///    "uri"
+///    "_meta",
+///    "notifications"
 ///  ],
 ///  "properties": {
 ///    "_meta": {
 ///      "$ref": "#/$defs/RequestMetaObject"
 ///    },
-///    "uri": {
-///      "description": "The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.",
-///      "type": "string",
-///      "format": "uri"
+///    "notifications": {
+///      "description": "The notifications the client opts in to on this stream. The server\n**MUST NOT** send notification types the client has not explicitly\nrequested.",
+///      "$ref": "#/$defs/SubscriptionFilter"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct SubscribeRequestParams {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
-    ///The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.
-    pub uri: ::std::string::String,
+pub struct SubscriptionsListenRequestParams {
+    #[serde(rename = "_meta")]
+    pub meta: RequestMetaObject,
+    /**The notifications the client opts in to on this stream. The server
+    **MUST NOT** send notification types the client has not explicitly
+    requested.*/
+    pub notifications: SubscriptionFilter,
 }
-///A successful response from the server for a {@link SubscribeRequestresources/subscribe} request.
+/**The response to a {@link SubscriptionsListenRequestsubscriptions/listen}
+request, signalling that the subscription has ended gracefully (for example,
+during server shutdown). Because the listen stream is long-lived, this result
+is sent only when the server tears the subscription down; an abrupt transport
+close carries no response. The result body is otherwise empty.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "A successful response from the server for a {@link SubscribeRequestresources/subscribe} request.",
+///  "description": "The response to a {@link SubscriptionsListenRequestsubscriptions/listen}\nrequest, signalling that the subscription has ended gracefully (for example,\nduring server shutdown). Because the listen stream is long-lived, this result\nis sent only when the server tears the subscription down; an abrupt transport\nclose carries no response. The result body is otherwise empty.",
+///  "type": "object",
+///  "required": [
+///    "_meta",
+///    "resultType"
+///  ],
+///  "properties": {
+///    "_meta": {
+///      "$ref": "#/$defs/SubscriptionsListenResultMetaObject"
+///    },
+///    "resultType": {
+///      "description": "Indicates the type of the result, which allows the client to determine\nhow to parse the result object.\n\nServers implementing this protocol version MUST include this field.\nFor backward compatibility, when a client receives a result from a\nserver implementing an earlier protocol version (which does not include\nresultType), the client MUST treat the absent field as \"complete\".",
+///      "type": "string"
+///    }
+///  }
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct SubscriptionsListenResult {
+    #[serde(rename = "_meta")]
+    pub meta: SubscriptionsListenResultMetaObject,
+    /**Indicates the type of the result, which allows the client to determine
+    how to parse the result object.
+    Servers implementing this protocol version MUST include this field.
+    For backward compatibility, when a client receives a result from a
+    server implementing an earlier protocol version (which does not include
+    resultType), the client MUST treat the absent field as "complete".*/
+    #[serde(rename = "resultType")]
+    pub result_type: ::std::string::String,
+}
+/**Extends {@link ResultMetaObject} with the subscription-stream identifier carried by a
+{@link SubscriptionsListenResult}. All key naming rules from MetaObject apply.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "Extends {@link ResultMetaObject} with the subscription-stream identifier carried by a\n{@link SubscriptionsListenResult}. All key naming rules from MetaObject apply.",
+///  "type": "object",
+///  "required": [
+///    "io.modelcontextprotocol/subscriptionId"
+///  ],
+///  "properties": {
+///    "io.modelcontextprotocol/serverInfo": {
+///      "description": "Identifies the server software producing the response. Servers SHOULD\ninclude this field on every response unless specifically configured not\nto do so.\n\nThe {@link Implementation} schema requires name and version; other\nfields are optional.\n\nThe value is self-reported by the server and is not verified by the\nprotocol. It is intended for display, logging, and debugging. Clients\nSHOULD NOT use it to change their behavior, and SHOULD NOT rely on it for\nsecurity decisions.",
+///      "$ref": "#/$defs/Implementation"
+///    },
+///    "io.modelcontextprotocol/subscriptionId": {
+///      "description": "Identifies the subscription stream this response closes, so the client can\ncorrelate it with the originating subscription — mirroring the same key on\nthe stream's notifications. The value is the JSON-RPC ID of the\nsubscriptions/listen request that opened the stream (and equals this\nresponse's id).",
+///      "$ref": "#/$defs/RequestId"
+///    }
+///  },
+///  "additionalProperties": {}
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct SubscriptionsListenResultMetaObject {
+    /**Identifies the server software producing the response. Servers SHOULD
+    include this field on every response unless specifically configured not
+    to do so.
+    The {@link Implementation} schema requires name and version; other
+    fields are optional.
+    The value is self-reported by the server and is not verified by the
+    protocol. It is intended for display, logging, and debugging. Clients
+    SHOULD NOT use it to change their behavior, and SHOULD NOT rely on it for
+    security decisions.*/
+    #[serde(
+        rename = "io.modelcontextprotocol/serverInfo",
+        default,
+        skip_serializing_if = "::std::option::Option::is_none"
+    )]
+    pub io_modelcontextprotocol_server_info: ::std::option::Option<Implementation>,
+    /**Identifies the subscription stream this response closes, so the client can
+    correlate it with the originating subscription — mirroring the same key on
+    the stream's notifications. The value is the JSON-RPC ID of the
+    subscriptions/listen request that opened the stream (and equals this
+    response's id).*/
+    #[serde(rename = "io.modelcontextprotocol/subscriptionId")]
+    pub io_modelcontextprotocol_subscription_id: RequestId,
+    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+}
+/**A successful response from the server for a {@link SubscriptionsListenRequestsubscriptions/listen}
+request, sent when the server tears the subscription down gracefully.*/
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
+///  "description": "A successful response from the server for a {@link SubscriptionsListenRequestsubscriptions/listen}\nrequest, sent when the server tears the subscription down gracefully.",
 ///  "type": "object",
 ///  "required": [
 ///    "id",
@@ -9381,21 +9067,21 @@ pub struct SubscribeRequestParams {
 ///      "const": "2.0"
 ///    },
 ///    "result": {
-///      "$ref": "#/$defs/Result"
+///      "$ref": "#/$defs/SubscriptionsListenResult"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct SubscribeResultResponse {
+pub struct SubscriptionsListenResultResponse {
     pub id: RequestId,
-    #[serde(deserialize_with = "validate::subscribe_result_response_jsonrpc")]
+    #[serde(deserialize_with = "validate::subscriptions_listen_result_response_jsonrpc")]
     jsonrpc: ::std::string::String,
-    pub result: Result,
+    pub result: SubscriptionsListenResult,
 }
-impl SubscribeResultResponse {
-    pub fn new(id: RequestId, result: Result) -> Self {
+impl SubscriptionsListenResultResponse {
+    pub fn new(id: RequestId, result: SubscriptionsListenResult) -> Self {
         Self {
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
@@ -9405,279 +9091,6 @@ impl SubscribeResultResponse {
     pub fn jsonrpc(&self) -> &::std::string::String {
         &self.jsonrpc
     }
-}
-///Data associated with a task.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Data associated with a task.",
-///  "type": "object",
-///  "required": [
-///    "createdAt",
-///    "lastUpdatedAt",
-///    "status",
-///    "taskId",
-///    "ttl"
-///  ],
-///  "properties": {
-///    "createdAt": {
-///      "description": "ISO 8601 timestamp when the task was created.",
-///      "type": "string"
-///    },
-///    "lastUpdatedAt": {
-///      "description": "ISO 8601 timestamp when the task was last updated.",
-///      "type": "string"
-///    },
-///    "pollInterval": {
-///      "description": "Suggested polling interval in milliseconds.",
-///      "type": "integer"
-///    },
-///    "status": {
-///      "$ref": "#/$defs/TaskStatus"
-///    },
-///    "statusMessage": {
-///      "description": "Optional human-readable message describing the current task state.\nThis can provide context for any status, including:\n- Reasons for \"cancelled\" status\n- Summaries for \"completed\" status\n- Diagnostic information for \"failed\" status (e.g., error details, what went wrong)",
-///      "type": "string"
-///    },
-///    "taskId": {
-///      "description": "The task identifier.",
-///      "type": "string"
-///    },
-///    "ttl": {
-///      "description": "Actual retention duration from creation in milliseconds, null for unlimited.",
-///      "type": "integer"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct Task {
-    ///ISO 8601 timestamp when the task was created.
-    #[serde(rename = "createdAt")]
-    pub created_at: ::std::string::String,
-    ///ISO 8601 timestamp when the task was last updated.
-    #[serde(rename = "lastUpdatedAt")]
-    pub last_updated_at: ::std::string::String,
-    ///Suggested polling interval in milliseconds.
-    #[serde(rename = "pollInterval", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub poll_interval: ::std::option::Option<i64>,
-    pub status: TaskStatus,
-    /**Optional human-readable message describing the current task state.
-    This can provide context for any status, including:
-    - Reasons for "cancelled" status
-    - Summaries for "completed" status
-    - Diagnostic information for "failed" status (e.g., error details, what went wrong)*/
-    #[serde(rename = "statusMessage", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub status_message: ::std::option::Option<::std::string::String>,
-    ///The task identifier.
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-    ///Actual retention duration from creation in milliseconds, null for unlimited.
-    #[serde(default)]
-    pub ttl: ::std::option::Option<i64>,
-}
-///Common params for any task-augmented request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Common params for any task-augmented request.",
-///  "type": "object",
-///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/RequestMetaObject"
-///    },
-///    "task": {
-///      "description": "If specified, the caller is requesting task-augmented execution for this request.\nThe request will return a {@link CreateTaskResult} immediately, and the actual result can be\nretrieved later via {@link GetTaskPayloadRequesttasks/result}.\n\nTask augmentation is subject to capability negotiation - receivers MUST declare support\nfor task augmentation of specific request types in their capabilities.",
-///      "$ref": "#/$defs/TaskMetadata"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct TaskAugmentedRequestParams {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
-    /**If specified, the caller is requesting task-augmented execution for this request.
-    The request will return a {@link CreateTaskResult} immediately, and the actual result can be
-    retrieved later via {@link GetTaskPayloadRequesttasks/result}.
-    Task augmentation is subject to capability negotiation - receivers MUST declare support
-    for task augmentation of specific request types in their capabilities.*/
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub task: ::std::option::Option<TaskMetadata>,
-}
-/**Metadata for augmenting a request with task execution.
-Include this in the task field of the request parameters.*/
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Metadata for augmenting a request with task execution.\nInclude this in the task field of the request parameters.",
-///  "type": "object",
-///  "properties": {
-///    "ttl": {
-///      "description": "Requested duration in milliseconds to retain task from creation.",
-///      "type": "integer"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct TaskMetadata {
-    ///Requested duration in milliseconds to retain task from creation.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub ttl: ::std::option::Option<i64>,
-}
-///The status of a task.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "The status of a task.",
-///  "type": "string",
-///  "enum": [
-///    "cancelled",
-///    "completed",
-///    "failed",
-///    "input_required",
-///    "working"
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub enum TaskStatus {
-    #[serde(rename = "cancelled")]
-    Cancelled,
-    #[serde(rename = "completed")]
-    Completed,
-    #[serde(rename = "failed")]
-    Failed,
-    #[serde(rename = "input_required")]
-    InputRequired,
-    #[serde(rename = "working")]
-    Working,
-}
-impl ::std::fmt::Display for TaskStatus {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        match *self {
-            Self::Cancelled => write!(f, "cancelled"),
-            Self::Completed => write!(f, "completed"),
-            Self::Failed => write!(f, "failed"),
-            Self::InputRequired => write!(f, "input_required"),
-            Self::Working => write!(f, "working"),
-        }
-    }
-}
-///An optional notification from the receiver to the requestor, informing them that a task's status has changed. Receivers are not required to send these notifications.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "An optional notification from the receiver to the requestor, informing them that a task's status has changed. Receivers are not required to send these notifications.",
-///  "type": "object",
-///  "required": [
-///    "jsonrpc",
-///    "method",
-///    "params"
-///  ],
-///  "properties": {
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "notifications/tasks/status"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/TaskStatusNotificationParams"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct TaskStatusNotification {
-    #[serde(deserialize_with = "validate::task_status_notification_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::task_status_notification_method")]
-    method: ::std::string::String,
-    pub params: TaskStatusNotificationParams,
-}
-impl TaskStatusNotification {
-    pub fn new(params: TaskStatusNotificationParams) -> Self {
-        Self {
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "notifications/tasks/status".to_string(),
-            params,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "notifications/tasks/status"
-    pub fn method_value() -> &'static str {
-        "notifications/tasks/status"
-    }
-}
-///Parameters for a notifications/tasks/status notification.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Parameters for a notifications/tasks/status notification.",
-///  "allOf": [
-///    {
-///      "$ref": "#/$defs/NotificationParams"
-///    },
-///    {
-///      "$ref": "#/$defs/Task"
-///    }
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct TaskStatusNotificationParams {
-    ///ISO 8601 timestamp when the task was created.
-    #[serde(rename = "createdAt")]
-    pub created_at: ::std::string::String,
-    ///ISO 8601 timestamp when the task was last updated.
-    #[serde(rename = "lastUpdatedAt")]
-    pub last_updated_at: ::std::string::String,
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<MetaObject>,
-    ///Suggested polling interval in milliseconds.
-    #[serde(rename = "pollInterval", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub poll_interval: ::std::option::Option<i64>,
-    pub status: TaskStatus,
-    /**Optional human-readable message describing the current task state.
-    This can provide context for any status, including:
-    - Reasons for "cancelled" status
-    - Summaries for "completed" status
-    - Diagnostic information for "failed" status (e.g., error details, what went wrong)*/
-    #[serde(rename = "statusMessage", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub status_message: ::std::option::Option<::std::string::String>,
-    ///The task identifier.
-    #[serde(rename = "taskId")]
-    pub task_id: ::std::string::String,
-    ///Actual retention duration from creation in milliseconds, null for unlimited.
-    #[serde(default)]
-    pub ttl: ::std::option::Option<i64>,
 }
 ///Text provided to or from an LLM.
 ///
@@ -9741,6 +9154,10 @@ impl TextContent {
     }
     /// returns "text"
     pub fn type_value() -> &'static str {
+        "text"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "text"
     }
 }
@@ -9907,6 +9324,10 @@ impl TitledMultiSelectEnumSchema {
     }
     /// returns "array"
     pub fn type_value() -> &'static str {
+        "array"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "array"
     }
 }
@@ -10078,6 +9499,10 @@ impl TitledSingleSelectEnumSchema {
     pub fn type_value() -> &'static str {
         "string"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "string"
+    }
 }
 ///TitledSingleSelectEnumSchemaOneOfItem
 ///
@@ -10135,10 +9560,6 @@ pub struct TitledSingleSelectEnumSchemaOneOfItem {
 ///      "description": "A human-readable description of the tool.\n\nThis can be used by clients to improve the LLM's understanding of available tools. It can be thought of like a \"hint\" to the model.",
 ///      "type": "string"
 ///    },
-///    "execution": {
-///      "description": "Execution-related properties for this tool.",
-///      "$ref": "#/$defs/ToolExecution"
-///    },
 ///    "icons": {
 ///      "description": "Optional set of sized icons that the client can display in a user interface.\n\nClients that support rendering icons MUST support at least the following MIME types:\n- image/png - PNG images (safe, universal compatibility)\n- image/jpeg (and image/jpg) - JPEG images (safe, universal compatibility)\n\nClients that support rendering icons SHOULD also support:\n- image/svg+xml - SVG images (scalable but requires security precautions)\n- image/webp - WebP images (modern, efficient format)",
 ///      "type": "array",
@@ -10147,7 +9568,7 @@ pub struct TitledSingleSelectEnumSchemaOneOfItem {
 ///      }
 ///    },
 ///    "inputSchema": {
-///      "description": "A JSON Schema object defining the expected parameters for the tool.",
+///      "description": "A JSON Schema object defining the expected parameters for the tool.\n\nTool arguments are always JSON objects, so type: \"object\" is required at the root.\nBeyond that, any JSON Schema 2020-12 keyword may appear alongside type — including\ncomposition keywords (oneOf, anyOf, allOf, not), conditional keywords\n(if/then/else), reference keywords ($ref, $defs, $anchor), and any other\nstandard validation or annotation keywords.\n\nProperty schemas may carry an x-mcp-header annotation to mirror the\nargument value into an HTTP header on the Streamable HTTP transport. See\nthe Streamable HTTP transport specification for the validity and\nextraction rules.\n\nDefaults to JSON Schema 2020-12 when no explicit $schema is provided.",
 ///      "type": "object",
 ///      "required": [
 ///        "type"
@@ -10156,55 +9577,26 @@ pub struct TitledSingleSelectEnumSchemaOneOfItem {
 ///        "$schema": {
 ///          "type": "string"
 ///        },
-///        "properties": {
-///          "type": "object",
-///          "additionalProperties": {
-///            "$ref": "#/$defs/JSONValue"
-///          }
-///        },
-///        "required": {
-///          "type": "array",
-///          "items": {
-///            "type": "string"
-///          }
-///        },
 ///        "type": {
 ///          "type": "string",
 ///          "const": "object"
 ///        }
-///      }
+///      },
+///      "additionalProperties": {}
 ///    },
 ///    "name": {
 ///      "description": "Intended for programmatic or logical use, but used as a display name in past specs or fallback (if title isn't present).",
 ///      "type": "string"
 ///    },
 ///    "outputSchema": {
-///      "description": "An optional JSON Schema object defining the structure of the tool's output returned in\nthe structuredContent field of a {@link CallToolResult}.\n\nDefaults to JSON Schema 2020-12 when no explicit $schema is provided.\nCurrently restricted to type: \"object\" at the root level.",
+///      "description": "An optional JSON Schema object defining the structure of the tool's output returned in\nthe structuredContent field of a {@link CallToolResult}. This can be any valid JSON Schema 2020-12.\n\nDefaults to JSON Schema 2020-12 when no explicit $schema is provided.",
 ///      "type": "object",
-///      "required": [
-///        "type"
-///      ],
 ///      "properties": {
 ///        "$schema": {
 ///          "type": "string"
-///        },
-///        "properties": {
-///          "type": "object",
-///          "additionalProperties": {
-///            "$ref": "#/$defs/JSONValue"
-///          }
-///        },
-///        "required": {
-///          "type": "array",
-///          "items": {
-///            "type": "string"
-///          }
-///        },
-///        "type": {
-///          "type": "string",
-///          "const": "object"
 ///        }
-///      }
+///      },
+///      "additionalProperties": {}
 ///    },
 ///    "title": {
 ///      "description": "Intended for UI and end-user contexts — optimized to be human-readable and easily understood,\neven by those unfamiliar with domain-specific terminology.\n\nIf not provided, the name should be used for display (except for {@link Tool},\nwhere annotations.title should be given precedence over using name,\nif present).",
@@ -10224,9 +9616,6 @@ pub struct Tool {
     This can be used by clients to improve the LLM's understanding of available tools. It can be thought of like a "hint" to the model.*/
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
-    ///Execution-related properties for this tool.
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub execution: ::std::option::Option<ToolExecution>,
     /**Optional set of sized icons that the client can display in a user interface.
     Clients that support rendering icons MUST support at least the following MIME types:
     - image/png - PNG images (safe, universal compatibility)
@@ -10387,87 +9776,23 @@ impl ::std::fmt::Display for ToolChoiceMode {
         }
     }
 }
-///Execution-related properties for a tool.
+/**A JSON Schema object defining the expected parameters for the tool.
+Tool arguments are always JSON objects, so type: "object" is required at the root.
+Beyond that, any JSON Schema 2020-12 keyword may appear alongside type — including
+composition keywords (oneOf, anyOf, allOf, not), conditional keywords
+(if/then/else), reference keywords ($ref, $defs, $anchor), and any other
+standard validation or annotation keywords.
+Property schemas may carry an x-mcp-header annotation to mirror the
+argument value into an HTTP header on the Streamable HTTP transport. See
+the Streamable HTTP transport specification for the validity and
+extraction rules.
+Defaults to JSON Schema 2020-12 when no explicit $schema is provided.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Execution-related properties for a tool.",
-///  "type": "object",
-///  "properties": {
-///    "taskSupport": {
-///      "description": "Indicates whether this tool supports task-augmented execution.\nThis allows clients to handle long-running operations through polling\nthe task system.\n\n- \"forbidden\": Tool does not support task-augmented execution (default when absent)\n- \"optional\": Tool may support task-augmented execution\n- \"required\": Tool requires task-augmented execution\n\nDefault: \"forbidden\"",
-///      "type": "string",
-///      "enum": [
-///        "forbidden",
-///        "optional",
-///        "required"
-///      ]
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
-pub struct ToolExecution {
-    /**Indicates whether this tool supports task-augmented execution.
-    This allows clients to handle long-running operations through polling
-    the task system.
-    - "forbidden": Tool does not support task-augmented execution (default when absent)
-    - "optional": Tool may support task-augmented execution
-    - "required": Tool requires task-augmented execution
-      "*/
-    #[serde(rename = "taskSupport", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub task_support: ::std::option::Option<ToolExecutionTaskSupport>,
-}
-/**Indicates whether this tool supports task-augmented execution.
-This allows clients to handle long-running operations through polling
-the task system.
-- "forbidden": Tool does not support task-augmented execution (default when absent)
-- "optional": Tool may support task-augmented execution
-- "required": Tool requires task-augmented execution
-  "*/
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "Indicates whether this tool supports task-augmented execution.\nThis allows clients to handle long-running operations through polling\nthe task system.\n\n- \"forbidden\": Tool does not support task-augmented execution (default when absent)\n- \"optional\": Tool may support task-augmented execution\n- \"required\": Tool requires task-augmented execution\n\nDefault: \"forbidden\"",
-///  "type": "string",
-///  "enum": [
-///    "forbidden",
-///    "optional",
-///    "required"
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub enum ToolExecutionTaskSupport {
-    #[serde(rename = "forbidden")]
-    Forbidden,
-    #[serde(rename = "optional")]
-    Optional,
-    #[serde(rename = "required")]
-    Required,
-}
-impl ::std::fmt::Display for ToolExecutionTaskSupport {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        match *self {
-            Self::Forbidden => write!(f, "forbidden"),
-            Self::Optional => write!(f, "optional"),
-            Self::Required => write!(f, "required"),
-        }
-    }
-}
-///A JSON Schema object defining the expected parameters for the tool.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A JSON Schema object defining the expected parameters for the tool.",
+///  "description": "A JSON Schema object defining the expected parameters for the tool.\n\nTool arguments are always JSON objects, so type: \"object\" is required at the root.\nBeyond that, any JSON Schema 2020-12 keyword may appear alongside type — including\ncomposition keywords (oneOf, anyOf, allOf, not), conditional keywords\n(if/then/else), reference keywords ($ref, $defs, $anchor), and any other\nstandard validation or annotation keywords.\n\nProperty schemas may carry an x-mcp-header annotation to mirror the\nargument value into an HTTP header on the Streamable HTTP transport. See\nthe Streamable HTTP transport specification for the validity and\nextraction rules.\n\nDefaults to JSON Schema 2020-12 when no explicit $schema is provided.",
 ///  "type": "object",
 ///  "required": [
 ///    "type"
@@ -10476,48 +9801,33 @@ impl ::std::fmt::Display for ToolExecutionTaskSupport {
 ///    "$schema": {
 ///      "type": "string"
 ///    },
-///    "properties": {
-///      "type": "object",
-///      "additionalProperties": {
-///        "$ref": "#/$defs/JSONValue"
-///      }
-///    },
-///    "required": {
-///      "type": "array",
-///      "items": {
-///        "type": "string"
-///      }
-///    },
 ///    "type": {
 ///      "type": "string",
 ///      "const": "object"
 ///    }
-///  }
+///  },
+///  "additionalProperties": {}
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
 pub struct ToolInputSchema {
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub properties: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonValue>>,
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "$schema", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub schema: ::std::option::Option<::std::string::String>,
     #[serde(rename = "type", deserialize_with = "validate::tool_input_schema_type_")]
     type_: ::std::string::String,
+    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
 impl ToolInputSchema {
     pub fn new(
-        required: ::std::vec::Vec<::std::string::String>,
-        properties: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonValue>>,
         schema: ::std::option::Option<::std::string::String>,
+        extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
     ) -> Self {
         Self {
-            properties,
-            required,
             schema,
             type_: "object".to_string(),
+            extra,
         }
     }
     pub fn type_(&self) -> &::std::string::String {
@@ -10527,14 +9837,18 @@ impl ToolInputSchema {
     pub fn type_value() -> &'static str {
         "object"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "object"
+    }
 }
-///An optional notification from the server to the client, informing it that the list of tools it offers has changed. This may be issued by servers without any previous subscription from the client.
+///An optional notification from the server to the client, informing it that the list of tools it offers has changed. This is only delivered on a {@link SubscriptionsListenRequestsubscriptions/listen} stream when the client requested it via the toolsListChanged filter field.
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "An optional notification from the server to the client, informing it that the list of tools it offers has changed. This may be issued by servers without any previous subscription from the client.",
+///  "description": "An optional notification from the server to the client, informing it that the list of tools it offers has changed. This is only delivered on a {@link SubscriptionsListenRequestsubscriptions/listen} stream when the client requested it via the toolsListChanged filter field.",
 ///  "type": "object",
 ///  "required": [
 ///    "jsonrpc",
@@ -10583,76 +9897,36 @@ impl ToolListChangedNotification {
     pub fn method_value() -> &'static str {
         "notifications/tools/list_changed"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/tools/list_changed"
+    }
 }
 /**An optional JSON Schema object defining the structure of the tool's output returned in
-the structuredContent field of a {@link CallToolResult}.
-Defaults to JSON Schema 2020-12 when no explicit $schema is provided.
-Currently restricted to type: "object" at the root level.*/
+the structuredContent field of a {@link CallToolResult}. This can be any valid JSON Schema 2020-12.
+Defaults to JSON Schema 2020-12 when no explicit $schema is provided.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "An optional JSON Schema object defining the structure of the tool's output returned in\nthe structuredContent field of a {@link CallToolResult}.\n\nDefaults to JSON Schema 2020-12 when no explicit $schema is provided.\nCurrently restricted to type: \"object\" at the root level.",
+///  "description": "An optional JSON Schema object defining the structure of the tool's output returned in\nthe structuredContent field of a {@link CallToolResult}. This can be any valid JSON Schema 2020-12.\n\nDefaults to JSON Schema 2020-12 when no explicit $schema is provided.",
 ///  "type": "object",
-///  "required": [
-///    "type"
-///  ],
 ///  "properties": {
 ///    "$schema": {
 ///      "type": "string"
-///    },
-///    "properties": {
-///      "type": "object",
-///      "additionalProperties": {
-///        "$ref": "#/$defs/JSONValue"
-///      }
-///    },
-///    "required": {
-///      "type": "array",
-///      "items": {
-///        "type": "string"
-///      }
-///    },
-///    "type": {
-///      "type": "string",
-///      "const": "object"
 ///    }
-///  }
+///  },
+///  "additionalProperties": {}
 ///}
 /// ```
 /// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default)]
 pub struct ToolOutputSchema {
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub properties: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonValue>>,
-    #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-    pub required: ::std::vec::Vec<::std::string::String>,
     #[serde(rename = "$schema", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub schema: ::std::option::Option<::std::string::String>,
-    #[serde(rename = "type", deserialize_with = "validate::tool_output_schema_type_")]
-    type_: ::std::string::String,
-}
-impl ToolOutputSchema {
-    pub fn new(
-        required: ::std::vec::Vec<::std::string::String>,
-        properties: ::std::option::Option<std::collections::BTreeMap<::std::string::String, JsonValue>>,
-        schema: ::std::option::Option<::std::string::String>,
-    ) -> Self {
-        Self {
-            properties,
-            required,
-            schema,
-            type_: "object".to_string(),
-        }
-    }
-    pub fn type_(&self) -> &::std::string::String {
-        &self.type_
-    }
-    /// returns "object"
-    pub fn type_value() -> &'static str {
-        "object"
-    }
+    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
 }
 ///The result of a tool use, provided by the user back to the assistant.
 ///
@@ -10684,9 +9958,7 @@ impl ToolOutputSchema {
 ///      "type": "boolean"
 ///    },
 ///    "structuredContent": {
-///      "description": "An optional structured result object.\n\nIf the tool defined an {@link Tool.outputSchema}, this SHOULD conform to that schema.",
-///      "type": "object",
-///      "additionalProperties": {}
+///      "description": "An optional structured result value.\n\nThis can be any JSON value (object, array, string, number, boolean, or null).\nIf the tool defined an {@link Tool.outputSchema}, this SHOULD conform to that schema."
 ///    },
 ///    "toolUseId": {
 ///      "description": "The ID of the tool use this result corresponds to.\n\nThis MUST match the ID from a previous {@link ToolUseContent}.",
@@ -10715,14 +9987,15 @@ pub struct ToolResultContent {
     including tool results in subsequent sampling requests to enable caching optimizations.*/
     #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
     pub meta: ::std::option::Option<MetaObject>,
-    /**An optional structured result object.
+    /**An optional structured result value.
+    This can be any JSON value (object, array, string, number, boolean, or null).
     If the tool defined an {@link Tool.outputSchema}, this SHOULD conform to that schema.*/
     #[serde(
         rename = "structuredContent",
         default,
         skip_serializing_if = "::std::option::Option::is_none"
     )]
-    pub structured_content: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+    pub structured_content: ::std::option::Option<::serde_json::Value>,
     /**The ID of the tool use this result corresponds to.
     This MUST match the ID from a previous {@link ToolUseContent}.*/
     #[serde(rename = "toolUseId")]
@@ -10736,7 +10009,7 @@ impl ToolResultContent {
         tool_use_id: ::std::string::String,
         is_error: ::std::option::Option<bool>,
         meta: ::std::option::Option<MetaObject>,
-        structured_content: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        structured_content: ::std::option::Option<::serde_json::Value>,
     ) -> Self {
         Self {
             content,
@@ -10752,6 +10025,10 @@ impl ToolResultContent {
     }
     /// returns "tool_result"
     pub fn type_value() -> &'static str {
+        "tool_result"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "tool_result"
     }
 }
@@ -10833,146 +10110,184 @@ impl ToolUseContent {
     pub fn type_value() -> &'static str {
         "tool_use"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "tool_use"
+    }
 }
-///Sent from the client to request cancellation of {@link ResourceUpdatedNotificationresources/updated} notifications from the server. This should follow a previous {@link SubscribeRequestresources/subscribe} request.
+/**Returned when the request's protocol version is unknown to the server or
+unsupported (e.g., a known experimental or draft version the server has
+chosen not to implement). For HTTP, the response status code MUST be
+400 Bad Request.*/
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Sent from the client to request cancellation of {@link ResourceUpdatedNotificationresources/updated} notifications from the server. This should follow a previous {@link SubscribeRequestresources/subscribe} request.",
+///  "description": "Returned when the request's protocol version is unknown to the server or\nunsupported (e.g., a known experimental or draft version the server has\nchosen not to implement). For HTTP, the response status code MUST be\n400 Bad Request.",
 ///  "type": "object",
 ///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "method",
-///    "params"
+///    "error",
+///    "jsonrpc"
 ///  ],
 ///  "properties": {
+///    "error": {
+///      "allOf": [
+///        {
+///          "$ref": "#/$defs/Error"
+///        },
+///        {
+///          "type": "object",
+///          "required": [
+///            "code",
+///            "data"
+///          ],
+///          "properties": {
+///            "code": {
+///              "type": "integer"
+///            },
+///            "data": {
+///              "type": "object",
+///              "required": [
+///                "requested",
+///                "supported"
+///              ],
+///              "properties": {
+///                "requested": {
+///                  "description": "The protocol version that was requested by the client.",
+///                  "type": "string"
+///                },
+///                "supported": {
+///                  "description": "Protocol versions the server supports. The client should choose a\nmutually supported version from this list and retry.",
+///                  "type": "array",
+///                  "items": {
+///                    "type": "string"
+///                  }
+///                }
+///              }
+///            }
+///          }
+///        }
+///      ]
+///    },
 ///    "id": {
 ///      "$ref": "#/$defs/RequestId"
 ///    },
 ///    "jsonrpc": {
 ///      "type": "string",
 ///      "const": "2.0"
-///    },
-///    "method": {
-///      "type": "string",
-///      "const": "resources/unsubscribe"
-///    },
-///    "params": {
-///      "$ref": "#/$defs/UnsubscribeRequestParams"
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct UnsubscribeRequest {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::unsubscribe_request_jsonrpc")]
+pub struct UnsupportedProtocolVersionError {
+    pub error: UnsupportedProtocolVersionErrorError,
+    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+    pub id: ::std::option::Option<RequestId>,
+    #[serde(deserialize_with = "validate::unsupported_protocol_version_error_jsonrpc")]
     jsonrpc: ::std::string::String,
-    #[serde(deserialize_with = "validate::unsubscribe_request_method")]
-    method: ::std::string::String,
-    pub params: UnsubscribeRequestParams,
 }
-impl UnsubscribeRequest {
-    pub fn new(id: RequestId, params: UnsubscribeRequestParams) -> Self {
+impl UnsupportedProtocolVersionError {
+    pub fn new(error: UnsupportedProtocolVersionErrorError, id: ::std::option::Option<RequestId>) -> Self {
         Self {
+            error,
             id,
             jsonrpc: JSONRPC_VERSION.to_string(),
-            method: "resources/unsubscribe".to_string(),
-            params,
         }
     }
     pub fn jsonrpc(&self) -> &::std::string::String {
         &self.jsonrpc
     }
-    pub fn method(&self) -> &::std::string::String {
-        &self.method
-    }
-    /// returns "resources/unsubscribe"
-    pub fn method_value() -> &'static str {
-        "resources/unsubscribe"
-    }
 }
-///Parameters for a resources/unsubscribe request.
+///UnsupportedProtocolVersionErrorError
 ///
 /// <details><summary>JSON schema</summary>
 ///
 /// ```json
 ///{
-///  "description": "Parameters for a resources/unsubscribe request.",
+///  "allOf": [
+///    {
+///      "$ref": "#/$defs/Error"
+///    },
+///    {
+///      "type": "object",
+///      "required": [
+///        "code",
+///        "data"
+///      ],
+///      "properties": {
+///        "code": {
+///          "type": "integer"
+///        },
+///        "data": {
+///          "type": "object",
+///          "required": [
+///            "requested",
+///            "supported"
+///          ],
+///          "properties": {
+///            "requested": {
+///              "description": "The protocol version that was requested by the client.",
+///              "type": "string"
+///            },
+///            "supported": {
+///              "description": "Protocol versions the server supports. The client should choose a\nmutually supported version from this list and retry.",
+///              "type": "array",
+///              "items": {
+///                "type": "string"
+///              }
+///            }
+///          }
+///        }
+///      }
+///    }
+///  ]
+///}
+/// ```
+/// </details>
+#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
+pub struct UnsupportedProtocolVersionErrorError {
+    pub code: i64,
+    pub data: UnsupportedProtocolVersionErrorErrorData,
+    ///A short description of the error. The message SHOULD be limited to a concise single sentence.
+    pub message: ::std::string::String,
+}
+///UnsupportedProtocolVersionErrorErrorData
+///
+/// <details><summary>JSON schema</summary>
+///
+/// ```json
+///{
 ///  "type": "object",
 ///  "required": [
-///    "uri"
+///    "requested",
+///    "supported"
 ///  ],
 ///  "properties": {
-///    "_meta": {
-///      "$ref": "#/$defs/RequestMetaObject"
+///    "requested": {
+///      "description": "The protocol version that was requested by the client.",
+///      "type": "string"
 ///    },
-///    "uri": {
-///      "description": "The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.",
-///      "type": "string",
-///      "format": "uri"
+///    "supported": {
+///      "description": "Protocol versions the server supports. The client should choose a\nmutually supported version from this list and retry.",
+///      "type": "array",
+///      "items": {
+///        "type": "string"
+///      }
 ///    }
 ///  }
 ///}
 /// ```
 /// </details>
 #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct UnsubscribeRequestParams {
-    #[serde(rename = "_meta", default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub meta: ::std::option::Option<RequestMetaObject>,
-    ///The URI of the resource. The URI can use any protocol; it is up to the server how to interpret it.
-    pub uri: ::std::string::String,
-}
-///A successful response from the server for a {@link UnsubscribeRequestresources/unsubscribe} request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "A successful response from the server for a {@link UnsubscribeRequestresources/unsubscribe} request.",
-///  "type": "object",
-///  "required": [
-///    "id",
-///    "jsonrpc",
-///    "result"
-///  ],
-///  "properties": {
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    },
-///    "result": {
-///      "$ref": "#/$defs/Result"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct UnsubscribeResultResponse {
-    pub id: RequestId,
-    #[serde(deserialize_with = "validate::unsubscribe_result_response_jsonrpc")]
-    jsonrpc: ::std::string::String,
-    pub result: Result,
-}
-impl UnsubscribeResultResponse {
-    pub fn new(id: RequestId, result: Result) -> Self {
-        Self {
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            result,
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
+pub struct UnsupportedProtocolVersionErrorErrorData {
+    ///The protocol version that was requested by the client.
+    pub requested: ::std::string::String,
+    /**Protocol versions the server supports. The client should choose a
+    mutually supported version from this list and retry.*/
+    pub supported: ::std::vec::Vec<::std::string::String>,
 }
 ///Schema for multiple-selection enumeration without display titles for options.
 ///
@@ -11086,6 +10401,10 @@ impl UntitledMultiSelectEnumSchema {
     pub fn type_value() -> &'static str {
         "array"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "array"
+    }
 }
 ///Schema for the array items.
 ///
@@ -11138,6 +10457,10 @@ impl UntitledMultiSelectEnumSchemaItems {
     }
     /// returns "string"
     pub fn type_value() -> &'static str {
+        "string"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "string"
     }
 }
@@ -11220,180 +10543,11 @@ impl UntitledSingleSelectEnumSchema {
     pub fn type_value() -> &'static str {
         "string"
     }
-}
-///UrlElicitError
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "allOf": [
-///    {
-///      "$ref": "#/$defs/Error"
-///    },
-///    {
-///      "type": "object",
-///      "required": [
-///        "code",
-///        "data"
-///      ],
-///      "properties": {
-///        "code": {
-///          "type": "integer"
-///        },
-///        "data": {
-///          "type": "object",
-///          "required": [
-///            "elicitations"
-///          ],
-///          "properties": {
-///            "elicitations": {
-///              "type": "array",
-///              "items": {
-///                "$ref": "#/$defs/ElicitRequestURLParams"
-///              }
-///            }
-///          },
-///          "additionalProperties": {}
-///        }
-///      }
-///    }
-///  ]
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct UrlElicitError {
-    #[serde(deserialize_with = "validate::url_elicit_error_code")]
-    code: i64,
-    pub data: UrlElicitErrorData,
-    ///A short description of the error. The message SHOULD be limited to a concise single sentence.
-    pub message: ::std::string::String,
-}
-impl UrlElicitError {
-    pub fn new(data: UrlElicitErrorData, message: ::std::string::String) -> Self {
-        Self {
-            code: -32042i64,
-            data,
-            message,
-        }
-    }
-    pub fn code(&self) -> &i64 {
-        &self.code
-    }
-    /// returns -32042i64
-    pub fn code_value() -> i64 {
-        -32042i64
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "string"
     }
 }
-///UrlElicitErrorData
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "type": "object",
-///  "required": [
-///    "elicitations"
-///  ],
-///  "properties": {
-///    "elicitations": {
-///      "type": "array",
-///      "items": {
-///        "$ref": "#/$defs/ElicitRequestURLParams"
-///      }
-///    }
-///  },
-///  "additionalProperties": {}
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct UrlElicitErrorData {
-    pub elicitations: ::std::vec::Vec<ElicitRequestUrlParams>,
-    #[serde(flatten, default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub extra: ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
-}
-///An error response that indicates that the server requires the client to provide additional information via an elicitation request.
-///
-/// <details><summary>JSON schema</summary>
-///
-/// ```json
-///{
-///  "description": "An error response that indicates that the server requires the client to provide additional information via an elicitation request.",
-///  "type": "object",
-///  "required": [
-///    "error",
-///    "jsonrpc"
-///  ],
-///  "properties": {
-///    "error": {
-///      "allOf": [
-///        {
-///          "$ref": "#/$defs/Error"
-///        },
-///        {
-///          "type": "object",
-///          "required": [
-///            "code",
-///            "data"
-///          ],
-///          "properties": {
-///            "code": {
-///              "type": "integer"
-///            },
-///            "data": {
-///              "type": "object",
-///              "required": [
-///                "elicitations"
-///              ],
-///              "properties": {
-///                "elicitations": {
-///                  "type": "array",
-///                  "items": {
-///                    "$ref": "#/$defs/ElicitRequestURLParams"
-///                  }
-///                }
-///              },
-///              "additionalProperties": {}
-///            }
-///          }
-///        }
-///      ]
-///    },
-///    "id": {
-///      "$ref": "#/$defs/RequestId"
-///    },
-///    "jsonrpc": {
-///      "type": "string",
-///      "const": "2.0"
-///    }
-///  }
-///}
-/// ```
-/// </details>
-#[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug)]
-pub struct UrlElicitationRequiredError {
-    pub error: UrlElicitError,
-    #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub id: ::std::option::Option<RequestId>,
-    #[serde(deserialize_with = "validate::url_elicitation_required_error_jsonrpc")]
-    jsonrpc: ::std::string::String,
-}
-impl UrlElicitationRequiredError {
-    pub fn new(error: UrlElicitError, id: ::std::option::Option<RequestId>) -> Self {
-        Self {
-            error,
-            id,
-            jsonrpc: JSONRPC_VERSION.to_string(),
-        }
-    }
-    pub fn jsonrpc(&self) -> &::std::string::String {
-        &self.jsonrpc
-    }
-}
-/// Implementing the Deserialize trait
-/// This allows enum to be deserialized into correct type based on the value of the "method"
 impl<'de> serde::Deserialize<'de> for ClientRequest {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
@@ -11403,13 +10557,9 @@ impl<'de> serde::Deserialize<'de> for ClientRequest {
         let method_option = value.get("method").and_then(|v| v.as_str());
         if let Some(method) = method_option {
             match method {
-                "initialize" => {
-                    let req = serde_json::from_value::<InitializeRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::InitializeRequest(req))
-                }
-                "ping" => {
-                    let req = serde_json::from_value::<PingRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::PingRequest(req))
+                "server/discover" => {
+                    let req = serde_json::from_value::<DiscoverRequest>(value).map_err(serde::de::Error::custom)?;
+                    Ok(ClientRequest::DiscoverRequest(req))
                 }
                 "resources/list" => {
                     let req = serde_json::from_value::<ListResourcesRequest>(value).map_err(serde::de::Error::custom)?;
@@ -11424,13 +10574,10 @@ impl<'de> serde::Deserialize<'de> for ClientRequest {
                     let req = serde_json::from_value::<ReadResourceRequest>(value).map_err(serde::de::Error::custom)?;
                     Ok(ClientRequest::ReadResourceRequest(req))
                 }
-                "resources/subscribe" => {
-                    let req = serde_json::from_value::<SubscribeRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::SubscribeRequest(req))
-                }
-                "resources/unsubscribe" => {
-                    let req = serde_json::from_value::<UnsubscribeRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::UnsubscribeRequest(req))
+                "subscriptions/listen" => {
+                    let req =
+                        serde_json::from_value::<SubscriptionsListenRequest>(value).map_err(serde::de::Error::custom)?;
+                    Ok(ClientRequest::SubscriptionsListenRequest(req))
                 }
                 "prompts/list" => {
                     let req = serde_json::from_value::<ListPromptsRequest>(value).map_err(serde::de::Error::custom)?;
@@ -11448,26 +10595,6 @@ impl<'de> serde::Deserialize<'de> for ClientRequest {
                     let req = serde_json::from_value::<CallToolRequest>(value).map_err(serde::de::Error::custom)?;
                     Ok(ClientRequest::CallToolRequest(req))
                 }
-                "tasks/get" => {
-                    let req = serde_json::from_value::<GetTaskRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::GetTaskRequest(req))
-                }
-                "tasks/result" => {
-                    let req = serde_json::from_value::<GetTaskPayloadRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::GetTaskPayloadRequest(req))
-                }
-                "tasks/cancel" => {
-                    let req = serde_json::from_value::<CancelTaskRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::CancelTaskRequest(req))
-                }
-                "tasks/list" => {
-                    let req = serde_json::from_value::<ListTasksRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::ListTasksRequest(req))
-                }
-                "logging/setLevel" => {
-                    let req = serde_json::from_value::<SetLevelRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientRequest::SetLevelRequest(req))
-                }
                 "completion/complete" => {
                     let req = serde_json::from_value::<CompleteRequest>(value).map_err(serde::de::Error::custom)?;
                     Ok(ClientRequest::CompleteRequest(req))
@@ -11482,142 +10609,19 @@ impl<'de> serde::Deserialize<'de> for ClientRequest {
 impl ClientRequest {
     pub fn method(&self) -> &str {
         match self {
-            ClientRequest::InitializeRequest(request) => request.method(),
-            ClientRequest::PingRequest(request) => request.method(),
+            ClientRequest::DiscoverRequest(request) => request.method(),
             ClientRequest::ListResourcesRequest(request) => request.method(),
             ClientRequest::ListResourceTemplatesRequest(request) => request.method(),
             ClientRequest::ReadResourceRequest(request) => request.method(),
-            ClientRequest::SubscribeRequest(request) => request.method(),
-            ClientRequest::UnsubscribeRequest(request) => request.method(),
+            ClientRequest::SubscriptionsListenRequest(request) => request.method(),
             ClientRequest::ListPromptsRequest(request) => request.method(),
             ClientRequest::GetPromptRequest(request) => request.method(),
             ClientRequest::ListToolsRequest(request) => request.method(),
             ClientRequest::CallToolRequest(request) => request.method(),
-            ClientRequest::GetTaskRequest(request) => request.method(),
-            ClientRequest::GetTaskPayloadRequest(request) => request.method(),
-            ClientRequest::CancelTaskRequest(request) => request.method(),
-            ClientRequest::ListTasksRequest(request) => request.method(),
-            ClientRequest::SetLevelRequest(request) => request.method(),
             ClientRequest::CompleteRequest(request) => request.method(),
         }
     }
 }
-/// Implementing the Deserialize trait
-/// This allows enum to be deserialized into correct type based on the value of the "method"
-impl<'de> serde::Deserialize<'de> for ClientNotification {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value: serde_json::Value = serde::Deserialize::deserialize(deserializer)?;
-        let method_option = value.get("method").and_then(|v| v.as_str());
-        if let Some(method) = method_option {
-            match method {
-                "notifications/cancelled" => {
-                    let req = serde_json::from_value::<CancelledNotification>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientNotification::CancelledNotification(req))
-                }
-                "notifications/initialized" => {
-                    let req = serde_json::from_value::<InitializedNotification>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientNotification::InitializedNotification(req))
-                }
-                "notifications/progress" => {
-                    let req = serde_json::from_value::<ProgressNotification>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientNotification::ProgressNotification(req))
-                }
-                "notifications/tasks/status" => {
-                    let req = serde_json::from_value::<TaskStatusNotification>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientNotification::TaskStatusNotification(req))
-                }
-                "notifications/roots/list_changed" => {
-                    let req =
-                        serde_json::from_value::<RootsListChangedNotification>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ClientNotification::RootsListChangedNotification(req))
-                }
-                _ => Err(serde::de::Error::unknown_variant("method", &[""])),
-            }
-        } else {
-            Err(serde::de::Error::missing_field("method"))
-        }
-    }
-}
-impl ClientNotification {
-    pub fn method(&self) -> &str {
-        match self {
-            ClientNotification::CancelledNotification(request) => request.method(),
-            ClientNotification::InitializedNotification(request) => request.method(),
-            ClientNotification::ProgressNotification(request) => request.method(),
-            ClientNotification::TaskStatusNotification(request) => request.method(),
-            ClientNotification::RootsListChangedNotification(request) => request.method(),
-        }
-    }
-}
-/// Implementing the Deserialize trait
-/// This allows enum to be deserialized into correct type based on the value of the "method"
-impl<'de> serde::Deserialize<'de> for ServerRequest {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let value: serde_json::Value = serde::Deserialize::deserialize(deserializer)?;
-        let method_option = value.get("method").and_then(|v| v.as_str());
-        if let Some(method) = method_option {
-            match method {
-                "ping" => {
-                    let req = serde_json::from_value::<PingRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::PingRequest(req))
-                }
-                "tasks/get" => {
-                    let req = serde_json::from_value::<GetTaskRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::GetTaskRequest(req))
-                }
-                "tasks/result" => {
-                    let req = serde_json::from_value::<GetTaskPayloadRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::GetTaskPayloadRequest(req))
-                }
-                "tasks/cancel" => {
-                    let req = serde_json::from_value::<CancelTaskRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::CancelTaskRequest(req))
-                }
-                "tasks/list" => {
-                    let req = serde_json::from_value::<ListTasksRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::ListTasksRequest(req))
-                }
-                "sampling/createMessage" => {
-                    let req = serde_json::from_value::<CreateMessageRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::CreateMessageRequest(req))
-                }
-                "roots/list" => {
-                    let req = serde_json::from_value::<ListRootsRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::ListRootsRequest(req))
-                }
-                "elicitation/create" => {
-                    let req = serde_json::from_value::<ElicitRequest>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerRequest::ElicitRequest(req))
-                }
-                _ => Err(serde::de::Error::unknown_variant("method", &[""])),
-            }
-        } else {
-            Err(serde::de::Error::missing_field("method"))
-        }
-    }
-}
-impl ServerRequest {
-    pub fn method(&self) -> &str {
-        match self {
-            ServerRequest::PingRequest(request) => request.method(),
-            ServerRequest::GetTaskRequest(request) => request.method(),
-            ServerRequest::GetTaskPayloadRequest(request) => request.method(),
-            ServerRequest::CancelTaskRequest(request) => request.method(),
-            ServerRequest::ListTasksRequest(request) => request.method(),
-            ServerRequest::CreateMessageRequest(request) => request.method(),
-            ServerRequest::ListRootsRequest(request) => request.method(),
-            ServerRequest::ElicitRequest(request) => request.method(),
-        }
-    }
-}
-/// Implementing the Deserialize trait
-/// This allows enum to be deserialized into correct type based on the value of the "method"
 impl<'de> serde::Deserialize<'de> for ServerNotification {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
@@ -11640,6 +10644,11 @@ impl<'de> serde::Deserialize<'de> for ServerNotification {
                         .map_err(serde::de::Error::custom)?;
                     Ok(ServerNotification::ResourceListChangedNotification(req))
                 }
+                "notifications/subscriptions/acknowledged" => {
+                    let req = serde_json::from_value::<SubscriptionsAcknowledgedNotification>(value)
+                        .map_err(serde::de::Error::custom)?;
+                    Ok(ServerNotification::SubscriptionsAcknowledgedNotification(req))
+                }
                 "notifications/resources/updated" => {
                     let req =
                         serde_json::from_value::<ResourceUpdatedNotification>(value).map_err(serde::de::Error::custom)?;
@@ -11655,19 +10664,10 @@ impl<'de> serde::Deserialize<'de> for ServerNotification {
                         serde_json::from_value::<ToolListChangedNotification>(value).map_err(serde::de::Error::custom)?;
                     Ok(ServerNotification::ToolListChangedNotification(req))
                 }
-                "notifications/tasks/status" => {
-                    let req = serde_json::from_value::<TaskStatusNotification>(value).map_err(serde::de::Error::custom)?;
-                    Ok(ServerNotification::TaskStatusNotification(req))
-                }
                 "notifications/message" => {
                     let req =
                         serde_json::from_value::<LoggingMessageNotification>(value).map_err(serde::de::Error::custom)?;
                     Ok(ServerNotification::LoggingMessageNotification(req))
-                }
-                "notifications/elicitation/complete" => {
-                    let req = serde_json::from_value::<ElicitationCompleteNotification>(value)
-                        .map_err(serde::de::Error::custom)?;
-                    Ok(ServerNotification::ElicitationCompleteNotification(req))
                 }
                 _ => Err(serde::de::Error::unknown_variant("method", &[""])),
             }
@@ -11682,18 +10682,71 @@ impl ServerNotification {
             ServerNotification::CancelledNotification(request) => request.method(),
             ServerNotification::ProgressNotification(request) => request.method(),
             ServerNotification::ResourceListChangedNotification(request) => request.method(),
+            ServerNotification::SubscriptionsAcknowledgedNotification(request) => request.method(),
             ServerNotification::ResourceUpdatedNotification(request) => request.method(),
             ServerNotification::PromptListChangedNotification(request) => request.method(),
             ServerNotification::ToolListChangedNotification(request) => request.method(),
-            ServerNotification::TaskStatusNotification(request) => request.method(),
             ServerNotification::LoggingMessageNotification(request) => request.method(),
-            ServerNotification::ElicitationCompleteNotification(request) => request.method(),
         }
     }
 }
-/// Converts any serializable struct into a `GenericResult`.
-/// This is used internally to convert ServerResult and ClientResult variants
-/// into GenericResult (Result)
+impl<'de> serde::Deserialize<'de> for ServerResult {
+    fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value: serde_json::Value = serde::Deserialize::deserialize(deserializer)?;
+        let result_type = value.get("resultType").and_then(|v| v.as_str());
+        if result_type == Some("input_required") {
+            return serde_json::from_value::<InputRequiredResult>(value)
+                .map(ServerResult::InputRequiredResult)
+                .map_err(serde::de::Error::custom);
+        }
+        let value = match result_type {
+            Some(_) => value,
+            None => match value {
+                serde_json::Value::Object(mut map) => {
+                    map.insert("resultType".to_string(), serde_json::Value::String("complete".to_string()));
+                    serde_json::Value::Object(map)
+                }
+                v => v,
+            },
+        };
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<DiscoverResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::DiscoverResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<ListResourcesResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::ListResourcesResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<ListResourceTemplatesResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::ListResourceTemplatesResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<ReadResourceResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::ReadResourceResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<SubscriptionsListenResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::SubscriptionsListenResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<ListPromptsResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::ListPromptsResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<GetPromptResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::GetPromptResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<ListToolsResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::ListToolsResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<CallToolResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::CallToolResult(v));
+        }
+        if let ::std::result::Result::Ok(v) = serde_json::from_value::<CompleteResult>(value.clone()) {
+            return ::std::result::Result::Ok(ServerResult::CompleteResult(v));
+        }
+        serde_json::from_value::<Result>(value)
+            .map(ServerResult::Result)
+            .map_err(serde::de::Error::custom)
+    }
+}
 fn into_result<T>(value: T) -> GenericResult
 where
     T: serde::Serialize,
@@ -11704,14 +10757,31 @@ where
             serde_json::Value::Object(obj) => serde_json::from_value(serde_json::Value::Object(obj)).ok(),
             _ => None,
         });
+        let result_type = map
+            .remove("resultType")
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
+            .unwrap_or_else(|| "complete".to_string());
         let extra = if map.is_empty() { None } else { Some(map) };
-        GenericResult { meta, extra }
+        GenericResult {
+            meta,
+            result_type,
+            extra,
+        }
     } else {
-        GenericResult { meta: None, extra: None }
+        GenericResult {
+            meta: None,
+            result_type: "complete".to_string(),
+            extra: None,
+        }
     }
 }
-impl From<InitializeResult> for GenericResult {
-    fn from(value: InitializeResult) -> Self {
+impl From<InputRequiredResult> for GenericResult {
+    fn from(value: InputRequiredResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<DiscoverResult> for GenericResult {
+    fn from(value: DiscoverResult) -> Self {
         into_result(value)
     }
 }
@@ -11727,6 +10797,11 @@ impl From<ListResourceTemplatesResult> for GenericResult {
 }
 impl From<ReadResourceResult> for GenericResult {
     fn from(value: ReadResourceResult) -> Self {
+        into_result(value)
+    }
+}
+impl From<SubscriptionsListenResult> for GenericResult {
+    fn from(value: SubscriptionsListenResult) -> Self {
         into_result(value)
     }
 }
@@ -11750,35 +10825,50 @@ impl From<CallToolResult> for GenericResult {
         into_result(value)
     }
 }
-impl From<CreateTaskResult> for GenericResult {
-    fn from(value: CreateTaskResult) -> Self {
-        into_result(value)
-    }
-}
-impl From<GetTaskResult> for GenericResult {
-    fn from(value: GetTaskResult) -> Self {
-        into_result(value)
-    }
-}
-impl From<GetTaskPayloadResult> for GenericResult {
-    fn from(value: GetTaskPayloadResult) -> Self {
-        into_result(value)
-    }
-}
-impl From<CancelTaskResult> for GenericResult {
-    fn from(value: CancelTaskResult) -> Self {
-        into_result(value)
-    }
-}
-impl From<ListTasksResult> for GenericResult {
-    fn from(value: ListTasksResult) -> Self {
-        into_result(value)
-    }
-}
 impl From<CompleteResult> for GenericResult {
     fn from(value: CompleteResult) -> Self {
         into_result(value)
     }
 }
+impl ClientRequest {
+    pub fn request_id(&self) -> &RequestId {
+        match self {
+            ClientRequest::DiscoverRequest(request) => &request.id,
+            ClientRequest::ListResourcesRequest(request) => &request.id,
+            ClientRequest::ListResourceTemplatesRequest(request) => &request.id,
+            ClientRequest::ReadResourceRequest(request) => &request.id,
+            ClientRequest::SubscriptionsListenRequest(request) => &request.id,
+            ClientRequest::ListPromptsRequest(request) => &request.id,
+            ClientRequest::GetPromptRequest(request) => &request.id,
+            ClientRequest::ListToolsRequest(request) => &request.id,
+            ClientRequest::CallToolRequest(request) => &request.id,
+            ClientRequest::CompleteRequest(request) => &request.id,
+        }
+    }
+}
+impl Default for ProgressToken {
+    fn default() -> Self {
+        ProgressToken::Integer(0)
+    }
+}
+impl Default for RequestId {
+    fn default() -> Self {
+        RequestId::Integer(0)
+    }
+}
 /// Alias to avoid conflicts with Rust's standard `Result` type.
 pub type GenericResult = Result;
+#[deprecated(since = "0.8.0", note = "Use `IncludeContext` instead.")]
+pub type CreateMessageRequestParamsIncludeContext = IncludeContext;
+#[deprecated(since = "0.8.0", note = "Use `CompleteRequestContext` instead.")]
+pub type CompleteRequestParamsContext = CompleteRequestContext;
+#[deprecated(since = "0.8.0", note = "Use `CompleteRequestArgument` instead.")]
+pub type CompleteRequestParamsArgument = CompleteRequestArgument;
+#[deprecated(since = "0.8.0", note = "Use `CompleteRequestRef` instead.")]
+pub type CompleteRequestParamsRef = CompleteRequestRef;
+#[deprecated(since = "0.8.0", note = "Use `CreateMessageContent` instead.")]
+pub type CreateMessageResultContent = CreateMessageContent;
+#[deprecated(since = "0.8.0", note = "Use `ElicitResultContent` instead.")]
+pub type ElicitResultContentValue = ElicitResultContent;
+#[deprecated(since = "0.8.0", note = "Use `ReadResourceContent` instead.")]
+pub type ReadResourceResultContentsItem = ReadResourceContent;

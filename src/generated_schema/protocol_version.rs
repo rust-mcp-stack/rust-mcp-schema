@@ -5,6 +5,7 @@ pub enum ProtocolVersion {
     V2025_03_26,
     V2025_06_18,
     V2025_11_25,
+    V2026_07_28,
     Draft,
 }
 impl ProtocolVersion {
@@ -18,6 +19,7 @@ impl ProtocolVersion {
             ProtocolVersion::V2025_03_26,
             ProtocolVersion::V2025_06_18,
             ProtocolVersion::V2025_11_25,
+            ProtocolVersion::V2026_07_28,
         ];
         if include_draft {
             versions.push(ProtocolVersion::Draft);
@@ -26,7 +28,7 @@ impl ProtocolVersion {
     }
     /// Returns the latest stable protocol version.
     pub const fn latest() -> Self {
-        ProtocolVersion::V2025_11_25
+        ProtocolVersion::V2026_07_28
     }
 }
 impl Display for ProtocolVersion {
@@ -36,7 +38,8 @@ impl Display for ProtocolVersion {
             ProtocolVersion::V2025_03_26 => write!(f, "2025-03-26"),
             ProtocolVersion::V2025_06_18 => write!(f, "2025-06-18"),
             ProtocolVersion::V2025_11_25 => write!(f, "2025-11-25"),
-            ProtocolVersion::Draft => write!(f, "DRAFT-2026-v1"),
+            ProtocolVersion::V2026_07_28 => write!(f, "2026-07-28"),
+            ProtocolVersion::Draft => write!(f, "DRAFT"),
         }
     }
 }
@@ -73,7 +76,7 @@ impl TryFrom<&str> for ProtocolVersion {
             "2025-03-26" => Ok(ProtocolVersion::V2025_03_26),
             "2025-06-18" => Ok(ProtocolVersion::V2025_06_18),
             "2025-11-25" => Ok(ProtocolVersion::V2025_11_25),
-            "DRAFT-2026-v1" => Ok(ProtocolVersion::Draft),
+            "2026-07-28" => Ok(ProtocolVersion::V2026_07_28),
             "DRAFT" => Ok(ProtocolVersion::Draft),
             other => Err(ParseProtocolVersionError {
                 details: other.to_string(),

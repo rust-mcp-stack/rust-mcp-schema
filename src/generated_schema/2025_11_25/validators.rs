@@ -57,6 +57,9 @@ where
     }
 }
 
+// Used only by the `i64` arm of `validate!`; some schema versions (e.g. 2026-07-28) have no
+// integer const properties, so it would otherwise be flagged as dead code there.
+#[allow(dead_code)]
 fn i64_validator<'de, D>(
     struct_name: &'static str,
     field_name: &'static str,

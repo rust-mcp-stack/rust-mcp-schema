@@ -317,7 +317,7 @@ impl RpcMessage for ClientMessage {
         }
     }
 
-    fn method(&self) -> Option<&str> {
+     fn method(&self) -> Option<&str> {
         match self {
             ClientMessage::Request(client_jsonrpc_request) => Some(client_jsonrpc_request.method()),
             ClientMessage::Notification(client_jsonrpc_notification) => Some(client_jsonrpc_notification.method()),
@@ -1506,17 +1506,13 @@ impl NotificationFromServer {
         match self {
             NotificationFromServer::CancelledNotification(_params) => CancelledNotification::method_value(),
             NotificationFromServer::ProgressNotification(_params) => ProgressNotification::method_value(),
-            NotificationFromServer::ResourceListChangedNotification(_params) => {
-                ResourceListChangedNotification::method_value()
-            }
+            NotificationFromServer::ResourceListChangedNotification(_params) => ResourceListChangedNotification::method_value(),
             NotificationFromServer::ResourceUpdatedNotification(_params) => ResourceUpdatedNotification::method_value(),
             NotificationFromServer::PromptListChangedNotification(_params) => PromptListChangedNotification::method_value(),
             NotificationFromServer::ToolListChangedNotification(_params) => ToolListChangedNotification::method_value(),
             NotificationFromServer::TaskStatusNotification(_params) => TaskStatusNotification::method_value(),
             NotificationFromServer::LoggingMessageNotification(_params) => LoggingMessageNotification::method_value(),
-            NotificationFromServer::ElicitationCompleteNotification(_params) => {
-                ElicitationCompleteNotification::method_value()
-            }
+            NotificationFromServer::ElicitationCompleteNotification(_params) => ElicitationCompleteNotification::method_value(),
             NotificationFromServer::CustomNotification(params) => params.method.as_str(),
         }
     }
@@ -2766,13 +2762,15 @@ impl ClientCapabilities {
                     return Err(create_error("sampling task", request_method));
                 }
             }
-            ServerJsonrpcRequest::ListRootsRequest(_) if self.roots.is_none() => {
-                return Err(create_error("roots capability", request_method));
+            ServerJsonrpcRequest::ListRootsRequest(_) => {
+                if self.roots.is_none() {
+                    return Err(create_error("roots capability", request_method));
+                }
             }
-            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_)
-                if self.tasks.is_none() =>
-            {
-                return Err(create_error("Task", request_method));
+            ServerJsonrpcRequest::GetTaskRequest(_) | ServerJsonrpcRequest::GetTaskPayloadRequest(_) => {
+                if self.tasks.is_none() {
+                    return Err(create_error("Task", request_method));
+                }
             }
             ServerJsonrpcRequest::CancelTaskRequest(_) => {
                 if let Some(tasks) = self.tasks.as_ref() {
@@ -4236,42 +4234,6 @@ impl ContentBlock {
                 "EmbeddedResource"
             ))),
         }
-    }
-
-    /// Build a `ContentBlock::EmbeddedResource` carrying a text payload
-    /// (e.g. JSON, plain text, source code).
-    ///
-    /// Shortcut for:
-    /// ```ignore
-    /// EmbeddedResource::new(
-    ///     EmbeddedResourceResource::TextResourceContents(
-    ///         TextResourceContents::new(text, uri).with_mime_type(mime_type),
-    ///     ),
-    ///     None, None,
-    /// ).into()
-    /// ```
-    pub fn embedded_text_resource<U, M, T>(uri: U, mime_type: M, text: T) -> Self
-    where
-        U: Into<String>,
-        M: Into<String>,
-        T: Into<String>,
-    {
-        let trc = TextResourceContents::new(text.into(), uri.into()).with_mime_type(mime_type.into());
-        EmbeddedResource::new(EmbeddedResourceResource::TextResourceContents(trc), None, None).into()
-    }
-
-    /// Build a `ContentBlock::EmbeddedResource` carrying a base64-encoded
-    /// binary payload (images, audio, arbitrary file blobs).
-    ///
-    /// `base64_data` must already be base64-encoded.
-    pub fn embedded_blob_resource<U, M, D>(uri: U, mime_type: M, base64_data: D) -> Self
-    where
-        U: Into<String>,
-        M: Into<String>,
-        D: Into<String>,
-    {
-        let brc = BlobResourceContents::new(base64_data.into(), uri.into()).with_mime_type(mime_type.into());
-        EmbeddedResource::new(EmbeddedResourceResource::BlobResourceContents(brc), None, None).into()
     }
 }
 impl CallToolResult {

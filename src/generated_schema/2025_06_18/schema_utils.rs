@@ -1860,8 +1860,8 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
                 ))
             }
             "number" | "integer" => {
-                let maximum = value.get("maximum").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
-                let minimum = value.get("minimum").and_then(|v| v.as_number().and_then(|n| n.as_i64()));
+                let maximum = value.get("maximum").and_then(|v| v.as_number().and_then(|n| n.as_f64()));
+                let minimum = value.get("minimum").and_then(|v| v.as_number().and_then(|n| n.as_f64()));
                 PrimitiveSchemaDefinition::NumberSchema(NumberSchema {
                     description,
                     maximum,
@@ -1915,6 +1915,10 @@ impl TryFrom<&serde_json::Map<String, Value>> for PrimitiveSchemaDefinition {
     }
 }
 
+#[deprecated(since = "0.4.0", note = "This trait was renamed to RpcMessage. Use RpcMessage instead.")]
+pub type RPCMessage = ();
+#[deprecated(since = "0.4.0", note = "This trait was renamed to McpMessage. Use McpMessage instead.")]
+pub type MCPMessage = ();
 
 /// BEGIN AUTO GENERATED
 impl ::serde::Serialize for ClientJsonrpcRequest {
