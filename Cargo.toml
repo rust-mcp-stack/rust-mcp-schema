@@ -68,4 +68,8 @@ schema_utils = []
 
 
 [package.metadata.typos]
-default.extend-ignore-re = ["a5ba501"]
+default.extend-ignore-re = [
+    "a5ba501",
+    "0af7651916cd43dd8448eb211c80319c",
+    "00f067aa0ba902b7",
+]
