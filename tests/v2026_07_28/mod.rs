@@ -46,22 +46,13 @@ fn request_meta_object_preserves_trace_context_and_vendor_keys() {
         Some("00-0af7651916cd43dd8448eb211c80319c-00f067aa0ba902b7-01")
     );
     assert_eq!(meta.tracestate(), Some("rojo=00f067aa0ba902b7"));
-    assert_eq!(
-        meta.baggage(),
-        Some("userId=alice,serverNode=DF:28,isProduction=false")
-    );
+    assert_eq!(meta.baggage(), Some("userId=alice,serverNode=DF:28,isProduction=false"));
 
     // Serialize: the reserved keys must appear verbatim at the `_meta` top level.
     let json = serde_json::to_value(&meta).unwrap();
-    assert_eq!(
-        json["traceparent"],
-        "00-0af7651916cd43dd8448eb211c80319c-00f067aa0ba902b7-01"
-    );
+    assert_eq!(json["traceparent"], "00-0af7651916cd43dd8448eb211c80319c-00f067aa0ba902b7-01");
     assert_eq!(json["tracestate"], "rojo=00f067aa0ba902b7");
-    assert_eq!(
-        json["baggage"],
-        "userId=alice,serverNode=DF:28,isProduction=false"
-    );
+    assert_eq!(json["baggage"], "userId=alice,serverNode=DF:28,isProduction=false");
 
     // Round-trip preserves everything (including a vendor-prefixed key).
     let with_vendor = {
@@ -77,15 +68,9 @@ fn request_meta_object_preserves_trace_context_and_vendor_keys() {
         Some("00-0af7651916cd43dd8448eb211c80319c-00f067aa0ba902b7-01")
     );
     assert_eq!(back.tracestate(), Some("rojo=00f067aa0ba902b7"));
-    assert_eq!(
-        back.baggage(),
-        Some("userId=alice,serverNode=DF:28,isProduction=false")
-    );
+    assert_eq!(back.baggage(), Some("userId=alice,serverNode=DF:28,isProduction=false"));
     let extra = back.extra.expect("vendor key kept in extra");
-    assert_eq!(
-        extra.get("com.example.traceThing"),
-        Some(&serde_json::json!({ "x": 1 }))
-    );
+    assert_eq!(extra.get("com.example.traceThing"), Some(&serde_json::json!({ "x": 1 })));
 }
 
 #[test]
@@ -100,8 +85,7 @@ fn request_meta_object_extra_is_none_when_no_trace_context() {
     assert_eq!(meta.tracestate(), None);
     assert_eq!(meta.baggage(), None);
 
-    let back: RequestMetaObject =
-        serde_json::from_value(serde_json::to_value(&meta).unwrap()).unwrap();
+    let back: RequestMetaObject = serde_json::from_value(serde_json::to_value(&meta).unwrap()).unwrap();
     // Accessors must report absence even when `extra` is `Some({})`.
     assert_eq!(back.traceparent(), None);
     assert_eq!(back.tracestate(), None);
