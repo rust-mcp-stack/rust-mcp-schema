@@ -7,8 +7,8 @@
 /// modify or extend the implementations as needed, but please do so at your own risk.
 ///
 /// Generated from : <https://github.com/modelcontextprotocol/specification.git>
-/// Hash : 9e7768c802b606e2d3dc4ebdaeaf07c40f943054
-/// Generated at : 2026-03-12 21:06:20
+/// Hash : 4e67bdc2f3403a8602f72025b28ac27fe7fd4e44
+/// Generated at : 2026-08-21 20:10:19
 /// ----------------------------------------------------------------------------
 ///
 use super::validators as validate;
@@ -147,6 +147,10 @@ impl AudioContent {
     }
     /// returns "audio"
     pub fn type_value() -> &'static str {
+        "audio"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "audio"
     }
 }
@@ -293,6 +297,10 @@ impl BooleanSchema {
     pub fn type_value() -> &'static str {
         "boolean"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "boolean"
+    }
 }
 ///Used by the client to invoke a tool provided by the server.
 ///
@@ -348,6 +356,10 @@ impl CallToolRequest {
     }
     /// returns "tools/call"
     pub fn method_value() -> &'static str {
+        "tools/call"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "tools/call"
     }
 }
@@ -500,6 +512,10 @@ impl CancelledNotification {
     }
     /// returns "notifications/cancelled"
     pub fn method_value() -> &'static str {
+        "notifications/cancelled"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/cancelled"
     }
 }
@@ -939,6 +955,10 @@ impl CompleteRequest {
     }
     /// returns "completion/complete"
     pub fn method_value() -> &'static str {
+        "completion/complete"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "completion/complete"
     }
 }
@@ -1383,6 +1403,10 @@ impl CreateMessageRequest {
     pub fn method_value() -> &'static str {
         "sampling/createMessage"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "sampling/createMessage"
+    }
 }
 ///CreateMessageRequestParams
 ///
@@ -1623,6 +1647,10 @@ impl ElicitRequest {
     pub fn method_value() -> &'static str {
         "elicitation/create"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "elicitation/create"
+    }
 }
 ///ElicitRequestParams
 ///
@@ -1735,6 +1763,10 @@ impl ElicitRequestedSchema {
     }
     /// returns "object"
     pub fn type_value() -> &'static str {
+        "object"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "object"
     }
 }
@@ -1936,6 +1968,10 @@ impl EmbeddedResource {
     pub fn type_value() -> &'static str {
         "resource"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "resource"
+    }
 }
 ///EmbeddedResourceResource
 ///
@@ -2056,6 +2092,10 @@ impl EnumSchema {
     pub fn type_value() -> &'static str {
         "string"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "string"
+    }
 }
 ///Used by the client to get a prompt provided by the server.
 ///
@@ -2115,6 +2155,10 @@ impl GetPromptRequest {
     }
     /// returns "prompts/get"
     pub fn method_value() -> &'static str {
+        "prompts/get"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "prompts/get"
     }
 }
@@ -2271,6 +2315,10 @@ impl ImageContent {
     pub fn type_value() -> &'static str {
         "image"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "image"
+    }
 }
 ///Describes the name and version of an MCP implementation, with an optional title for UI representation.
 ///
@@ -2406,6 +2454,10 @@ impl InitializeRequest {
     }
     /// returns "initialize"
     pub fn method_value() -> &'static str {
+        "initialize"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "initialize"
     }
 }
@@ -2548,6 +2600,10 @@ impl InitializedNotification {
     }
     /// returns "notifications/initialized"
     pub fn method_value() -> &'static str {
+        "notifications/initialized"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/initialized"
     }
 }
@@ -2995,6 +3051,10 @@ impl ListPromptsRequest {
     pub fn method_value() -> &'static str {
         "prompts/list"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "prompts/list"
+    }
 }
 ///ListPromptsRequestParams
 ///
@@ -3109,6 +3169,10 @@ impl ListResourceTemplatesRequest {
     }
     /// returns "resources/templates/list"
     pub fn method_value() -> &'static str {
+        "resources/templates/list"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "resources/templates/list"
     }
 }
@@ -3226,6 +3290,10 @@ impl ListResourcesRequest {
     }
     /// returns "resources/list"
     pub fn method_value() -> &'static str {
+        "resources/list"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "resources/list"
     }
 }
@@ -3355,6 +3423,10 @@ impl ListRootsRequest {
     }
     /// returns "roots/list"
     pub fn method_value() -> &'static str {
+        "roots/list"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "roots/list"
     }
 }
@@ -3499,6 +3571,10 @@ impl ListToolsRequest {
     }
     /// returns "tools/list"
     pub fn method_value() -> &'static str {
+        "tools/list"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "tools/list"
     }
 }
@@ -3682,6 +3758,10 @@ impl LoggingMessageNotification {
     }
     /// returns "notifications/message"
     pub fn method_value() -> &'static str {
+        "notifications/message"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/message"
     }
 }
@@ -3895,10 +3975,10 @@ pub struct NotificationParams {
 ///      "type": "string"
 ///    },
 ///    "maximum": {
-///      "type": "integer"
+///      "type": "number"
 ///    },
 ///    "minimum": {
-///      "type": "integer"
+///      "type": "number"
 ///    },
 ///    "title": {
 ///      "type": "string"
@@ -3919,9 +3999,9 @@ pub struct NumberSchema {
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub description: ::std::option::Option<::std::string::String>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub maximum: ::std::option::Option<i64>,
+    pub maximum: ::std::option::Option<f64>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-    pub minimum: ::std::option::Option<i64>,
+    pub minimum: ::std::option::Option<f64>,
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub title: ::std::option::Option<::std::string::String>,
     #[serde(rename = "type")]
@@ -4101,6 +4181,10 @@ impl PingRequest {
     pub fn method_value() -> &'static str {
         "ping"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "ping"
+    }
 }
 ///PingRequestParams
 ///
@@ -4276,6 +4360,10 @@ impl ProgressNotification {
     }
     /// returns "notifications/progress"
     pub fn method_value() -> &'static str {
+        "notifications/progress"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/progress"
     }
 }
@@ -4511,6 +4599,10 @@ impl PromptListChangedNotification {
     pub fn method_value() -> &'static str {
         "notifications/prompts/list_changed"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "notifications/prompts/list_changed"
+    }
 }
 ///PromptListChangedNotificationParams
 ///
@@ -4626,6 +4718,10 @@ impl PromptReference {
     pub fn type_value() -> &'static str {
         "ref/prompt"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "ref/prompt"
+    }
 }
 ///ReadResourceContent
 ///
@@ -4712,6 +4808,10 @@ impl ReadResourceRequest {
     }
     /// returns "resources/read"
     pub fn method_value() -> &'static str {
+        "resources/read"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "resources/read"
     }
 }
@@ -5148,6 +5248,10 @@ impl ResourceLink {
     pub fn type_value() -> &'static str {
         "resource_link"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "resource_link"
+    }
 }
 ///An optional notification from the server to the client, informing it that the list of resources it can read from has changed. This may be issued by servers without any previous subscription from the client.
 ///
@@ -5199,6 +5303,10 @@ impl ResourceListChangedNotification {
     }
     /// returns "notifications/resources/list_changed"
     pub fn method_value() -> &'static str {
+        "notifications/resources/list_changed"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/resources/list_changed"
     }
 }
@@ -5350,6 +5458,10 @@ impl ResourceTemplateReference {
     pub fn type_value() -> &'static str {
         "ref/resource"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "ref/resource"
+    }
 }
 ///A notification from the server to the client, informing it that a resource has changed and may need to be read again. This should only be sent if the client previously sent a resources/subscribe request.
 ///
@@ -5403,6 +5515,10 @@ impl ResourceUpdatedNotification {
     }
     /// returns "notifications/resources/updated"
     pub fn method_value() -> &'static str {
+        "notifications/resources/updated"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/resources/updated"
     }
 }
@@ -5584,6 +5700,10 @@ impl RootsListChangedNotification {
     }
     /// returns "notifications/roots/list_changed"
     pub fn method_value() -> &'static str {
+        "notifications/roots/list_changed"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/roots/list_changed"
     }
 }
@@ -6180,6 +6300,10 @@ impl SetLevelRequest {
     pub fn method_value() -> &'static str {
         "logging/setLevel"
     }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
+        "logging/setLevel"
+    }
 }
 ///SetLevelRequestParams
 ///
@@ -6284,6 +6408,10 @@ impl StringSchema {
     pub fn type_value() -> &'static str {
         "string"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "string"
+    }
 }
 ///StringSchemaFormat
 ///
@@ -6374,6 +6502,10 @@ impl SubscribeRequest {
     }
     /// returns "resources/subscribe"
     pub fn method_value() -> &'static str {
+        "resources/subscribe"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "resources/subscribe"
     }
 }
@@ -6467,6 +6599,10 @@ impl TextContent {
     }
     /// returns "text"
     pub fn type_value() -> &'static str {
+        "text"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
         "text"
     }
 }
@@ -6765,6 +6901,10 @@ impl ToolInputSchema {
     pub fn type_value() -> &'static str {
         "object"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "object"
+    }
 }
 ///An optional notification from the server to the client, informing it that the list of tools it offers has changed. This may be issued by servers without any previous subscription from the client.
 ///
@@ -6816,6 +6956,10 @@ impl ToolListChangedNotification {
     }
     /// returns "notifications/tools/list_changed"
     pub fn method_value() -> &'static str {
+        "notifications/tools/list_changed"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "notifications/tools/list_changed"
     }
 }
@@ -6910,6 +7054,10 @@ impl ToolOutputSchema {
     pub fn type_value() -> &'static str {
         "object"
     }
+    #[deprecated(since = "0.8.0", note = "Use `type_value()` instead.")]
+    pub fn type_name() -> &'static str {
+        "object"
+    }
 }
 ///Sent from the client to request cancellation of resources/updated notifications from the server. This should follow a previous resources/subscribe request.
 ///
@@ -6963,6 +7111,10 @@ impl UnsubscribeRequest {
     }
     /// returns "resources/unsubscribe"
     pub fn method_value() -> &'static str {
+        "resources/unsubscribe"
+    }
+    #[deprecated(since = "0.8.0", note = "Use `method_value()` instead.")]
+    pub fn method_name() -> &'static str {
         "resources/unsubscribe"
     }
 }
@@ -7300,3 +7452,25 @@ impl From<CompleteResult> for GenericResult {
 }
 /// Alias to avoid conflicts with Rust's standard `Result` type.
 pub type GenericResult = Result;
+/// Deprecating the old auto-generated verbose names.
+/// These were renamed to clearer, shorter names in v0.8.0.
+/// The old names are deprecated but kept for backward-compatibility for a smooth migration period.
+///
+#[deprecated(since = "0.8.0", note = "Use `ClientRoots` instead.")]
+pub type ClientCapabilitiesRoots = ClientRoots;
+#[deprecated(since = "0.8.0", note = "Use `IncludeContext` instead.")]
+pub type CreateMessageRequestParamsIncludeContext = IncludeContext;
+#[deprecated(since = "0.8.0", note = "Use `CompleteRequestRef` instead.")]
+pub type CompleteRequestParamsRef = CompleteRequestRef;
+#[deprecated(since = "0.8.0", note = "Use `CompleteRequestContext` instead.")]
+pub type CompleteRequestParamsContext = CompleteRequestContext;
+#[deprecated(since = "0.8.0", note = "Use `CompleteRequestArgument` instead.")]
+pub type CompleteRequestParamsArgument = CompleteRequestArgument;
+#[deprecated(since = "0.8.0", note = "Use `ElicitRequestedSchema` instead.")]
+pub type ElicitRequestParamsRequestedSchema = ElicitRequestedSchema;
+#[deprecated(since = "0.8.0", note = "Use `CreateMessageContent` instead.")]
+pub type CreateMessageResultContent = CreateMessageContent;
+#[deprecated(since = "0.8.0", note = "Use `ElicitResultContent` instead.")]
+pub type ElicitResultContentValue = ElicitResultContent;
+#[deprecated(since = "0.8.0", note = "Use `ReadResourceContent` instead.")]
+pub type ReadResourceResultContentsItem = ReadResourceContent;

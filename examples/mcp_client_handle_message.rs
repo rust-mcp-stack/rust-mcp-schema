@@ -1,27 +1,25 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]
+//! Example: handling messages received by an MCP **client** (sent by an MCP **server**)
+//!
+//! Demonstrates:
+//! - deserializing a `ServerMessage` from a JSON-RPC payload,
+//! - the delegate enums (`ServerJsonrpcNotification::Known` wraps the schema `ServerNotification`),
+//! - the `resultType` discriminator and the `is_input_required()` / `as_input_required()`
+//!   helpers that drive the 2026-07-28 mid-request (elicitation) flow.
 use rust_mcp_schema::{schema_utils::*, *};
 use std::str::FromStr;
 
 type AppError = RpcError;
 
+// A server→client *response* to a `tools/call` request.
+// 2026-07-28: every result carries a required `resultType` ("complete" | "input_required").
 const SAMPLE_PAYLOAD: &str = r#"
 {
     "id": 0,
     "jsonrpc": "2.0",
     "result": {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {
-            "prompts": {},
-            "resources": {
-                "subscribe": true
-            },
-            "tools": {},
-            "logging": {}
-        },
-        "serverInfo": {
-            "name": "example-servers/everything",
-            "version": "1.0.0"
-        }
+        "resultType": "complete",
+        "content": [{ "type": "text", "text": "Hello from the tool" }]
     }
 }
 "#;
@@ -32,61 +30,65 @@ fn main() {
     }
 }
 
-
-
-// Determine if the message is an Error
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
-    // Deserialize message into ServerMessage.
-    //ServerMessage is a message sent by an MCP Server to an MCP Client.
+    // Deserialize into `ServerMessage` (a message sent by an MCP Server to an MCP Client).
     let mcp_message = ServerMessage::from_str(message_payload)?;
-    match mcp_message {
-        // Determine if the message is a Request
-        ServerMessage::Request(request) => match request {
-            ServerJsonrpcRequest::PingRequest(ping_request) => println!("Ping request received: {:?}", ping_request),
-            ServerJsonrpcRequest::GetTaskRequest(get_task_request) => println!("GetTaskRequest request received: {:?}", get_task_request),
-            ServerJsonrpcRequest::GetTaskPayloadRequest(get_task_payload_request) => println!("GetTaskPayloadRequest request received: {:?}", get_task_payload_request),
-            ServerJsonrpcRequest::CancelTaskRequest(cancel_task_request) => println!("CancelTaskRequest request received: {:?}", cancel_task_request),
-            ServerJsonrpcRequest::ListTasksRequest(list_tasks_request) => println!("ListTasksRequest request received: {:?}", list_tasks_request),
-            ServerJsonrpcRequest::CreateMessageRequest(create_message_request) => println!("CreateMessageRequest request received: {:?}", create_message_request),
-            ServerJsonrpcRequest::ListRootsRequest(list_roots_request) => println!("ListRootsRequest request received: {:?}", list_roots_request),
-            ServerJsonrpcRequest::ElicitRequest(elicit_request) => println!("ElicitRequest request received: {:?}", elicit_request),
-            ServerJsonrpcRequest::CustomRequest(jsonrpc_request) => println!("CustomRequest request received: {:?}", jsonrpc_request),
-        },
-        // Determine if the message is a Notification
-        ServerMessage::Notification(notification) => match notification {
-            ServerJsonrpcNotification::CancelledNotification(cancelled_notification) => println!("CancelledNotification notification received: {:?}", cancelled_notification),
-            ServerJsonrpcNotification::ProgressNotification(progress_notification) => println!("ProgressNotification notification received: {:?}", progress_notification),
-            ServerJsonrpcNotification::ResourceListChangedNotification(resource_list_changed_notification) => println!("ResourceListChangedNotification notification received: {:?}",resource_list_changed_notification),
-            ServerJsonrpcNotification::ResourceUpdatedNotification(resource_updated_notification) => println!("ResourceUpdatedNotification notification received: {:?}",resource_updated_notification),
-            ServerJsonrpcNotification::PromptListChangedNotification(prompt_list_changed_notification) => println!("PromptListChangedNotification notification received: {:?}",prompt_list_changed_notification),
-            ServerJsonrpcNotification::ToolListChangedNotification(tool_list_changed_notification) => println!("ToolListChangedNotification notification received: {:?}",tool_list_changed_notification),
-            ServerJsonrpcNotification::TaskStatusNotification(task_status_notification) => {println!("TaskStatusNotification notification received: {:?}", task_status_notification)}
-            ServerJsonrpcNotification::LoggingMessageNotification(logging_message_notification) => println!("LoggingMessageNotification notification received: {:?}",logging_message_notification),
-            ServerJsonrpcNotification::ElicitationCompleteNotification(elicitation_complete_notification) => println!("ElicitationCompleteNotification notification received: {:?}",elicitation_complete_notification),
-            ServerJsonrpcNotification::CustomNotification(jsonrpc_notification) => println!("CustomNotification notification received: {:?}", jsonrpc_notification)
-        },
-    // Determine if the message is a Response
-    ServerMessage::Response(response) => match &response.result {
-        ResultFromServer::InitializeResult(_initialize_result) =>  println!("InitializeResult response received: {:?}", response),
-        ResultFromServer::ListResourcesResult(_list_resources_result) =>  println!("ListResourcesResult response received: {:?}", response),
-        ResultFromServer::ListResourceTemplatesResult(_list_resource_templates_result) =>  println!("ListResourceTemplatesResult response received: {:?}", response),
-        ResultFromServer::ReadResourceResult(_read_resource_result) =>  println!("ReadResourceResult response received: {:?}", response),
-        ResultFromServer::ListPromptsResult(_list_prompts_result) =>  println!("ListPromptsResult response received: {:?}", response),
-        ResultFromServer::GetPromptResult(_get_prompt_result) => println!("GetPromptResult response received: {:?}", response),
-        ResultFromServer::ListToolsResult(_list_tools_result) => println!("ListToolsResult response received: {:?}", response),
-        ResultFromServer::CallToolResult(_call_tool_result) => println!("CallToolResult response received: {:?}", response),
-        ResultFromServer::GetTaskResult(_get_task_result) => println!("GetTaskResult response received: {:?}", response),
-        ResultFromServer::CancelTaskResult(_cancel_task_result) => println!("CancelTaskResult response received: {:?}", response),
-        ResultFromServer::ListTasksResult(_list_tasks_result) => println!("ListTasksResult response received: {:?}", response),
-        ResultFromServer::CompleteResult(_complete_result) => println!("CompleteResult response received: {:?}", response),
-        ResultFromServer::CreateTaskResult(_create_task_result) => println!("CreateTaskResult response received: {:?}", response),
-        ResultFromServer::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
-        ResultFromServer::GetTaskPayloadResult(_generic_result) => println!("Generic Result response received: {:?}", response),
 
-    },
-        ServerMessage::Error(error_response) => {
-            println!("Error response received: {:?}", error_response)
+    match mcp_message {
+        // Server→client request. In 2026-07-28 these arrive either standalone or embedded
+        // inside an `InputRequiredResult` (see Response handling below).
+        ServerMessage::Request(request) => match request {
+            ServerJsonrpcRequest::CreateMessageRequest { request, .. } => println!("CreateMessage (sampling) request: {:?}", request),
+            ServerJsonrpcRequest::ListRootsRequest { request, .. } => println!("ListRoots request: {:?}", request),
+            ServerJsonrpcRequest::ElicitRequest { request, .. } => println!("Elicit request: {:?}", request),
+            ServerJsonrpcRequest::CustomRequest(custom) => println!("Custom request: {:?}", custom),
+        },
+
+        // Notifications delegate to the schema-generated `ServerNotification` enum.
+        ServerMessage::Notification(notification) => match notification {
+            ServerJsonrpcNotification::Standard(standard) => match standard {
+                ServerNotification::CancelledNotification(n) => println!("Cancelled: {:?}", n),
+                ServerNotification::ProgressNotification(n) => println!("Progress: {:?}", n),
+                ServerNotification::ResourceListChangedNotification(n) => println!("ResourceListChanged: {:?}", n),
+                ServerNotification::ResourceUpdatedNotification(n) => println!("ResourceUpdated (deprecated): {:?}", n),
+                ServerNotification::PromptListChangedNotification(n) => println!("PromptListChanged: {:?}", n),
+                ServerNotification::ToolListChangedNotification(n) => println!("ToolListChanged: {:?}", n),
+                ServerNotification::LoggingMessageNotification(n) => println!("LoggingMessage: {:?}", n),
+                ServerNotification::SubscriptionsAcknowledgedNotification(n) => println!("SubscriptionsAcknowledged: {:?}", n),
+            },
+            ServerJsonrpcNotification::Custom(custom) => println!("Custom notification: {:?}", custom),
+        },
+
+        // Result of a client→server request. `resultType` distinguishes a final result
+        // ("complete") from a request for more input ("input_required").
+        ServerMessage::Response(response) => {
+            let result = &response.result;
+
+            if result.is_input_required() {
+                // Mid-request elicitation: the server paused and needs the client to answer
+                // one or more `InputRequest`s before it can complete the original request.
+                let input_required = result.as_input_required().expect("checked is_input_required()");
+                let pending = input_required.input_requests.as_ref().map(|r| r.0.len()).unwrap_or(0);
+                println!("Input required — resolve {} request(s) and retry: {:?}", pending, input_required);
+            } else {
+                match result {
+                    ServerResult::CallToolResult(r) => println!("CallToolResult: {:?}", r),
+                    ServerResult::DiscoverResult(r) => println!("DiscoverResult: {:?}", r),
+                    ServerResult::ListResourcesResult(r) => println!("ListResourcesResult: {:?}", r),
+                    ServerResult::ListResourceTemplatesResult(r) => println!("ListResourceTemplatesResult: {:?}", r),
+                    ServerResult::ReadResourceResult(r) => println!("ReadResourceResult: {:?}", r),
+                    ServerResult::ListPromptsResult(r) => println!("ListPromptsResult: {:?}", r),
+                    ServerResult::GetPromptResult(r) => println!("GetPromptResult: {:?}", r),
+                    ServerResult::ListToolsResult(r) => println!("ListToolsResult: {:?}", r),
+                    ServerResult::CompleteResult(r) => println!("CompleteResult: {:?}", r),
+                    ServerResult::SubscriptionsListenResult(r) => println!("SubscriptionsListenResult: {:?}", r),
+                    ServerResult::Result(r) => println!("Generic Result: {:?}", r),
+                    ServerResult::InputRequiredResult(_) => unreachable!("handled by is_input_required() above"),
+                }
+            }
         }
+
+        ServerMessage::Error(error_response) => println!("Error response: {:?}", error_response),
     }
 
     Ok(())

@@ -1,93 +1,79 @@
 #![cfg_attr(rustfmt, rustfmt_skip)]
-#[cfg(feature = "latest")]
+//! Example: handling messages received by an MCP **server** (sent by an MCP **client**)
+//!
+//! Demonstrates:
+//! - deserializing a `ClientMessage` from a JSON-RPC payload,
+//! - the delegate enums (`ClientJsonrpcRequest::Known` wraps the schema `ClientRequest`),
+//! - the 2026-07-28 requirement that `params` and `params._meta` are always present,
+//!   with `_meta` (`RequestMetaObject`) carrying protocolVersion/clientInfo/clientCapabilities.
 use rust_mcp_schema::{schema_utils::*, *};
 use std::str::FromStr;
 
-#[cfg(feature = "latest")]
 type AppError = RpcError;
 
+// A client→server `tools/call` request.
+// 2026-07-28: `params` and `params._meta` are required; `_meta` is a `RequestMetaObject`
+// whose namespaced keys carry the protocol handshake fields on every request.
 const SAMPLE_PAYLOAD: &str = r#"
 {
     "id": 0,
     "jsonrpc": "2.0",
-    "method": "initialize",
+    "method": "tools/call",
     "params": {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {
-            "sampling": {},
-            "roots": {
-                "listChanged": true
-            }
-        },
-        "clientInfo": {
-            "name": "mcp-inspector",
-            "version": "0.1.0"
+        "name": "get_weather",
+        "arguments": { "city": "Paris" },
+        "_meta": {
+            "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+            "io.modelcontextprotocol/clientInfo": { "name": "example-client", "version": "1.0.0" },
+            "io.modelcontextprotocol/clientCapabilities": {}
         }
     }
 }
 "#;
 
 fn main() {
-    #[cfg(feature = "latest")]
     if let Err(error) = handle_message(SAMPLE_PAYLOAD) {
         eprintln!("Error occurred: {:?}", error);
     }
 }
 
-#[cfg(feature = "latest")]
-/// Deserialize the JSON-RPC message into the appropriate MCP type and print it with dbg!() macro .
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
-    // Deserialize message into ClientMessage.
-    // ClientMessage represents a message sent by an MCP Client and received by an MCP Server.
+    // Deserialize into `ClientMessage` (a message sent by an MCP Client to an MCP Server).
     let mcp_message = ClientMessage::from_str(message_payload)?;
 
     match mcp_message {
-        // Determine if the message is a Request
+        // Requests delegate to the schema-generated `ClientRequest` enum.
         ClientMessage::Request(request) => match request {
-            ClientJsonrpcRequest::InitializeRequest(initialize_request) => println!("InitializeRequest request received: {:?}", initialize_request),
-            ClientJsonrpcRequest::PingRequest(ping_request) => println!("PingRequest request received: {:?}", ping_request),
-            ClientJsonrpcRequest::ListResourcesRequest(list_resources_request) => println!("ListResourcesRequest request received: {:?}", list_resources_request),
-            ClientJsonrpcRequest::ListResourceTemplatesRequest(list_resource_templates_request) => println!("ListResourceTemplatesRequest request received: {:?}",list_resource_templates_request),
-            ClientJsonrpcRequest::ReadResourceRequest(read_resource_request) => println!("ReadResourceRequest request received: {:?}", read_resource_request),
-            ClientJsonrpcRequest::SubscribeRequest(subscribe_request) => println!("SubscribeRequest request received: {:?}", subscribe_request),
-            ClientJsonrpcRequest::UnsubscribeRequest(unsubscribe_request) => println!("UnsubscribeRequest request received: {:?}", unsubscribe_request),
-            ClientJsonrpcRequest::ListPromptsRequest(list_prompts_request) => println!("ListPromptsRequest request received: {:?}", list_prompts_request),
-            ClientJsonrpcRequest::GetPromptRequest(get_prompt_request) => println!("GetPromptRequest request received: {:?}", get_prompt_request),
-            ClientJsonrpcRequest::ListToolsRequest(list_tools_request) => println!("ListToolsRequest request received: {:?}", list_tools_request),
-            ClientJsonrpcRequest::CallToolRequest(call_tool_request) => println!("CallToolRequest request received: {:?}", call_tool_request),
-            ClientJsonrpcRequest::GetTaskRequest(get_task_request) => println!("GetTaskRequest request received: {:?}", get_task_request),
-            ClientJsonrpcRequest::GetTaskPayloadRequest(get_task_payload_request) => println!("GetTaskPayloadRequest request received: {:?}", get_task_payload_request),
-            ClientJsonrpcRequest::CancelTaskRequest(cancel_task_request) => println!("CancelTaskRequest request received: {:?}", cancel_task_request),
-            ClientJsonrpcRequest::ListTasksRequest(list_tasks_request) => println!("ListTasksRequest request received: {:?}", list_tasks_request),
-            ClientJsonrpcRequest::SetLevelRequest(set_level_request) => println!("SetLevelRequest request received: {:?}", set_level_request),
-            ClientJsonrpcRequest::CompleteRequest(complete_request) => println!("CompleteRequest request received: {:?}", complete_request),
-            ClientJsonrpcRequest::CustomRequest(jsonrpc_request) => println!("CustomRequest request received: {:?}", jsonrpc_request),
+            ClientJsonrpcRequest::Standard(standard) => match standard {
+                ClientRequest::DiscoverRequest(r) => println!("Discover (server/discover): {:?}", r),
+                ClientRequest::ListResourcesRequest(r) => println!("ListResources: {:?}", r),
+                ClientRequest::ListResourceTemplatesRequest(r) => println!("ListResourceTemplates: {:?}", r),
+                ClientRequest::ReadResourceRequest(r) => println!("ReadResource: {:?}", r),
+                ClientRequest::SubscriptionsListenRequest(r) => println!("SubscriptionsListen: {:?}", r),
+                ClientRequest::ListPromptsRequest(r) => println!("ListPrompts: {:?}", r),
+                ClientRequest::GetPromptRequest(r) => println!("GetPrompt: {:?}", r),
+                ClientRequest::ListToolsRequest(r) => println!("ListTools: {:?}", r),
+                ClientRequest::CallToolRequest(r) => println!("CallTool: {:?}", r),
+                ClientRequest::CompleteRequest(r) => println!("Complete: {:?}", r),
+            },
+            ClientJsonrpcRequest::Custom(custom) => println!("Custom request: {:?}", custom),
         },
-        // Determine if the message is a Notification
+
+        // Client→server notifications (task/roots-list-changed/initialized removed in 2026-07-28).
         ClientMessage::Notification(notification) => match notification {
-            ClientJsonrpcNotification::CancelledNotification(cancelled_notification) => println!("CancelledNotification notification received: {:?}", cancelled_notification),
-            ClientJsonrpcNotification::InitializedNotification(initialized_notification) => println!("InitializedNotification notification received: {:?}",initialized_notification),
-            ClientJsonrpcNotification::ProgressNotification(progress_notification) => println!("ProgressNotification notification received: {:?}", progress_notification),
-            ClientJsonrpcNotification::TaskStatusNotification(task_status_notification) => println!("TaskStatusNotification notification received: {:?}", task_status_notification),
-            ClientJsonrpcNotification::RootsListChangedNotification(roots_list_changed_notification) => println!("RootsListChangedNotification notification received: {:?}",roots_list_changed_notification),
-            ClientJsonrpcNotification::CustomNotification(jsonrpc_notification) => println!("CustomNotification notification received: {:?}", jsonrpc_notification),
+            ClientJsonrpcNotification::CancelledNotification(n) => println!("Cancelled: {:?}", n),
+            ClientJsonrpcNotification::CustomNotification(custom) => println!("Custom notification: {:?}", custom),
         },
-        // Determine if the message is a Response
+
+        // Results of server→client requests (the client's answers to sampling/roots/elicitation).
         ClientMessage::Response(response) => match &response.result {
-            ResultFromClient::GetTaskResult(_get_task_result) => println!("GetTaskResult  response received: {:?}", response),
-            ResultFromClient::CancelTaskResult(_cancel_task_result) => println!("CancelTaskResult  response received: {:?}", response),
-            ResultFromClient::ListTasksResult(_list_tasks_result) => println!("ListTasksResult  response received: {:?}", response),
-            ResultFromClient::CreateMessageResult(_create_message_result) => println!("CreateMessageResult  response received: {:?}", response),
-            ResultFromClient::ListRootsResult(_list_roots_result) => println!("ListRootsResult  response received: {:?}", response),
-            ResultFromClient::ElicitResult(_elicit_result) => println!("ElicitResult  response received: {:?}", response),
-            ResultFromClient::CreateTaskResult(_create_task_result) => println!("CreateTaskResult response received: {:?}", response),
-            ResultFromClient::Result(_generic_result) => println!("Generic Result response received: {:?}", response),
-            ResultFromClient::GetTaskPayloadResult(_generic_result) => println!("Generic Result response received: {:?}", response),
+            ResultFromClient::CreateMessageResult(r) => println!("CreateMessageResult: {:?}", r),
+            ResultFromClient::ListRootsResult(r) => println!("ListRootsResult: {:?}", r),
+            ResultFromClient::ElicitResult(r) => println!("ElicitResult: {:?}", r),
+            ResultFromClient::Result(r) => println!("Generic Result: {:?}", r),
         },
-        // Determine if the message is an Error
-        ClientMessage::Error(error_response) => {
-            println!("Error response received: {:?}", error_response)
-        }
+
+        ClientMessage::Error(error_response) => println!("Error response: {:?}", error_response),
     }
 
     Ok(())

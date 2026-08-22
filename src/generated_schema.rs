@@ -10,6 +10,9 @@ macro_rules! define_schema_version {
     ) => {
         #[cfg(feature = $feature)]
         #[path = $schema_path]
+        // Doc comments are machine-generated from upstream schema descriptions whose
+        // markdown does not always satisfy clippy's doc-formatting lints.
+        #[allow(clippy::doc_lazy_continuation)]
         mod $schema_mod;
 
         #[cfg(all(feature = "schema_utils", feature = $feature))]
@@ -31,9 +34,17 @@ macro_rules! define_schema_version {
     };
 }
 
-/// Latest MCP Protocol 2025_11_25
 #[cfg(feature = "2025_11_25")]
 pub use mcp_2025_11_25::*;
+
+/// Latest MCP Protocol 2026_07_28
+#[cfg(feature = "2026_07_28")]
+pub use mcp_2026_07_28::*;
+
+/// Draft (pre-release) MCP schema. Shares the 2026-07-28 schema contents.
+/// NOTE: do not enable together with `2026_07_28` (duplicate re-exports).
+#[cfg(feature = "draft")]
+pub use mcp_draft::*;
 
 #[cfg(feature = "2025_06_18")]
 define_schema_version!(
@@ -77,6 +88,17 @@ define_schema_version!(
     "generated_schema/2025_11_25/validators.rs",
     __int_2025_11_25,
     __int_utils_2025_11_25
+);
+
+#[cfg(feature = "2026_07_28")]
+define_schema_version!(
+    "2026_07_28",
+    mcp_2026_07_28,
+    "generated_schema/2026_07_28/mcp_schema.rs",
+    "generated_schema/2026_07_28/schema_utils.rs",
+    "generated_schema/2026_07_28/validators.rs",
+    __int_2026_07_28,
+    __int_utils_2026_07_28
 );
 
 #[cfg(feature = "draft")]

@@ -11,6 +11,7 @@
 
 A type-safe Rust implementation of the official Model Context Protocol (MCP) schema, supporting all official MCP Protocol versions:
 
+- `2026-07-28` (default)
 - `2025-11-25`
 - `2025-06-18`
 - `2025-03-26`
@@ -39,12 +40,12 @@ Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp
 - [What is `schema_utils`?](#what-is-schema_utils)
 - [What does the schema_utils do?](#what-does-the-schema_utils-do)
 - [Usage Examples](#usage-examples)
-  - [Detecting an InitializeRequest Message on an MCP Server](#detecting-an-initializerequest-message-on-an-mcp-server)
-  - [Creating an InitializeResult Response on an MCP Server](#creating-an-initializeresult-response-on-an-mcp-server)
-  - [Detecting an InitializeResult Response Message in an MCP Client](#detecting-an-initializeresult-response-message-in-an-mcp-client)
+  - [Detecting a CallToolRequest Message on an MCP Server](#detecting-a-calltoolrequest-message-on-an-mcp-server)
+  - [Creating a CallToolResult Response on an MCP Server](#creating-a-calltoolresult-response-on-an-mcp-server)
+  - [Detecting a CallToolResult Response Message in an MCP Client](#detecting-a-calltoolresult-response-message-in-an-mcp-client)
 - [Usage Examples (Without Utilizing schema_utils)](#usage-examples-without-utilizing-schema_utils)
 
-  - [Detecting an InitializeRequest Message on an MCP Server (without schema_utils)](#detecting-an-initializerequest-message-on-an-mcp-server-without-schema_utils)
+  - [Detecting a CallToolRequest Message on an MCP Server (without schema_utils)](#detecting-a-calltoolrequest-message-on-an-mcp-server-without-schema_utils)
 
 - [Contributing](CONTRIBUTING.md)
 
@@ -52,7 +53,7 @@ Focus on your app's logic while [rust-mcp-sdk](https://crates.io/crates/rust-mcp
 
 - 🧩 Type-safe implementation of the MCP protocol specification.
 - 💎 Auto-generated schemas are always synchronized with the official schema specifications.
-- 📜 Includes all official released versions : `2025-11-25`, `2025-06-18`, `2025-03-26`, `2024-11-05` and `draft` version for early adoption.
+- 📜 Includes all official released versions : `2026-07-28`, `2025-11-25`, `2025-06-18`, `2025-03-26`, `2024-11-05` and `draft` version for early adoption.
 - 🛠 Complimentary schema utility module (schema_utils) to boost productivity and ensure development integrity.
 
 ## How can this crate be used?
@@ -76,6 +77,7 @@ For more information on the MCP architecture, refer to the [official documentati
 
 This repository provides all official released versions the schema , including draft version, enabling you to prepare and adapt your applications ahead of upcoming official schema releases.
 
+- [2026-07-28](src/generated_schema/2026_07_28) (default)
 - [2025-11-25](src/generated_schema/2025_11_25)
 - [2025-06-18](src/generated_schema/2025_06_18)
 - [2025-03-26](src/generated_schema/2025_03_26)
@@ -91,7 +93,9 @@ Each schema version has a corresponding Cargo feature that can be enabled in you
 Multiple schema versions may be enabled concurrently if needed. Non-default versions are available under explicitly named modules, for example:
 
 - rust_mcp_schema::mcp_2025_06_18
-- rust_mcp_schema::mcp_draft"
+- rust_mcp_schema::mcp_2025_11_25
+
+> 📌 Note: the three most recent schemas (`2026_07_28`, `2025_11_25` and `draft`) are also re-exported at the crate root and are therefore **mutually exclusive** — enable at most one of them at a time. Older versions (`2025_06_18`, `2025_03_26`, `2024_11_05`) are module-only and can be combined with any one of them.
 
 Example: enable `2025-06-18` version of the schema:
 
@@ -125,17 +129,17 @@ Using a customized version of [typify](https://github.com/oxidecomputer/typify),
 
 The Rust implementations of the MCP schemas in this crate are automatically generated from the official MCP GitHub repository.
 
-[mcp_schema.rs](src/generated_schema/2024_11_05/mcp_schema.rs) provides all the core structures and enums with serialization/deserialization support, allowing you to use them as needed and extend their functionality.
+[mcp_schema.rs](src/generated_schema/2026_07_28/mcp_schema.rs) provides all the core structures and enums with serialization/deserialization support, allowing you to use them as needed and extend their functionality.
 
 To streamline development, improve compile-time type checking, and reduce the potential for errors, we’ve implemented utility types and functions that offer more strongly-typed objects and implementations, all without modifying the originally generated schema.
 
-Please refer to [schema_utils.rs](src/generated_schema/2024_11_05/schema_utils.rs) for more details.
+Please refer to [schema_utils.rs](src/generated_schema/2026_07_28/schema_utils.rs) for more details.
 
 ### 📌 Note
 
 > Using schema_utils is optional. It is enabled by default through the schema_utils Cargo feature and can be used from `rust_mcp_schema::schema_utils`.
 
-> If you prefer not to use schema_utils, you can directly work with the enums and structs provided in [mcp_schema.rs](src/generated_schema/2024_11_05/mcp_schema.rs), adapting them to your needs and creating your own utility types and functions around them.
+> If you prefer not to use schema_utils, you can directly work with the enums and structs provided in [mcp_schema.rs](src/generated_schema/2026_07_28/mcp_schema.rs), adapting them to your needs and creating your own utility types and functions around them.
 
 Visit [Usage Examples (Without `Using schema_utils`)](#usage-examples-without-utilizing-schema_utils) to see an alternative approach.
 
@@ -145,30 +149,30 @@ The official schema defines a unified `JsonrpcMessage` type that encompasses all
 
 To enhance type safety and usability, `schema_utils` divides JsonrpcMessage into two distinct categories: `ClientMessage` and `ServerMessage`. Each category includes the relevant types for both standard and custom messages.
 
-Please refer to [schema_utils.rs](src/generated_schema/2024_11_05/schema_utils.rs) and the [Usage Examples](usage-examples) section for more details.
+Please refer to [schema_utils.rs](src/generated_schema/2026_07_28/schema_utils.rs) and the [Usage Examples](usage-examples) section for more details.
 
 ## Usage Examples
 
 :point_right: The following examples focus solely on the serialization and deserialization of schema messages, assuming the JSON-RPC message has already been received in the application as a string.
 
-### Detecting an `InitializeRequest` Message on an MCP Server
+### Detecting a `CallToolRequest` Message on an MCP Server
 
-The following code snippet demonstrates how an MCP message, represented as a JSON string, can be deserialized into a ClientMessage and how to identify it as an InitializeRequest message.
+The following code snippet demonstrates how an MCP message, represented as a JSON string, can be deserialized into a ClientMessage and how to identify it as a CallToolRequest message.
 
 > Note: ClientMessage represents MCP messages sent from an MCP client. The following code demonstrates how an MCP server can deserialize received messages from an MCP client.
 
 ```rs
 
-pub fn handle_messagew(message_payload: &str) -> std::result::Result<(), RpcError> {
+pub fn handle_message(message_payload: &str) -> std::result::Result<(), RpcError> {
     // Deserialize message into ClientMessage.
-    let message = ClientMessage::from_str(&message_payload)?;
+    let message = ClientMessage::from_str(message_payload)?;
 
     // Check if the message is a Request
-    if let ClientMessage::Request(message_object) = message {
-        // Check if it's an InitializeRequest
-        if let ClientRequest::InitializeRequest(initialize_request) = client_request {
-            // Process the InitializeRequest (and eventually send back a InitializedNotification back to the server)
-            handle_initialize_request(initialize_request);
+    if let ClientMessage::Request(client_request) = message {
+        // Requests delegate to the schema-generated `ClientRequest` enum via `ClientJsonrpcRequest::Known`
+        if let ClientJsonrpcRequest::Known(ClientRequest::CallToolRequest(call_tool_request)) = client_request {
+            // Process the CallToolRequest (and eventually send a CallToolResult back to the client)
+            handle_call_tool_request(call_tool_request);
         }
     }
     Ok(())
@@ -178,46 +182,22 @@ pub fn handle_messagew(message_payload: &str) -> std::result::Result<(), RpcErro
 
 Refer to [examples/mcp_server_handle_message.rs](examples/mcp_server_handle_message.rs) for a complete match implementation that handles all possible `ClientMessage` variants.
 
-### Creating an `InitializeResult` Response on an MCP Server.
+### Creating a `CallToolResult` Response on an MCP Server.
 
-In response to an InitializeRequest, the MCP Server is expected to return an InitializeResult message.
+In response to a CallToolRequest, the MCP Server is expected to return a CallToolResult message.
 
-This code snippet demonstrates how to create an InitializeRequest, serialize it into a string, and send it back to the client via the transport layer.
+This code snippet demonstrates how to create a CallToolResult, serialize it into a string, and send it back to the client via the transport layer.
 
 ```rs
-    // create InitializeResult object
-    let initial_result = InitializeResult {
-        capabilities: ServerCapabilities {
-            logging: None,
-            prompts: Some(ServerCapabilitiesPrompts {list_changed: Some(true)}),
-            resources: Some(ServerCapabilitiesResources {list_changed: Some(true),subscribe: Some(true)}),
-            tools: Some(ServerCapabilitiesTools { list_changed: Some(true)}),
-            completions: None,
-            tasks: Some(ServerTasks { cancel: Some(Map::new()), list: Some(Map::new()), requests: None }),
-            experimental: None,
-        },
-        instructions: Some(String::from("mcp server instructions....")),
-        meta: Some(
-            json!({
-                "meta 1": serde_json::Value::String("meta-value".into()),
-                "meta 2": serde_json::Value::Number(serde_json::Number::from(225)),
-                "feature-xyz": serde_json::Value::Bool(true)
-            }).as_object().unwrap().to_owned(),
-        ),
-        protocol_version: ProtocolVersion::V2025_11_25.into(),
-        server_info: Implementation {
-            name: String::from("rust mcp server"),
-            title: Some("Cool mcp server!".into()),
-            version: String::from("1.0.0"),
-            description: Some("your rust mcp server description....".into()),
-            icons: vec![],
-            website_url: Some("https://github.com/rust-mcp-stack/rust-mcp-schema".into()),
-        },
-    };
+    // create a CallToolResult object (the builder sets `resultType: "complete"`)
+    let tool_result = CallToolResult::text_content(vec![TextContent::new(
+        "Sunny, 22°C in Paris.".to_string(),
+        None,
+        None,
+    )]);
 
-    // JsonrpcResultResponse  vs  JsonrpcResponse
-    // Create a ServerMessage (a message intended to be sent from the server)
-    let message = ServerJsonrpcResponse::new(RequestId::Integer(0), initial_result.into());
+    // wrap it in a JSON-RPC response envelope addressed to the request's `id`
+    let message = ServerJsonrpcResponse::new(RequestId::Integer(0), tool_result.into());
 
     // Serialize the MCP message into a valid JSON string for sending to the client
     let json_payload = serde_json::to_string(&message).unwrap();
@@ -232,27 +212,13 @@ output:
   "id": 0,
   "jsonrpc": "2.0",
   "result": {
-    "capabilities": {
-      "prompts": { "listChanged": true },
-      "resources": { "listChanged": true, "subscribe": true },
-      "tasks": { "cancel": {}, "list": {} },
-      "tools": { "listChanged": true }
-    },
-    "instructions": "mcp server instructions....",
-    "protocolVersion": "2025-11-25",
-    "serverInfo": {
-      "description": "your rust mcp server description....",
-      "name": "rust mcp server",
-      "title": "Cool mcp server!",
-      "version": "1.0.0",
-      "websiteUrl": "https://github.com/rust-mcp-stack/rust-mcp-schema"
-    },
-    "_meta": { "feature-xyz": true, "meta 1": "meta-value", "meta 2": 225 }
+    "content": [{ "type": "text", "text": "Sunny, 22°C in Paris." }],
+    "resultType": "complete"
   }
 }
 ```
 
-### Detecting an `InitializeResult` Response Message in an MCP Client:
+### Detecting a `CallToolResult` Response Message in an MCP Client:
 
 ```rs
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
@@ -262,10 +228,10 @@ fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
 
     // Check if the message is a Response type of message
     if let ServerMessage::Response(server_response) = mcp_message {
-        // Check if it's a InitializeResult response
-        if let ServerResult::InitializeResult(initialize_result) = server_response.result {
-            //Process the InitializeResult and send an InitializedNotification back to the server for acknowledgment.
-            handle_initialize_result(initialize_request);
+        // Check if it's a CallToolResult response
+        if let ServerResult::CallToolResult(call_tool_result) = &server_response.result {
+            // Process the CallToolResult
+            handle_call_tool_result(call_tool_result);
         }
     }
     Ok(())
@@ -278,29 +244,24 @@ Refer to [mcp_client_handle_message.rs](examples/mcp_client_handle_message.rs) f
 
 If you prefer not to use schema_utils, you can directly work with the generated types in your application or build custom utilities around them.
 
-### Detecting an InitializeRequest Message on an MCP Server (without schema_utils)
+### Detecting a CallToolRequest Message on an MCP Server (without schema_utils)
 
-The following code example illustrates how to detect an InitializeRequest message on an MCP server:
+The following code example illustrates how to detect a CallToolRequest message on an MCP server:
 
 ```rs
 
 fn handle_message(message_payload: &str) -> std::result::Result<(), AppError> {
-    // Deserialize json string into JsonrpcMessage
-    let message: JsonrpcMessage = serde_json::from_str(message_payload).unwrap();
+    // Deserialize the JSON-RPC payload directly into ClientRequest.
+    // Its `Deserialize` impl dispatches on the `method` field.
+    let client_request: ClientRequest = serde_json::from_str(message_payload).unwrap();
 
-    // Check it's a Request type of message
-    if let JsonrpcMessage::Request(client_message) = message {
-        let client_request: ClientRequest = serde_json::from_value(client_message.params.into()).unwrap();
+    // Check it's a "tools/call" request
+    if let ClientRequest::CallToolRequest(call_tool_request) = client_request {
+        // Now that we can handle the message, we simply print out the details.
+        println!("CallTool request received!");
 
-        // Check method to detect is a "initialize" request
-        if let ClientRequest::InitializeRequest(initialize_request) = client_request {
-            // Now that we can handle the message, we simply print out the details.
-            println!("Initialize request received!");
-
-            println!("Client name : {:?} ", initialize_request.params.client_info.name);
-            println!("Client version : {:?} ", initialize_request.params.client_info.version);
-            
-        }
+        println!("Tool name : {:?} ", call_tool_request.params.name);
+        println!("Arguments : {:?} ", call_tool_request.params.arguments);
     }
 
     Ok(())
