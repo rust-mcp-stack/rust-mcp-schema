@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v1.0.0...v2.0.0) (2026-08-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* support MCP schema 2026-07-28 and make it the default (v2.0.0) ([#119](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/119))
+
+### 🚀 Features
+
+* Support MCP schema 2026-07-28 and make it the default (v2.0.0) ([#119](https://github.com/rust-mcp-stack/rust-mcp-schema/issues/119)) ([a764b2d](https://github.com/rust-mcp-stack/rust-mcp-schema/commit/a764b2d8a14cd2c76498d5fa681981bcfa638a74))
+
 ## [1.0.0](https://github.com/rust-mcp-stack/rust-mcp-schema/compare/v0.10.3...v1.0.0) (2026-08-17)
 
 
